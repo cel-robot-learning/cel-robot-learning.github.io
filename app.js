@@ -133,83 +133,116 @@ new ResizeObserver(() => goToTask(activeTask, false)).observe(taskViewport);
 document.addEventListener('visibilitychange', syncTaskPlayback);
 showTask(0);
 
-// Title background and fleet-video presentation.
+// A short opening gesture eases into the page; scrolling below the cover stays native.
 (() => {
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const hero = document.querySelector('.research-hero');
-  const canvas = document.getElementById('hero-field');
-  const context = canvas.getContext('2d');
-  let width = 0, height = 0, step = 26;
-  let pointer = {x: -1000, y: -1000};
-  let heroVisible = false, animationFrame = 0, lastDraw = 0;
-  let elapsed = 0, lastTick = 0;
+  const content = document.getElementById('project-content');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let scrollFrame = 0, paintFrame = 0, wheelDistance = 0, wheelTime = 0;
+  let touchStart = null;
 
-  // Decorative field only: it does not encode experiment data or robot counts.
-  function drawField(time) {
-    if (!context || !width || !height) return;
-    context.clearRect(0, 0, width, height);
-    const sweep = (time * .025) % (width + 300) - 150;
-    for (let row = 0; row < Math.ceil(height / step); row++) {
-      for (let col = 0; col < Math.ceil(width / step); col++) {
-        const x = col * step + 4, y = row * step + 4;
-        const seed = (Math.sin(col * 12.9898 + row * 78.233) * 43758.5453) % 1;
-        const distance = Math.hypot(x - pointer.x, y - pointer.y);
-        const hover = Math.max(0, 1 - distance / 155);
-        const wave = Math.exp(-Math.pow((x - sweep) / 95, 2));
-        const pulse = .5 + .5 * Math.sin(time * .0013 + seed * 6.28);
-        // Keep the center light so the full manuscript title remains readable.
-        const edge = .25 + .75 * Math.pow(Math.abs(x / width - .5) * 2, .8);
-        const alpha = (.04 + .045 * Math.abs(seed) + .13 * wave * pulse + .32 * hover) * edge;
-        context.fillStyle = `rgba(50,101,138,${alpha.toFixed(3)})`;
-        context.fillRect(x, y, step - 8, step - 8);
+  function paintCover() {
+    paintFrame = 0;
+    const progress = Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / hero.offsetHeight));
+    hero.style.setProperty('--hero-shift', `${progress * hero.offsetHeight * .12}px`);
+    hero.style.setProperty('--hero-title-shift', `${progress * hero.offsetHeight * .18}px`);
+    hero.style.setProperty('--hero-scale', 1 + progress * .06);
+    hero.style.setProperty('--hero-opacity', Math.max(0, 1 - progress * 1.7));
+  }
+
+  function schedulePaint() {
+    if (!paintFrame) paintFrame = requestAnimationFrame(paintCover);
+  }
+
+  function stopTransition() {
+    cancelAnimationFrame(scrollFrame);
+    scrollFrame = 0;
+    document.documentElement.classList.remove('hero-transition');
+    wheelDistance = 0;
+  }
+
+  function atCoverStart() {
+    return !reduced.matches && window.scrollY < hero.offsetHeight * .1;
+  }
+
+  function enterPage(fromKeyboard = false) {
+    if (scrollFrame || !atCoverStart()) return;
+    const startY = window.scrollY;
+    const targetY = content.getBoundingClientRect().top + startY;
+    const started = performance.now();
+    document.documentElement.classList.add('hero-transition');
+    function advance(now) {
+      const progress = Math.min(1, (now - started) / 1100);
+      const eased = progress < .5 ? 4 * progress ** 3 : 1 - (-2 * progress + 2) ** 3 / 2;
+      window.scrollTo({top: startY + (targetY - startY) * eased, behavior: 'instant'});
+      if (progress < 1) scrollFrame = requestAnimationFrame(advance);
+      else {
+        stopTransition();
+        if (fromKeyboard) content.focus({preventScroll:true});
       }
     }
+    scrollFrame = requestAnimationFrame(advance);
   }
 
-  function loop(now) {
-    animationFrame = 0;
-    if (!heroVisible || document.hidden || reduced.matches) { lastTick = 0; return; }
-    if (lastTick) elapsed += Math.min(64, now - lastTick);
-    lastTick = now;
-    if (now - lastDraw > 32) { drawField(elapsed); lastDraw = now; }
-    animationFrame = requestAnimationFrame(loop);
+  window.addEventListener('wheel', event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
+    if (scrollFrame) {
+      if (event.deltaY < 0) stopTransition();
+      else event.preventDefault();
+      return;
+    }
+    if (!atCoverStart() || !hero.contains(event.target) || event.deltaY <= 0) return;
+    event.preventDefault();
+    const now = performance.now();
+    if (now - wheelTime > 180) wheelDistance = 0;
+    wheelTime = now;
+    const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+    wheelDistance += event.deltaY * unit;
+    if (wheelDistance >= 18) enterPage();
+  }, {passive:false});
+
+  hero.addEventListener('touchstart', event => {
+    touchStart = event.touches.length === 1 && atCoverStart()
+      ? {x:event.touches[0].clientX, y:event.touches[0].clientY} : null;
+  }, {passive:true});
+  hero.addEventListener('touchmove', event => {
+    if (!touchStart || event.touches.length !== 1) return;
+    const dx = touchStart.x - event.touches[0].clientX;
+    const dy = touchStart.y - event.touches[0].clientY;
+    if (Math.abs(dx) >= Math.abs(dy)) return;
+    if (dy < 0) { stopTransition(); touchStart = null; return; }
+    event.preventDefault();
+    if (dy >= 32) enterPage();
+  }, {passive:false});
+  for (const name of ['touchend', 'touchcancel']) {
+    hero.addEventListener(name, () => { touchStart = null; }, {passive:true});
   }
 
-  function syncField() {
-    cancelAnimationFrame(animationFrame);
-    animationFrame = 0;
-    lastTick = 0;
-    if (!heroVisible || document.hidden) return;
-    if (reduced.matches) drawField(4000);
-    else animationFrame = requestAnimationFrame(loop);
-  }
+  window.addEventListener('keydown', event => {
+    if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey ||
+        event.target.closest('a,button,input,select,textarea,summary,video,[contenteditable]')) return;
+    if (scrollFrame) {
+      if (['Escape', 'ArrowUp', 'PageUp', 'Home', 'End'].includes(event.key)) stopTransition();
+      else if (['ArrowDown', 'PageDown', ' '].includes(event.key)) event.preventDefault();
+      return;
+    }
+    if (atCoverStart() && ['ArrowDown', 'PageDown', ' '].includes(event.key)) {
+      event.preventDefault();
+      enterPage(true);
+    }
+  });
+  window.addEventListener('scroll', schedulePaint, {passive:true});
+  window.addEventListener('resize', () => { stopTransition(); schedulePaint(); });
+  window.addEventListener('hashchange', stopTransition);
+  window.addEventListener('pagehide', stopTransition);
+  window.addEventListener('pageshow', paintCover);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stopTransition(); });
+  reduced.addEventListener('change', () => { stopTransition(); schedulePaint(); });
+  paintCover();
+})();
 
-  function sizeField() {
-    if (!context) return;
-    width = hero.clientWidth;
-    height = hero.clientHeight;
-    step = width < 600 ? 22 : 26;
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    canvas.width = Math.round(width * dpr);
-    canvas.height = Math.round(height * dpr);
-    context.setTransform(dpr, 0, 0, dpr, 0, 0);
-    drawField(reduced.matches ? 4000 : elapsed);
-  }
-
-  if (context) {
-    new ResizeObserver(sizeField).observe(hero);
-    new IntersectionObserver(entries => {
-      heroVisible = entries[0].isIntersecting;
-      syncField();
-    }).observe(hero);
-    hero.addEventListener('pointermove', event => {
-      if (reduced.matches || event.pointerType === 'touch') return;
-      const bounds = hero.getBoundingClientRect();
-      pointer = {x: event.clientX - bounds.left, y: event.clientY - bounds.top};
-    }, {passive:true});
-    hero.addEventListener('pointerleave', () => { pointer = {x:-1000, y:-1000}; });
-  }
-
+// Keep fleet-video playback tied to visibility and the viewer's own pause.
+(() => {
   const windowElement = document.getElementById('title-video-window');
   const video = document.getElementById('title-video');
   let videoVisible = false;
@@ -244,8 +277,7 @@ showTask(0);
     syncVideo();
   }, {threshold:.1}).observe(windowElement);
 
-  reduced.addEventListener('change', syncField);
-  document.addEventListener('visibilitychange', () => { syncField(); syncVideo(); });
+  document.addEventListener('visibilitychange', syncVideo);
 })();
 
 // Start off-screen blocks transparent so entering view never restarts a visible frame.
@@ -254,7 +286,6 @@ showTask(0);
   if (reduced.matches || !('IntersectionObserver' in window)) return;
 
   const blocks = [...document.querySelectorAll([
-    '.project-masthead > h1', '.project-masthead > .project-affiliations',
     '.section-heading > *', '.overview-highlights > div', '.project-details',
     '.task-showcase > .figure-header', '.task-carousel-caption > *',
     '.stages-figure > .figure-header', '.stages > div', '.stages-figure > figcaption',

@@ -10,23 +10,26 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%2332658a'/%3E%3Cpath d='M7 7h7v7H7zm11 0h7v7h-7zM7 18h7v7H7zm11 0h7v7h-7z' fill='%23ffffff'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261010-compact-fats">
   <link rel="stylesheet" href="results.css?v=20261008-neutral-blue">
-  <link rel="stylesheet" href="motion.css?v=20261010-cel">
+  <link rel="preload" as="image" href="assets/cel-fleet-cover.png">
+  <link rel="stylesheet" href="motion.css?v=20261010-photo-cover">
 </head>
 <body>
   <a class="skip-link" href="#overview">Skip to content</a>
-  <header class="site-header wide-width">
-    <a class="wordmark" href="#top"><span class="brand-symbol" aria-hidden="true">∷</span> Collective Experience Learning</a>
-    <nav aria-label="Main navigation"><a href="#overview">Introduction</a><a href="#tasks">Tasks</a><a href="#method">Method</a><a href="#results">Results</a><a href="#system">System</a></nav>
-  </header>
   <main id="top">
-    <div class="research-hero wide-width">
-      <canvas id="hero-field" aria-hidden="true"></canvas>
-<div class="article-header project-masthead">
-      <h1>Collective Experience Learning Enables Scalable Robot Post-training</h1>
-      <p class="project-affiliations">Tsinghua University · AgiBot · Infinigence AI</p>
-      <div class="project-tagline-space" aria-hidden="true"></div>
-    </div>
-    </div>
+    <section class="research-hero" aria-labelledby="project-title">
+      <img class="hero-photograph" src="assets/cel-fleet-cover.png" width="1024" height="1536" alt="" fetchpriority="high" decoding="async">
+      <div class="hero-shade" aria-hidden="true"></div>
+      <h1 id="project-title">
+        <span>Collective Experience Learning</span>
+        <span>Enables Scalable</span>
+        <span>Robot Post-training</span>
+      </h1>
+    </section>
+    <header class="site-header wide-width" id="project-content" tabindex="-1">
+      <a class="wordmark" href="#top"><span class="brand-symbol" aria-hidden="true">∷</span> Collective Experience Learning</a>
+      <nav aria-label="Main navigation"><a href="#overview">Introduction</a><a href="#tasks">Tasks</a><a href="#method">Method</a><a href="#results">Results</a><a href="#system">System</a></nav>
+    </header>
+    <p class="project-affiliations wide-width">Tsinghua University · AgiBot · Infinigence AI</p>
     <figure class="title-video wide-width" aria-label="Robot fleet test video">
       <div class="title-video-window" id="title-video-window"><div class="title-video-shell">
       <div class="title-video-frame" id="title-video-frame">
@@ -174,7 +177,7 @@
   </main>
   <footer class="reading-width site-footer"><a class="wordmark" href="#top">Collective Experience Learning</a><p>Tsinghua University · AgiBot · Infinigence AI</p><a href="#top">Back to top</a></footer>
   <script src="research-data.js?v=20261010-cel" defer></script>
-  <script src="app.js?v=20261010-cel-hero" defer></script>
+  <script src="app.js?v=20261010-photo-cover" defer></script>
   <script src="results.js?v=20261010-cel" defer></script>
 </body>
 </html>
