@@ -7,14 +7,17 @@ const byId = id => document.getElementById(id);
 const titleVideo = byId('title-video');
 if (titleVideo.dataset.src) {
   const frame = titleVideo.closest('.title-video-frame');
+  const figure = titleVideo.closest('.title-video');
   titleVideo.muted = true;
   titleVideo.src = titleVideo.dataset.src;
   titleVideo.hidden = false;
+  figure.hidden = false;
   titleVideo.addEventListener('loadeddata', () => {
     frame.dataset.ready = 'true';
   }, {once: true});
   titleVideo.addEventListener('error', () => {
     titleVideo.hidden = true;
+    figure.hidden = true;
     frame.dataset.ready = 'false';
   });
   titleVideo.load();
@@ -118,9 +121,7 @@ taskVideos.forEach(video => {
     syncTaskPlayback();
   }, {once: true});
   video.addEventListener('error', () => {
-    video.hidden = true;
     frame.dataset.ready = 'false';
-    frame.querySelector('.task-video-placeholder p').textContent = 'Video unavailable';
   });
   video.load();
 });
@@ -212,17 +213,15 @@ showTask(0);
     hero.addEventListener('pointerleave', () => { pointer = {x:-1000, y:-1000}; });
   }
 
-  const figure = document.querySelector('.title-video');
   const windowElement = document.getElementById('title-video-window');
-  const toggle = document.getElementById('title-video-toggle');
   const video = document.getElementById('title-video');
-  let videoVisible = false, folded = false;
+  let videoVisible = false;
   let autoPaused = false, manuallyPaused = false, changingPlayback = false;
 
-  // Preserve a viewer's own pause when the video leaves the viewport or folds away.
+  // Preserve a viewer's own pause when the video leaves the viewport.
   function syncVideo() {
     if (!video.getAttribute('src') || video.hidden) return;
-    const shouldPlay = videoVisible && !folded && !document.hidden;
+    const shouldPlay = videoVisible && !document.hidden;
     if (!shouldPlay && !video.paused) {
       autoPaused = true;
       changingPlayback = true;
@@ -235,7 +234,7 @@ showTask(0);
   }
   video.addEventListener('pause', () => {
     if (changingPlayback) changingPlayback = false;
-    else if (videoVisible && !folded && !document.hidden) manuallyPaused = true;
+    else if (videoVisible && !document.hidden) manuallyPaused = true;
   });
   video.addEventListener('play', () => {
     manuallyPaused = false;
@@ -247,16 +246,6 @@ showTask(0);
     videoVisible = entries[0].isIntersecting;
     syncVideo();
   }, {threshold:.1}).observe(windowElement);
-  toggle.hidden = false;
-  toggle.addEventListener('click', () => {
-    folded = !folded;
-    figure.classList.toggle('is-folded', folded);
-    windowElement.inert = folded;
-    windowElement.setAttribute('aria-hidden', String(folded));
-    toggle.setAttribute('aria-expanded', String(!folded));
-    toggle.querySelector('span').textContent = folded ? 'Show video' : 'Hide video';
-    syncVideo();
-  });
 
   reduced.addEventListener('change', syncField);
   document.addEventListener('visibilitychange', () => { syncField(); syncVideo(); });

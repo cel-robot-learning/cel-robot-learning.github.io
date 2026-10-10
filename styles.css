@@ -42,10 +42,6 @@
 .title-video-frame{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--surface);border-radius:4px}
 .title-video-frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--dark)}
 .title-video-frame video[hidden]{display:none}
-.title-video-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;color:var(--ink)}
-.title-video-placeholder .small-mono{color:var(--muted)}
-.title-video-placeholder p{font:clamp(25px,3vw,40px)/1.2 var(--serif);margin:0}
-.title-video-frame[data-ready=true] .title-video-placeholder{display:none}
 .paper-diagram{display:block;background:white;padding:22px;border-radius:3px;overflow-x:auto}
 .method-image{display:block;width:100%;height:auto}
 .hardware-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-top:25px}
@@ -72,11 +68,7 @@
 .task-video-frame[data-task-media=stool]{background:var(--surface)}
 .task-video-frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#20242a}
 .task-video-frame video[hidden]{display:none}
-.task-video-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;padding:22px;text-align:center;color:var(--muted)}
-.task-video-placeholder .small-mono{font-size:11px;letter-spacing:1.1px;text-transform:uppercase}
-.task-video-placeholder p{font:clamp(24px,3vw,38px)/1.2 var(--serif);margin:0;letter-spacing:-.5px}
 .task-video-label{position:absolute;bottom:24px;left:24px;max-width:calc(100% - 48px);border-radius:5px;background:#282d33dd;color:#fff;padding:8px 12px;font:13px/1.4 var(--mono);pointer-events:none}
-.task-video-frame[data-ready=true] .task-video-placeholder{display:none}
 .task-video-frame[data-ready=true] .task-video-label{top:18px;bottom:auto;background:#20242aa6}
 .task-carousel-navigation{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:22px}
 .task-carousel-controls{display:flex;gap:12px}
@@ -98,7 +90,7 @@
 .fault-analysis-intro{max-width:850px;font-size:16px;line-height:1.8;margin:0 0 22px;color:var(--muted)}
 .fault-timeline-slot .method-image{min-width:760px}
 
-@media(max-width:600px){.task-carousel-track{gap:14px}.task-carousel-track::after{flex-basis:calc(12% - 14px)}.task-video-slide{flex-basis:88%}.task-video-frame,.task-carousel-viewport{border-radius:7px}.task-video-placeholder{gap:9px;padding:14px}.task-video-placeholder p{font-size:25px}.task-video-placeholder .small-mono{font-size:9px}.task-video-label{bottom:13px;left:13px;max-width:calc(100% - 26px);font-size:10px;padding:6px 9px}.task-video-frame[data-ready=true] .task-video-label{top:12px}.task-carousel-navigation{margin-top:18px;gap:13px}.task-carousel-controls button{width:44px;height:44px}.task-carousel-caption{margin-top:26px}.task-carousel-caption h3{font-size:27px}.task-carousel-caption>p:not(.task-carousel-metrics){font-size:13px;line-height:1.8}.task-carousel-metrics{gap:7px 16px;font-size:10px}}
+@media(max-width:600px){.task-carousel-track{gap:14px}.task-carousel-track::after{flex-basis:calc(12% - 14px)}.task-video-slide{flex-basis:88%}.task-video-frame,.task-carousel-viewport{border-radius:7px}.task-video-label{bottom:13px;left:13px;max-width:calc(100% - 26px);font-size:10px;padding:6px 9px}.task-video-frame[data-ready=true] .task-video-label{top:12px}.task-carousel-navigation{margin-top:18px;gap:13px}.task-carousel-controls button{width:44px;height:44px}.task-carousel-caption{margin-top:26px}.task-carousel-caption h3{font-size:27px}.task-carousel-caption>p:not(.task-carousel-metrics){font-size:13px;line-height:1.8}.task-carousel-metrics{gap:7px 16px;font-size:10px}}
 @media(max-width:600px){.fault-analysis-intro{font-size:14px}.paper-diagram .method-image{min-width:620px}.fault-timeline-slot .method-image{min-width:760px}}
 @media(max-width:1000px){.stages h3.stage-name{font-size:28px}}
 @media(max-width:600px){.stages>div{padding:22px 24px}.stages .stage-label{font-size:15px}.stages h3.stage-name{font-size:30px}.stage-number{margin-bottom:12px}.stage-signal{font-size:10px}}
