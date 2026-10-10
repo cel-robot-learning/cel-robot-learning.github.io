@@ -8,7 +8,7 @@
   <title>Collective Experience Learning Enables Scalable Robot Post-training</title>
   <link rel="canonical" href="https://cel-robot-post-training.github.io/">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%2332658a'/%3E%3Cpath d='M7 7h7v7H7zm11 0h7v7h-7zM7 18h7v7H7zm11 0h7v7h-7z' fill='%23ffffff'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles.css?v=20261010-compact-method">
+  <link rel="stylesheet" href="styles.css?v=20261010-compact-fats">
   <link rel="stylesheet" href="results.css?v=20261008-neutral-blue">
   <link rel="stylesheet" href="motion.css?v=20261010-cel">
 </head>
@@ -107,7 +107,7 @@
         <div class="stage-highlight"><span class="stage-number">03</span><p class="stage-label">Fleet-generated experience</p><p>Successful actions supply training targets; failure contexts set sampling priorities.</p><span class="stage-signal">Signal: binary task outcomes</span><h3 class="stage-name">FERT</h3></div>
       </div>
       <figcaption>Each stage retains the previous policy weights and collects fresh training data.</figcaption>
-    </figure>    <figure class="retrieval-figure fert-figure wide-width" aria-labelledby="retrieval-title">
+    </figure>    <figure class="retrieval-figure wide-width" aria-labelledby="retrieval-title">
       <div class="figure-header"><span class="eyebrow" id="retrieval-title">Failure-guided experience retrieval fine-tuning</span><span class="small-mono">Failure-guided retrieval</span></div>
       <div class="paper-diagram">
         <img class="method-image" src="assets/fert-method.png?v=20261010-cel" width="2600" height="2485" loading="lazy" alt="Four-step FERT workflow: asynchronous robot experience collection; frozen visual encoding and normalized joint-state embeddings; failure-guided temporal matching, retrieval costs and selected intervals; priority updates and weighted sampling from the collective experience buffer for policy fine-tuning.">

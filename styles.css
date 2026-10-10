@@ -99,4 +99,4 @@
 @media(max-width:1000px){.stages h3.stage-name{font-size:28px}}
 @media(max-width:600px){.stages>div{padding:22px 24px}.stages .stage-label{font-size:15px}.stages h3.stage-name{font-size:30px}.stage-number{margin-bottom:12px}.stage-signal{font-size:10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
-.fert-figure .method-image{max-width:760px;min-width:0;margin-inline:auto}
+.hardware-figure .method-image{max-width:760px;margin-inline:auto}
