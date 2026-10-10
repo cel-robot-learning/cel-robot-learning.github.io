@@ -7,17 +7,14 @@ const byId = id => document.getElementById(id);
 const titleVideo = byId('title-video');
 if (titleVideo.dataset.src) {
   const frame = titleVideo.closest('.title-video-frame');
-  const figure = titleVideo.closest('.title-video');
   titleVideo.muted = true;
   titleVideo.src = titleVideo.dataset.src;
   titleVideo.hidden = false;
-  figure.hidden = false;
   titleVideo.addEventListener('loadeddata', () => {
     frame.dataset.ready = 'true';
   }, {once: true});
   titleVideo.addEventListener('error', () => {
     titleVideo.hidden = true;
-    figure.hidden = true;
     frame.dataset.ready = 'false';
   });
   titleVideo.load();
