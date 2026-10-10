@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Collective Experience Learning achieves 93.3–99.2% task success across five real-world manipulation tasks, with training fleets of up to 96 robots.">
+  <title>Collective Experience Learning Enables Scalable Robot Post-training</title>
+  <link rel="canonical" href="https://cel-robot-post-training.github.io/">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%2332658a'/%3E%3Cpath d='M7 7h7v7H7zm11 0h7v7h-7zM7 18h7v7H7zm11 0h7v7h-7z' fill='%23ffffff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css?v=20261008-unified-grid">
+  <link rel="stylesheet" href="results.css?v=20261008-neutral-blue">
+  <link rel="stylesheet" href="motion.css?v=20261008-smooth-reveal">
+</head>
+<body>
+  <a class="skip-link" href="#overview">Skip to content</a>
+  <header class="site-header wide-width">
+    <a class="wordmark" href="#top"><span class="brand-symbol" aria-hidden="true">∷</span> Collective Experience Learning</a>
+    <nav aria-label="Main navigation"><a href="#overview">Introduction</a><a href="#tasks">Tasks</a><a href="#method">Method</a><a href="#results">Results</a><a href="#system">System</a></nav>
+  </header>
+  <main id="top">
+    <div class="research-hero wide-width">
+      <canvas id="hero-field" aria-hidden="true"></canvas>
+<div class="article-header project-masthead">
+      <h1>Collective Experience Learning Enables Scalable Robot Post-training</h1>
+      <p class="project-affiliations">Tsinghua University · AgiBot · Infinigence AI</p>
+      <div class="project-tagline-space" aria-hidden="true"></div>
+    </div>
+    </div>
+    <figure class="title-video wide-width" aria-label="Robot fleet test video">
+      <div class="title-video-toolbar"><button id="title-video-toggle" type="button" aria-expanded="true" aria-controls="title-video-window" hidden><span>Hide video</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg></button></div>
+      <div class="title-video-window" id="title-video-window"><div class="title-video-shell">
+      <div class="title-video-frame" id="title-video-frame">
+        <!-- Add the MP4 to assets/ and set data-src="assets/fleet-test.mp4" to enable playback. -->
+        <video id="title-video" data-src="" autoplay muted loop playsinline controls preload="metadata" aria-label="Robot fleet test video" hidden></video>
+        <div class="title-video-placeholder"><span class="small-mono">Collective Experience Learning</span><p>Video placeholder</p></div>
+      </div>
+      </div></div>
+    </figure>
+<section class="project-section" id="overview">
+<div class="reading-width section-heading"><p class="section-index">01 / Introduction</p><h2>Collective Experience Learning</h2>
+<p>Collective Experience Learning improves a shared task policy using autonomous rollouts from a robot fleet. After initialization with demonstrations and human corrections, <strong>Failure-guided Experience Retrieval Fine-Tuning (FERT)</strong> trains on successful trajectories and uses failure contexts to select relevant experience. During FERT, operators provide binary task-outcome labels.</p>
+<p>Across five separately trained manipulation tasks, FERT achieves <strong>93.3–99.2%</strong> success on held-out robots. On Phone Packaging, post-training with 96 robots raises success from <strong>79.2% to 98.3%</strong>.</p></div>
+<dl class="reading-width overview-highlights"><div><dt>Largest training fleet</dt><dd>96<span>robots</span></dd></div><div><dt>Separately trained tasks</dt><dd>5<span>real-world tasks</span></dd></div><div><dt>Phone Packaging</dt><dd>98.3<span>% success</span></dd></div></dl>
+<div class="reading-width project-details"><details class="method-details" id="challenge"><summary>Robot Post-training from Real-world Experience</summary><div class="details-copy"><p>Object placement, contact conditions and robot variation can cause errors to accumulate during multi-stage tasks. Human interventions supply corrective actions for these states. As more robots run concurrently, experts must monitor more interaction streams and provide more corrections. Collective Experience Learning uses fleet-generated trajectories and binary outcome labels for subsequent policy updates.</p></div></details></div>
+</section>
+<section class="project-section" id="tasks">
+<div class="reading-width section-heading"><p class="section-index">02 / Task Setup</p><h2>Tasks and robot setup</h2>
+<p>Each task uses a separately trained policy on AgiBot G2 robots. Observations combine one head-camera view, two wrist-camera views and proprioceptive state. Actions are delta joint positions for both arms.</p></div>
+    <figure class="task-showcase task-carousel wide-width" aria-labelledby="task-showcase-title">
+      <div class="figure-header"><span class="eyebrow" id="task-showcase-title">Task Setup</span><span class="small-mono">Five tasks</span></div>
+      <div class="task-carousel-viewport" id="task-frame" role="region" aria-roledescription="carousel" aria-label="Task demonstration videos" tabindex="0">
+        <div class="task-carousel-track" id="task-track">
+          <!-- Place clips in assets/ and fill each data-src to enable playback. -->
+          <div class="task-video-slide is-active" data-task-slide="packaging" role="group" aria-roledescription="slide" aria-label="1 of 5: Phone Packaging">
+            <div class="task-video-frame" data-task-media="packaging">
+              <video data-src="" autoplay muted loop playsinline controls preload="metadata" aria-label="Phone Packaging demonstration" hidden></video>
+              <div class="task-video-placeholder"><span class="small-mono">Task demonstration</span><p>Video placeholder</p></div>
+              <span class="task-video-label">Phone Packaging</span>
+            </div>
+          </div>
+          <div class="task-video-slide" data-task-slide="flowers" role="group" aria-roledescription="slide" aria-label="2 of 5: Flower Arrangement">
+            <div class="task-video-frame" data-task-media="flowers">
+              <video data-src="" autoplay muted loop playsinline controls preload="metadata" aria-label="Flower Arrangement demonstration" hidden></video>
+              <div class="task-video-placeholder"><span class="small-mono">Task demonstration</span><p>Video placeholder</p></div>
+              <span class="task-video-label">Flower Arrangement</span>
+            </div>
+          </div>
+          <div class="task-video-slide" data-task-slide="folding" role="group" aria-roledescription="slide" aria-label="3 of 5: Clothes Folding">
+            <div class="task-video-frame" data-task-media="folding">
+              <video data-src="" autoplay muted loop playsinline controls preload="metadata" aria-label="Clothes Folding demonstration" hidden></video>
+              <div class="task-video-placeholder"><span class="small-mono">Task demonstration</span><p>Video placeholder</p></div>
+              <span class="task-video-label">Clothes Folding</span>
+            </div>
+          </div>
+          <div class="task-video-slide" data-task-slide="charging" role="group" aria-roledescription="slide" aria-label="4 of 5: Phone Charging">
+            <div class="task-video-frame" data-task-media="charging">
+              <video data-src="" autoplay muted loop playsinline controls preload="metadata" aria-label="Phone Charging demonstration" hidden></video>
+              <div class="task-video-placeholder"><span class="small-mono">Task demonstration</span><p>Video placeholder</p></div>
+              <span class="task-video-label">Phone Charging</span>
+            </div>
+          </div>
+          <div class="task-video-slide" data-task-slide="stool" role="group" aria-roledescription="slide" aria-label="5 of 5: Stool Assembly">
+            <div class="task-video-frame" data-task-media="stool">
+              <video data-src="" autoplay muted loop playsinline controls preload="metadata" aria-label="Stool Assembly demonstration" hidden></video>
+              <div class="task-video-placeholder"><span class="small-mono">Task demonstration</span><p>Video placeholder</p></div>
+              <span class="task-video-label">Stool Assembly</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="task-carousel-navigation">
+        <div class="task-carousel-controls" role="group" aria-label="Browse task videos">
+          <button id="task-previous" type="button" aria-label="Previous task video" aria-controls="task-frame" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button>
+          <button id="task-next" type="button" aria-label="Next task video" aria-controls="task-frame"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button>
+        </div>
+        <p class="task-carousel-counter" id="task-position" role="status" aria-live="polite" aria-atomic="true">1 / 5</p>
+      </div>
+      <figcaption class="task-carousel-caption" id="task-details">
+        <h3 id="task-title">Phone Packaging</h3>
+        <p id="task-description">Task description placeholder.</p>
+        <p class="task-carousel-metrics"><span><strong id="task-rate">98.3%</strong> FERT success</span><span id="task-trials">118 successful trials out of 120</span><span id="task-robots">96 training robots</span></p>
+      </figcaption>
+    </figure>
+</section>
+<section class="project-section" id="method">
+<div class="reading-width section-heading"><p class="section-index">03 / Collective Experience Learning</p><h2>Failure-guided Experience Retrieval Fine-Tuning (FERT)</h2>
+<p>FERT stores successful rollouts in a shared buffer. Visual features and robot state encode failure contexts, which are matched to successful sequences using subsequence dynamic time warping. Retrieved intervals receive higher sampling priority during supervised fine-tuning.</p></div>    <figure class="stages-figure wide-width" aria-labelledby="stages-title">
+      <div class="figure-header"><span id="stages-title" class="eyebrow">Training setup</span><span class="small-mono">SFT · HG-DAgger · FERT</span></div>
+      <div class="stages">
+        <div><span class="stage-number">01</span><p class="stage-label">Human demonstrations</p><p>Supervised fine-tuning adapts a pretrained policy to the target task.</p><span class="stage-signal">Signal: expert demonstrations</span><h3 class="stage-name">SFT</h3></div>
+        <div><span class="stage-number">02</span><p class="stage-label">Human interventions</p><p>Operators intervene in situations the policy encounters during execution.</p><span class="stage-signal">Signal: corrective actions</span><h3 class="stage-name">HG-DAgger</h3></div>
+        <div class="stage-highlight"><span class="stage-number">03</span><p class="stage-label">Fleet-generated experience</p><p>Successful actions supply training targets; failure contexts set sampling priorities.</p><span class="stage-signal">Signal: binary task outcomes</span><h3 class="stage-name">FERT</h3></div>
+      </div>
+      <figcaption>Each stage retains the previous policy weights and collects fresh training data.</figcaption>
+    </figure>    <figure class="retrieval-figure wide-width" aria-labelledby="retrieval-title">
+      <div class="figure-header"><span class="eyebrow" id="retrieval-title">Failure-guided experience retrieval fine-tuning</span><span class="small-mono">Failure-guided retrieval</span></div>
+      <div class="paper-diagram">
+        <img class="method-image" src="assets/fert-method.png?v=20261008-paper-refresh" width="4427" height="2012" loading="lazy" alt="FERT workflow: failed episodes and successful episodes are encoded using visual features and robot state. Dynamic time warping matches failure context to segments in the success buffer. Matched segments receive higher sampling weights, and a weighted sampler supplies successful actions for policy fine-tuning.">
+      </div>
+      <figcaption>Autonomous rollouts are encoded, matched against the success buffer and sampled for policy fine-tuning. The updated policy returns to the fleet.</figcaption>
+    </figure><div class="reading-width project-details"><details class="method-details"><summary>Failure-guided retrieval</summary><div class="details-copy"><p>FERT initializes an empty rolling success buffer and freezes a copy of the policy’s vision tower. Retrieval combines normalized visual features and joint state; subsequence dynamic time warping aligns failure contexts with segments of successful trajectories.</p>
+<p>A query contains up to 90 frames, ending 10 frames before the failed episode’s recorded endpoint. The ten lowest-cost matches are extended by 30 frames on each side. At 30 Hz, these settings provide up to three seconds of query context and one-second extensions.</p>
+<p>Each action chunk’s sampling priority increases in proportion to its overlap with retrieved intervals. Previous priorities decay at each valid retrieval event. Fine-tuning samples successful action chunks in proportion to these weights and maximizes the likelihood of their recorded actions.</p></div></details></div>
+</section>
+<section class="project-section" id="results">
+<div class="reading-width section-heading"><p class="section-index">04 / Experimental Results</p><h2>Experimental Results</h2>
+<p>Each checkpoint is evaluated on two robots excluded from training data collection, with 60 trials per robot. Task configurations match training. Error bars show 95% Wilson confidence intervals.</p></div>    <figure class="research-results wide-width" id="main-results" aria-labelledby="comparison-title">
+      <div class="results-heading"><div><p class="eyebrow">Main results across five tasks</p><h3 id="comparison-title">Policy improvement with Collective Experience Learning</h3></div></div>
+      <div id="comparison-legend" class="results-legend" role="group" aria-label="Highlight a comparison method"></div>
+      <div id="comparison-cards" class="comparison-cards"></div>
+      <details class="comparison-data"><summary>Detailed Success Rate</summary><div class="results-table-header"><h4>Baseline methods</h4><label>Sort tasks<select id="comparison-sort"><option value="paper">Paper order</option><option value="fert">FERT success</option><option value="gain">Gain over DAgger</option></select></label></div>
+      <div class="results-table-scroll" tabindex="0" role="region" aria-label="Interactive method comparison table"><table class="comparison-table"><caption class="sr-only">Success rate by task and method. Select a cell for its trial count and confidence interval.</caption><thead><tr><th scope="col">Task</th><th scope="col">Human</th><th scope="col">SFT</th><th scope="col">DAgger</th><th scope="col">RLT</th><th scope="col">RECAP</th><th scope="col">FERT</th></tr></thead><tbody id="results-table"></tbody></table></div>
+      </details>
+      <figcaption>Human teleoperation, SFT, selected DAgger, RLT, RECAP and FERT success over 120 trials per task. FERT uses 8, 16, 16, 32 and 96 robots in panel order; Flower Arrangement reaches 119/120 with both 8 and 16 robots.</figcaption>
+      <div class="result-tooltip" id="comparison-tooltip" role="tooltip" hidden></div>
+    </figure><div class="reading-width prose" id="scaling-evidence"><h3>Scaling with fleet size</h3><p>Phone Packaging reaches <strong>50.8%, 86.7% and 98.3%</strong> success with 4, 16 and 96 FERT training robots, respectively, compared with <strong>79.2%</strong> at initialization. Across all five tasks, FERT success increases over the reported fleet sizes. Per-robot collection time is fixed within each task and method, so robot count and total experience increase together.</p></div>    <figure class="research-results wide-width" id="fleet-scaling" aria-labelledby="scaling-title">
+      <div class="results-heading"><div><p class="eyebrow">Scaling with fleet size</p><h3 id="scaling-title">Scaling with the number of training robots</h3></div></div>
+      <div id="scaling-legend" class="results-legend" role="group" aria-label="Show or hide scaling series"></div>
+      <div id="scaling-cards" class="scaling-cards"></div>
+      <div id="scaling-readout" class="scaling-selection" aria-live="polite" aria-atomic="true"></div>
+      <details class="scaling-data"><summary>Detailed Success Rate</summary><div class="scaling-data-controls"><label>Task<select id="scaling-table-task"><option value="packaging">Phone Packaging</option><option value="flowers">Flower Arrangement</option><option value="folding">Clothes Folding</option><option value="charging">Phone Charging</option><option value="stool">Stool Assembly</option></select></label></div><div class="results-table-scroll" tabindex="0" role="region" aria-label="Scaling results table"><table class="scaling-table"><caption class="sr-only">Select a scaling result. Column headers sort by fleet size or success rate.</caption><thead><tr><th scope="col">Method</th><th scope="col" id="scaling-robots-heading" aria-sort="ascending"><button data-scaling-sort="robots">Robots ↕</button></th><th scope="col" id="scaling-rate-heading" aria-sort="none"><button data-scaling-sort="rate">Success ↕</button></th><th scope="col">Successful trials</th><th scope="col">95% Wilson interval</th></tr></thead><tbody id="scaling-data-table"></tbody></table></div></details>
+      <figcaption>DAgger and FERT success versus training fleet size. Dashed and dash-dotted lines mark the SFT and selected DAgger initialization, respectively. Each point pools 120 held-out trials.</figcaption>
+      <div class="result-tooltip" id="scaling-tooltip" role="tooltip" hidden></div>
+    </figure>
+    <section class="reading-width prose ablation-section">
+      <h3>Contribution of failure-guided retrieval</h3>
+      <p>With 16 training robots on Phone Packaging, full FERT achieves <strong>86.7%</strong> success. Removing failure-guided retrieval lowers success to <strong>64.2%</strong>, a decrease of 22.5 percentage points.</p>
+      <figure class="ablation-chart" aria-label="Failure retrieval ablation: 64.2 percent without retrieval and 86.7 percent with full FERT"><div class="ablation-row"><span>Without retrieval</span><div><i style="width:64.1667%"></i></div><strong>64.2%</strong></div><div class="ablation-row"><span>Full FERT</span><div><i class="fert-bar" style="width:86.6667%"></i></div><strong>86.7%</strong></div><figcaption>Phone Packaging · 16 training robots · 120 evaluation trials per model.</figcaption></figure>
+      <!-- Nature (2).zip: source/experiments/ablation.tex and source/appendix/exp_res.tex. -->
+      <p>Removing the one-second extensions around each retrieved segment reduces success from <strong>86.7% to 57.5%</strong>.</p>
+      <details class="method-details"><summary>Ablation studies</summary><p>Priority decay factors of 0.80, 0.88 and 0.95 yield 70.8%, 86.7% and 82.5% success, respectively. Synchronizing policy weights every 100, 500 and 1,500 optimizer steps yields 75.0%, 86.7% and 80.0%. All configurations use Phone Packaging with 16 training robots and 120 evaluation trials.</p></details>
+    </section><div class="reading-width project-details"><details class="method-details"><summary>Evaluation protocol</summary><div class="details-copy"><p>For each task, FERT, RLT and RECAP start from the same selected DAgger checkpoint. Phone Charging, Stool Assembly and Phone Packaging use Mixture DAgger. RLT uses single-robot online reinforcement learning; RECAP uses offline reinforcement learning on fleet data. Both baselines use human corrections during post-training. Robot and training budgets follow the method-specific configurations in the manuscript.</p></div></details></div>
+</section>
+<section class="project-section" id="system">
+<div class="reading-width section-heading"><p class="section-index">05 / Infrastructure</p><h2>Fault-tolerant Asynchronous Training System (FATS)</h2>
+<p>FATS separates robot interaction, policy inference and optimization into independent workers. Interaction and inference run at the edge; training runs in the cloud. <strong>HotSwarm</strong> manages workers joining, leaving and recovering, while unaffected workers continue collecting experience.</p></div>    <figure class="retrieval-figure hardware-figure wide-width" aria-labelledby="hardware-title">
+      <div class="figure-header"><span class="eyebrow" id="hardware-title">Hardware Deployment and Network Configuration</span><span class="small-mono">Edge inference · Cloud optimization</span></div>
+      <div class="paper-diagram">
+        <img class="method-image" src="assets/fats-hardware.png?v=20261008-paper-refresh" width="3093" height="1462" loading="lazy" alt="FATS hardware topology: two tier-1 switches connect to three tier-2 switches. Robot groups have labeled capacities of 40, 40 and 20. Blue arrows denote dual 100 Gbps links; the purple connection to the cloud is 30 Gbps. Network-attached storage connects at the edge.">
+      </div>
+      <dl class="hardware-facts"><div><dt>Edge nodes</dt><dd>50<span>NVIDIA RTX 4090</span></dd></div><div><dt>Robot capacity</dt><dd>100<span>96 used in the largest training fleet</span></dd></div><div><dt>Cloud GPUs</dt><dd>48<span>NVIDIA A800 · 6 servers</span></dd></div><div><dt>Edge–cloud link</dt><dd>30<span>Gbps · dedicated connection</span></dd></div></dl>
+      <figcaption>The manuscript reports 50 RTX 4090 edge nodes and six cloud servers with 48 A800 GPUs. Deployment capacity is 100 robots; the largest evaluated training fleet contains 96.</figcaption>
+    </figure><div class="reading-width prose"><h3>Fleet activity and local interruptions</h3><p>During a 96-robot run from approximately 10:30 to 18:30, <strong>22 robots</strong> recorded at least one system error. Collection resumed after many error events. Blank intervals in the trial timeline include environment resets and operator breaks. Physical repair and resets require operator involvement.</p></div>
+    <figure class="research-results fault-analysis-figure wide-width" id="fleet-faults" aria-labelledby="faults-title">
+      <div class="results-heading"><div><p class="eyebrow">Fleet-scale operation and system performance</p><h3 id="faults-title">System errors</h3></div><span class="results-hint">96 robots · 22 with recorded errors</span></div>
+      <p class="fault-analysis-intro">Recorded errors include joint, battery and sensor faults; host-memory and network failures; and power or SDK startup issues.</p>
+      <!-- Keep this container for the event-level interactive view when the raw logs are available. -->
+      <div class="paper-diagram fault-timeline-slot" id="fault-timeline-slot" aria-label="System-error timeline from the current manuscript">
+        <img class="method-image" src="assets/system-errors.png?v=20261008-paper-refresh" width="2600" height="1293" loading="lazy" alt="System errors for 22 robots during a 96-robot run, plotted by robot ID and time. Colors distinguish hardware faults, compute and network failures, and startup issues. Cross-hatching marks restarts; diagonal hatching marks blocked recovery.">
+      </div>
+      <figcaption>Error types and occurrence times during the 96-robot run. Cross-hatching marks restarts; diagonal hatching marks blocked recovery.</figcaption>
+    </figure>
+<div class="reading-width project-details"><details class="method-details"><summary>Network topology</summary><div class="details-copy"><p>Two tier-1 switches and three tier-2 switches connect the laboratory resources, with dual 100 Gbps links between interconnected switches. A dedicated 30 Gbps edge–cloud connection carries trajectory uploads and policy updates. NAS provides edge storage; GPFS provides shared cloud storage.</p></div></details></div>
+</section>
+<section class="project-section" id="discussion">
+<div class="reading-width section-heading"><p class="section-index">06 / Conclusion</p><h2>Conclusion</h2>
+<p>The experiments train one policy per task and evaluate it on held-out instances of the same robot platform under matching task configurations. FERT requires an initialization that can generate successful rollouts, binary outcome labels and physical support for resets and maintenance.</p></div>
+</section>
+  </main>
+  <footer class="reading-width site-footer"><a class="wordmark" href="#top">Collective Experience Learning</a><p>Tsinghua University · AgiBot · Infinigence AI</p><a href="#top">Back to top</a></footer>
+  <script src="research-data.js?v=20261008-task-placeholders" defer></script>
+  <script src="app.js?v=20261008-smooth-reveal" defer></script>
+  <script src="results.js?v=20261008-interactions" defer></script>
+</body>
+</html>
