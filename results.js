@@ -106,7 +106,7 @@
       const textY = y(wilson(result.count)[1]) - 9;
       const textColor = method === 'fert' ? '#713f64' : '#243746';
       const methodText = method === 'dagger' ? `<tspan x="${x}" dy="0">(M)HG-</tspan><tspan x="${x}" dy="13">DAgger</tspan>` : labels[method];
-      return `<g class="result-mark comparison-mark" style="--mark-index:${index}" ${attributes(result, 'comparison')} tabindex="0" role="button" aria-pressed="false" aria-label="${accessibleLabel(result)}"><rect class="bar-glow" x="${x-step/2+3}" y="${top-5}" width="${step-6}" height="${bottom-top+10}" rx="5"/><rect class="result-bar" x="${x-barWidth/2}" y="${y(rate(result.count))}" width="${barWidth}" height="${barHeight}" rx="3" fill="${colors[method]}"/>${errorBar(x,result.count,y,'#243746')}<text class="bar-value" x="${x}" y="${textY}" fill="${textColor}" font-weight="${method === 'fert' ? '700' : '400'}" text-anchor="middle">${percent(result.count)}</text><text class="plot-method" x="${x}" y="${bottom+23}" text-anchor="middle">${methodText}</text></g>`;
+      return `<g class="result-mark comparison-mark" style="--mark-index:${index};--method-color:${colors[method]}" ${attributes(result, 'comparison')} tabindex="0" role="button" aria-pressed="false" aria-label="${accessibleLabel(result)}"><rect class="bar-glow" x="${x-step/2+3}" y="${top-5}" width="${step-6}" height="${bottom-top+10}" rx="5"/><rect class="result-bar" x="${x-barWidth/2}" y="${y(rate(result.count))}" width="${barWidth}" height="${barHeight}" rx="3" fill="${colors[method]}"/>${errorBar(x,result.count,y,'#243746')}<text class="bar-value" x="${x}" y="${textY}" fill="${textColor}" font-weight="${method === 'fert' ? '700' : '400'}" text-anchor="middle">${percent(result.count)}</text><text class="plot-method" x="${x}" y="${bottom+23}" text-anchor="middle">${methodText}</text></g>`;
     }).join('');
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="group" aria-label="${tasks[key].title}: success by method"><text class="plot-caption" x="${left}" y="12">Success rate (%)</text>${grid(left,right,y)}${bars}</svg>`;
   }
@@ -137,6 +137,8 @@
   }
 
   function updateComparison(result) {
+    comparisonRoot.style.setProperty('--selected-color',colors[result.method]);
+    comparisonRoot.style.setProperty('--selected-ink',result.method === 'fert' ? '#713f64' : '#243746');
     byId('comparison-readout').innerHTML = `<span class="small-mono">Selected result</span>${resultDetails(result)}`;
     comparisonRoot.querySelectorAll('[data-result]').forEach(element => {
       const current = comparisonResult(element.dataset.task,element.dataset.method);
