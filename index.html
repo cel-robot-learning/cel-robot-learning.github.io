@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="results.css?v=20261010-paper-palette">
   <link rel="preload" as="image" href="assets/cel-fleet-cover.png">
   <link rel="preload" as="font" href="assets/fonts/source-serif-4-bold.woff2" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fert.css?v=20261011-framework-v5">
   <link rel="stylesheet" href="motion.css?v=20261010-cover-logo-balance">
 </head>
 <body>
@@ -122,15 +123,327 @@
         <div class="stage-highlight"><span class="stage-number">03</span><p class="stage-label">Fleet-generated experience</p><p>Successful actions supply training targets; failure contexts set sampling priorities.</p><span class="stage-signal">Signal: binary task outcomes</span><h3 class="stage-name">FERT</h3></div>
       </div>
       <figcaption>Each stage retains the previous policy weights and collects fresh training data.</figcaption>
-    </figure>    <figure class="retrieval-figure wide-width" aria-labelledby="retrieval-title">
-      <div class="figure-header"><span class="eyebrow" id="retrieval-title">Failure-guided experience retrieval fine-tuning</span><span class="small-mono">Failure-guided retrieval</span></div>
-      <div class="paper-diagram">
-        <img class="method-image" src="assets/fert-method.png?v=20261010-cel" width="2600" height="2485" loading="lazy" alt="Four-step FERT workflow: asynchronous robot experience collection; frozen visual encoding and normalized joint-state embeddings; failure-guided temporal matching, retrieval costs and selected intervals; priority updates and weighted sampling from the collective experience buffer for policy fine-tuning.">
+    </figure>
+    <figure class="fert-framework wide-width" id="fert-framework" aria-labelledby="retrieval-title">
+  <div class="fert-framework-header">
+    <span class="eyebrow" id="retrieval-title">FERT algorithm framework</span>
+    <div class="fert-view-controls" aria-label="Diagram view">
+      <button type="button" id="fert-overview" aria-label="Show the full FERT workflow">Full workflow</button>
+      <button type="button" class="fert-zoom" id="fert-zoom-out" aria-label="Zoom out of the algorithm diagram">−</button>
+      <button type="button" class="fert-zoom" id="fert-zoom-in" aria-label="Zoom into the algorithm diagram">+</button>
+    </div>
+  </div>
+  <div class="fert-layout">
+    <div class="fert-visual">
+      <div class="fert-scene" id="fert-scene"><svg role="group" id="fert-diagram" viewBox="-12 -10 1024 940" xmlns="http://www.w3.org/2000/svg" aria-labelledby="fert-svg-title fert-svg-description">
+<title id="fert-svg-title">Failure-guided Experience Retrieval Fine-Tuning</title><desc id="fert-svg-description">Four steps from the revised framework: asynchronous robot collection, frozen visual and joint-state encoding, S-DTW retrieval from successful trajectories, and priority updates followed by weighted sampling and policy fine-tuning.</desc>
+<defs><marker id="fert-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#718896"/></marker></defs>
+<g class="fert-module" data-step="1" role="button" tabindex="0" aria-label="1. Asynchronous collection" aria-pressed="false" aria-controls="fert-panel-1">
+<rect x="0" y="0" width="400" height="245" rx="18" fill="#f0f7fb" />
+<rect x="1.5" y="1.5" width="397" height="242" rx="17" fill="none" class="module-outline"/>
+<circle cx="30" cy="27" r="15" fill="#fff" stroke="#b3c6d1" stroke-width="1.3"/><text x="30" y="32" class="fert-label" text-anchor="middle" font-size="15">1</text><text x="57" y="34" class="fert-title" >Asynchronous collection</text>
+<image href="assets/fert/robot.svg" x="26" y="65" width="63" height="51"/>
+<image href="assets/fert/globe.svg" x="29" y="177" width="58" height="58"/>
+<path d="M48 124 C22 130 23 155 48 161 M68 161 C91 157 92 134 68 126" class="fert-path" />
+<text x="110" y="144" class="fert-label-small" >Independent robot</text>
+<text x="110" y="161" class="fert-label-small" >rollouts</text>
+<path d="M94 127 L138 96" class="fert-path" /><path d="M94 173 L138 198" class="fert-path" />
+<path d="M145 98 C174 50 210 109 240 77" class="fert-path" style="stroke:#709d83;marker-end:none"/>
+<path d="M145 98 C174 50 210 109 240 77" class="fert-flow flow-green" />
+<path d="M145 203 C173 172 205 212 240 188" class="fert-path" style="stroke:#cf8790;marker-end:none"/>
+<path d="M145 203 C173 172 205 212 240 188" class="fert-flow flow-red" />
+<text x="242" y="74" class="fert-label" style="fill:#709d83;font-weight:700">✓</text>
+<text x="242" y="188" class="fert-label" style="fill:#b46470;font-size:26px">×</text>
+<rect x="280" y="76" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.00s"/><rect x="303" y="76" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.16s"/><rect x="326" y="76" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.32s"/><rect x="349" y="76" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.48s"/>
+<rect x="280" y="184" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.00s"/><rect x="303" y="184" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.16s"/><rect x="326" y="184" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.32s"/><rect x="349" y="184" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.48s"/>
+<text x="279" y="151" class="fert-label" style="fill:#507f99">Trajectories</text>
+</g>
+<g class="fert-module" data-step="2" role="button" tabindex="0" aria-label="2. Experience encoding" aria-pressed="false" aria-controls="fert-panel-2">
+<rect x="412" y="0" width="588" height="245" rx="18" fill="#f1f6f3" />
+<rect x="413.5" y="1.5" width="585" height="242" rx="17" fill="none" class="module-outline"/>
+<circle cx="442" cy="27" r="15" fill="#fff" stroke="#b3c6d1" stroke-width="1.3"/><text x="442" y="32" class="fert-label" text-anchor="middle" font-size="15">2</text><text x="469" y="34" class="fert-title" >Experience encoding</text>
+<g stroke="#526877" stroke-width="2.6" fill="none"><rect x="438" y="86" width="48" height="33" rx="6"/><path d="M446 86L451 78H471L477 86"/><circle cx="462" cy="102" r="10"/><circle cx="462" cy="102" r="6"/></g>
+<text x="462" y="142" class="fert-label-small" text-anchor="middle">Camera views</text>
+<image href="assets/fert/joint.svg" x="440" y="176" width="43" height="43"/>
+<text x="462" y="234" class="fert-label-small" text-anchor="middle">Joint state</text>
+<rect x="509" y="81" width="130" height="52" rx="8" fill="#fff" stroke="#aebfc9"/>
+<text x="574" y="102" class="fert-label-small" text-anchor="middle" font-weight="600">Frozen visual</text>
+<text x="574" y="120" class="fert-label-small" text-anchor="middle" font-weight="600">encoder</text>
+<g stroke="#526877" stroke-width="1.5" fill="none"><rect x="568" y="134" width="12" height="9" rx="1"/><path d="M570 134V130a4 4 0 018 0v4"/></g>
+<rect x="665" y="86" width="103" height="43" rx="8" fill="#fff" stroke="#aebfc9"/><rect x="665" y="180" width="103" height="43" rx="8" fill="#fff" stroke="#aebfc9"/>
+<text x="716" y="112" class="fert-label-small" text-anchor="middle">Normalization</text>
+<text x="716" y="205" class="fert-label-small" text-anchor="middle">Normalization</text>
+<path d="M488 104H509" class="fert-path" /><path d="M640 104H665" class="fert-path" /><path d="M488 202H665" class="fert-path" />
+<path d="M489 104H508" class="fert-flow" /><path d="M640 104H664" class="fert-flow" /><path d="M489 202H664" class="fert-flow" />
+<path d="M768 107H784V155H804" class="fert-path" /><path d="M768 201H784V155" class="fert-path" />
+<text x="781" y="176" class="fert-label-small" text-anchor="end">Concatenate</text>
+<rect x="804" y="127" width="176" height="56" rx="9" fill="#fff" stroke="#aebfc9"/>
+<text x="892" y="150" class="fert-label" text-anchor="middle" font-weight="600">Retrieval</text>
+<text x="892" y="170" class="fert-label" text-anchor="middle" font-weight="600">representation</text>
+<rect x="843" y="65" width="14" height="14" rx="4" fill="#79abc5" class="fert-encoding-token" style="--delay:0.00s"/><rect x="861" y="65" width="14" height="14" rx="4" fill="#79abc5" class="fert-encoding-token" style="--delay:0.16s"/><rect x="879" y="65" width="14" height="14" rx="4" fill="#79abc5" class="fert-encoding-token" style="--delay:0.32s"/><rect x="897" y="65" width="14" height="14" rx="4" fill="#79abc5" class="fert-encoding-token" style="--delay:0.48s"/><rect x="915" y="65" width="14" height="14" rx="4" fill="#79abc5" class="fert-encoding-token" style="--delay:0.64s"/>
+<rect x="843" y="86" width="14" height="14" rx="4" fill="#709d83" class="fert-encoding-token" style="--delay:0.00s"/><rect x="861" y="86" width="14" height="14" rx="4" fill="#709d83" class="fert-encoding-token" style="--delay:0.16s"/><rect x="879" y="86" width="14" height="14" rx="4" fill="#709d83" class="fert-encoding-token" style="--delay:0.32s"/><rect x="897" y="86" width="14" height="14" rx="4" fill="#709d83" class="fert-encoding-token" style="--delay:0.48s"/><rect x="915" y="86" width="14" height="14" rx="4" fill="#709d83" class="fert-encoding-token" style="--delay:0.64s"/>
+<text x="887" y="50" class="fert-label-small" text-anchor="middle" style="fill:#547e64">Success embeddings</text>
+<rect x="843" y="208" width="14" height="14" rx="4" fill="#cf8790" class="fert-encoding-token" style="--delay:0.00s"/><rect x="861" y="208" width="14" height="14" rx="4" fill="#cf8790" class="fert-encoding-token" style="--delay:0.16s"/><rect x="879" y="208" width="14" height="14" rx="4" fill="#cf8790" class="fert-encoding-token" style="--delay:0.32s"/><rect x="897" y="208" width="14" height="14" rx="4" fill="#cf8790" class="fert-encoding-token" style="--delay:0.48s"/><rect x="915" y="208" width="14" height="14" rx="4" fill="#cf8790" class="fert-encoding-token" style="--delay:0.64s"/>
+<text x="834" y="235" class="fert-label-small" style="fill:#b46470">Failure-query embeddings</text>
+<path d="M891 126C877 111 879 109 887 103" class="fert-path" style="stroke:#709d83"/>
+<path d="M891 184C877 195 879 198 887 204" class="fert-path" style="stroke:#cf8790"/>
+</g>
+<g class="fert-module" data-step="3" role="button" tabindex="0" aria-label="3. Failure-guided retrieval" aria-pressed="false" aria-controls="fert-panel-3">
+<rect x="0" y="260" width="1000" height="240" rx="18" fill="#f8f2f7" />
+<rect x="1.5" y="261.5" width="997" height="237" rx="17" fill="none" class="module-outline"/>
+<circle cx="30" cy="287" r="15" fill="#fff" stroke="#b3c6d1" stroke-width="1.3"/><text x="30" y="292" class="fert-label" text-anchor="middle" font-size="15">3</text><text x="57" y="294" class="fert-title" >Failure-guided retrieval</text>
+<text x="28" y="320" class="fert-subhead" >Retrieved intervals</text><text x="319" y="320" class="fert-subhead" >Retrieval cost</text><text x="630" y="320" class="fert-subhead" >Temporal alignment (S-DTW)</text>
+<text x="27" y="368" class="fert-label-small" >#1</text><rect x="52" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-retrieved-0-0"/><rect x="77" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-retrieved-0-1"/><rect x="102" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-retrieved-0-2"/><rect x="127" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-retrieved-0-3"/><rect x="152" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-retrieved-0-4"/><rect x="177" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-retrieved-0-5"/><rect x="202" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-retrieved-0-6"/><rect x="227" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-retrieved-0-7"/>
+<text x="27" y="425" class="fert-label-small" >#4</text><rect x="52" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-retrieved-3-0"/><rect x="77" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-retrieved-3-1"/><rect x="102" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-retrieved-3-2"/><rect x="127" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-retrieved-3-3"/><rect x="152" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-retrieved-3-4"/><rect x="177" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-retrieved-3-5"/><rect x="202" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-retrieved-3-6"/><rect x="227" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-retrieved-3-7"/>
+<rect x="313" y="337" width="269" height="133" rx="10" fill="#fff" stroke="#d4dbe4"/>
+<text x="327" y="362" class="fert-label-small" >#1</text>
+<rect x="360" y="351" width="173" height="13" rx="6" fill="#ecf0f3" />
+<rect x="360" y="351" width="60" height="13" rx="6" fill="#c2d8ca" class="fert-cost-bar" id="fert-cost-0"/>
+<text x="544" y="362" class="fert-cost-value" id="fert-cost-value-0" text-anchor="end"></text>
+<text x="327" y="387" class="fert-label-small" >#2</text>
+<rect x="360" y="376" width="173" height="13" rx="6" fill="#ecf0f3" />
+<rect x="360" y="376" width="60" height="13" rx="6" fill="#c2d8ca" class="fert-cost-bar" id="fert-cost-1"/>
+<text x="544" y="387" class="fert-cost-value" id="fert-cost-value-1" text-anchor="end"></text>
+<text x="327" y="412" class="fert-label-small" >#3</text>
+<rect x="360" y="401" width="173" height="13" rx="6" fill="#ecf0f3" />
+<rect x="360" y="401" width="60" height="13" rx="6" fill="#c2d8ca" class="fert-cost-bar" id="fert-cost-2"/>
+<text x="544" y="412" class="fert-cost-value" id="fert-cost-value-2" text-anchor="end"></text>
+<text x="327" y="437" class="fert-label-small" >#4</text>
+<rect x="360" y="426" width="173" height="13" rx="6" fill="#ecf0f3" />
+<rect x="360" y="426" width="60" height="13" rx="6" fill="#c2d8ca" class="fert-cost-bar" id="fert-cost-3"/>
+<text x="544" y="437" class="fert-cost-value" id="fert-cost-value-3" text-anchor="end"></text>
+<text x="447" y="487" class="fert-label-small" text-anchor="middle">Lower cost indicates closer alignment</text>
+<text x="653" y="350" class="fert-label-small" style="fill:#b46470">Failure query</text>
+<rect x="797" y="335" width="21" height="21" rx="4" fill="#cf8790" class="fert-query-token" style="--delay:0.00s" id="fert-query-0"/><rect x="823" y="335" width="21" height="21" rx="4" fill="#cf8790" class="fert-query-token" style="--delay:0.16s" id="fert-query-1"/><rect x="849" y="335" width="21" height="21" rx="4" fill="#cf8790" class="fert-query-token" style="--delay:0.32s" id="fert-query-2"/>
+<g id="fert-alignments"></g>
+<text x="623" y="400" class="fert-label-small" >#1</text>
+<rect x="640" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-candidate-0-0"/><rect x="661" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-candidate-0-1"/><rect x="682" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-candidate-0-2"/><rect x="703" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-candidate-0-3"/><rect x="724" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-candidate-0-4"/><rect x="745" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-candidate-0-5"/><rect x="766" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-candidate-0-6"/><rect x="787" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-candidate-0-7"/>
+<rect x="640" y="388" width="17" height="17" rx="4" fill="none" id="fert-interval-0" stroke="#8ba995" stroke-dasharray="4 3"/>
+<text x="807" y="400" class="fert-label-small" >#2</text>
+<rect x="824" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-candidate-1-0"/><rect x="845" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-candidate-1-1"/><rect x="866" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-candidate-1-2"/><rect x="887" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-candidate-1-3"/><rect x="908" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-candidate-1-4"/><rect x="929" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-candidate-1-5"/><rect x="950" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-candidate-1-6"/><rect x="971" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-candidate-1-7"/>
+<rect x="824" y="388" width="17" height="17" rx="4" fill="none" id="fert-interval-1" stroke="#8ba995" stroke-dasharray="4 3"/>
+<text x="623" y="459" class="fert-label-small" >#3</text>
+<rect x="640" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-candidate-2-0"/><rect x="661" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-candidate-2-1"/><rect x="682" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-candidate-2-2"/><rect x="703" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-candidate-2-3"/><rect x="724" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-candidate-2-4"/><rect x="745" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-candidate-2-5"/><rect x="766" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-candidate-2-6"/><rect x="787" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-candidate-2-7"/>
+<rect x="640" y="447" width="17" height="17" rx="4" fill="none" id="fert-interval-2" stroke="#8ba995" stroke-dasharray="4 3"/>
+<text x="807" y="459" class="fert-label-small" >#4</text>
+<rect x="824" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-candidate-3-0"/><rect x="845" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-candidate-3-1"/><rect x="866" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-candidate-3-2"/><rect x="887" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-candidate-3-3"/><rect x="908" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-candidate-3-4"/><rect x="929" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-candidate-3-5"/><rect x="950" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-candidate-3-6"/><rect x="971" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-candidate-3-7"/>
+<rect x="824" y="447" width="17" height="17" rx="4" fill="none" id="fert-interval-3" stroke="#8ba995" stroke-dasharray="4 3"/>
+<path d="M298 397H272" class="fert-path" /><path d="M613 397H591" class="fert-path" />
+<path d="M608 397H593" class="fert-flow flow-green" /><path d="M293 397H274" class="fert-flow flow-green" />
+</g>
+<g class="fert-module" data-step="4" role="button" tabindex="0" aria-label="4. Prioritized fine-tuning" aria-pressed="false" aria-controls="fert-panel-4">
+<rect x="0" y="515" width="1000" height="395" rx="18" fill="#f0f7fb" />
+<rect x="1.5" y="516.5" width="997" height="392" rx="17" fill="none" class="module-outline"/>
+<circle cx="30" cy="542" r="15" fill="#fff" stroke="#b3c6d1" stroke-width="1.3"/><text x="30" y="547" class="fert-label" text-anchor="middle" font-size="15">4</text><text x="57" y="549" class="fert-title" >Prioritized fine-tuning</text>
+<rect x="18" y="568" width="337" height="146" rx="12" fill="#fff" stroke="#cdd6df"/><rect x="368" y="568" width="337" height="146" rx="12" fill="#fff" stroke="#cdd6df"/>
+<text x="186" y="592" class="fert-label" text-anchor="middle" font-weight="600">Current priorities</text>
+<text x="536" y="592" class="fert-label" text-anchor="middle" font-weight="600">Updated priorities</text>
+<text x="34" y="614" class="fert-label-small" >#1</text>
+<path d="M34 620V644H166" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="42" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-0" data-baseline="644"/>
+<rect x="57" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-1" data-baseline="644"/>
+<rect x="72" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-2" data-baseline="644"/>
+<rect x="87" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-3" data-baseline="644"/>
+<rect x="102" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-4" data-baseline="644"/>
+<rect x="117" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-5" data-baseline="644"/>
+<rect x="132" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-6" data-baseline="644"/>
+<rect x="147" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-7" data-baseline="644"/>
+<text x="192" y="614" class="fert-label-small" >#2</text>
+<path d="M192 620V644H324" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="200" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-0" data-baseline="644"/>
+<rect x="215" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-1" data-baseline="644"/>
+<rect x="230" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-2" data-baseline="644"/>
+<rect x="245" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-3" data-baseline="644"/>
+<rect x="260" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-4" data-baseline="644"/>
+<rect x="275" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-5" data-baseline="644"/>
+<rect x="290" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-6" data-baseline="644"/>
+<rect x="305" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-7" data-baseline="644"/>
+<text x="34" y="676" class="fert-label-small" >#3</text>
+<path d="M34 682V706H166" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="42" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-0" data-baseline="706"/>
+<rect x="57" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-1" data-baseline="706"/>
+<rect x="72" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-2" data-baseline="706"/>
+<rect x="87" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-3" data-baseline="706"/>
+<rect x="102" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-4" data-baseline="706"/>
+<rect x="117" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-5" data-baseline="706"/>
+<rect x="132" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-6" data-baseline="706"/>
+<rect x="147" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-7" data-baseline="706"/>
+<text x="192" y="676" class="fert-label-small" >#4</text>
+<path d="M192 682V706H324" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="200" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-0" data-baseline="706"/>
+<rect x="215" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-1" data-baseline="706"/>
+<rect x="230" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-2" data-baseline="706"/>
+<rect x="245" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-3" data-baseline="706"/>
+<rect x="260" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-4" data-baseline="706"/>
+<rect x="275" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-5" data-baseline="706"/>
+<rect x="290" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-6" data-baseline="706"/>
+<rect x="305" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-7" data-baseline="706"/>
+<text x="384" y="614" class="fert-label-small" >#1</text>
+<path d="M384 620V644H516" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="392" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-0" data-baseline="644"/>
+<rect x="407" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-1" data-baseline="644"/>
+<rect x="422" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-2" data-baseline="644"/>
+<rect x="437" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-3" data-baseline="644"/>
+<rect x="452" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-4" data-baseline="644"/>
+<rect x="467" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-5" data-baseline="644"/>
+<rect x="482" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-6" data-baseline="644"/>
+<rect x="497" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-7" data-baseline="644"/>
+<text x="542" y="614" class="fert-label-small" >#2</text>
+<path d="M542 620V644H674" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="550" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-0" data-baseline="644"/>
+<rect x="565" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-1" data-baseline="644"/>
+<rect x="580" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-2" data-baseline="644"/>
+<rect x="595" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-3" data-baseline="644"/>
+<rect x="610" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-4" data-baseline="644"/>
+<rect x="625" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-5" data-baseline="644"/>
+<rect x="640" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-6" data-baseline="644"/>
+<rect x="655" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-7" data-baseline="644"/>
+<text x="384" y="676" class="fert-label-small" >#3</text>
+<path d="M384 682V706H516" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="392" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-0" data-baseline="706"/>
+<rect x="407" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-1" data-baseline="706"/>
+<rect x="422" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-2" data-baseline="706"/>
+<rect x="437" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-3" data-baseline="706"/>
+<rect x="452" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-4" data-baseline="706"/>
+<rect x="467" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-5" data-baseline="706"/>
+<rect x="482" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-6" data-baseline="706"/>
+<rect x="497" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-7" data-baseline="706"/>
+<text x="542" y="676" class="fert-label-small" >#4</text>
+<path d="M542 682V706H674" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="550" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-0" data-baseline="706"/>
+<rect x="565" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-1" data-baseline="706"/>
+<rect x="580" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-2" data-baseline="706"/>
+<rect x="595" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-3" data-baseline="706"/>
+<rect x="610" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-4" data-baseline="706"/>
+<rect x="625" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-5" data-baseline="706"/>
+<rect x="640" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-6" data-baseline="706"/>
+<rect x="655" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-7" data-baseline="706"/>
+<path d="M327 565C344 543 372 543 398 565" class="fert-path" />
+<path d="M331 561C347 546 371 546 394 561" class="fert-flow" />
+<text x="914" y="593" class="fert-label" text-anchor="middle" font-weight="600">Fine-tuning</text>
+<image href="assets/fert/trained-robot.svg" x="928" y="602" width="58" height="46"/>
+<path d="M874 625H925" class="fert-path" /><path d="M816 687V650" class="fert-path" />
+<path d="M878 625H924" class="fert-flow" /><path d="M816 684V652" class="fert-flow" />
+<rect x="787" y="601" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-0" class="fert-sampled-token"/>
+<rect x="811" y="601" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-1" class="fert-sampled-token"/>
+<rect x="835" y="601" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-2" class="fert-sampled-token"/>
+<rect x="787" y="623" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-3" class="fert-sampled-token"/>
+<rect x="811" y="623" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-4" class="fert-sampled-token"/>
+<rect x="835" y="623" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-5" class="fert-sampled-token"/>
+<rect x="787" y="645" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-6" class="fert-sampled-token"/>
+<rect x="811" y="645" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-7" class="fert-sampled-token"/>
+<rect x="835" y="645" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-8" class="fert-sampled-token"/>
+<text x="817" y="670" class="fert-label-small" text-anchor="middle">Training batch</text>
+<text x="815" y="709" class="fert-label" font-weight="600">Prioritized sampling</text>
+<path d="M690 691C733 704 747 740 735 767" class="fert-path" /><path d="M733 735C753 731 789 710 815 694" class="fert-path" />
+<path d="M693 694C725 708 741 737 736 764" class="fert-flow" /><path d="M738 734C757 726 788 710 812 696" class="fert-flow" />
+<rect x="18" y="738" width="964" height="155" rx="15" fill="#fff" stroke="#aebfc9" stroke-dasharray="5 5"/>
+<text x="500" y="762" class="fert-label" text-anchor="middle" font-weight="700">Collective experience buffer</text>
+<text x="29" y="804" class="fert-label-small" style="fill:#547e64" font-weight="600">Embedding</text>
+<text x="29" y="833" class="fert-label-small" style="fill:#507f99" font-weight="600">Trajectory</text>
+<text x="29" y="858" class="fert-label-small" style="fill:#805b84" font-weight="600">Sampling</text>
+<text x="29" y="876" class="fert-label-small" style="fill:#805b84" font-weight="600">priority</text>
+<rect x="145" y="774" width="196" height="108" rx="7" fill="#fff" stroke="#d6dfe6"/>
+<text x="243" y="790" class="fert-label-small" text-anchor="middle" font-weight="600">Trajectory #1</text>
+<rect x="163" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.00s"/><rect x="183" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.16s"/><rect x="203" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.32s"/><rect x="223" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.48s"/><rect x="243" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.64s"/><rect x="263" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.80s"/><rect x="283" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.96s"/><rect x="303" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:1.12s"/>
+<rect x="163" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.00s" id="fert-buffer-0-0"/><rect x="183" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.16s" id="fert-buffer-0-1"/><rect x="203" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.32s" id="fert-buffer-0-2"/><rect x="223" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.48s" id="fert-buffer-0-3"/><rect x="243" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.64s" id="fert-buffer-0-4"/><rect x="263" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.80s" id="fert-buffer-0-5"/><rect x="283" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.96s" id="fert-buffer-0-6"/><rect x="303" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:1.12s" id="fert-buffer-0-7"/>
+<path d="M158 845V872H331" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="163" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-0" data-baseline="872"/>
+<rect x="183" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-1" data-baseline="872"/>
+<rect x="203" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-2" data-baseline="872"/>
+<rect x="223" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-3" data-baseline="872"/>
+<rect x="243" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-4" data-baseline="872"/>
+<rect x="263" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-5" data-baseline="872"/>
+<rect x="283" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-6" data-baseline="872"/>
+<rect x="303" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-7" data-baseline="872"/>
+<rect x="350" y="774" width="196" height="108" rx="7" fill="#fff" stroke="#d6dfe6"/>
+<text x="448" y="790" class="fert-label-small" text-anchor="middle" font-weight="600">Trajectory #2</text>
+<rect x="368" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.00s"/><rect x="388" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.16s"/><rect x="408" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.32s"/><rect x="428" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.48s"/><rect x="448" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.64s"/><rect x="468" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.80s"/><rect x="488" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.96s"/><rect x="508" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:1.12s"/>
+<rect x="368" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.00s" id="fert-buffer-1-0"/><rect x="388" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.16s" id="fert-buffer-1-1"/><rect x="408" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.32s" id="fert-buffer-1-2"/><rect x="428" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.48s" id="fert-buffer-1-3"/><rect x="448" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.64s" id="fert-buffer-1-4"/><rect x="468" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.80s" id="fert-buffer-1-5"/><rect x="488" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.96s" id="fert-buffer-1-6"/><rect x="508" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:1.12s" id="fert-buffer-1-7"/>
+<path d="M363 845V872H536" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="368" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-0" data-baseline="872"/>
+<rect x="388" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-1" data-baseline="872"/>
+<rect x="408" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-2" data-baseline="872"/>
+<rect x="428" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-3" data-baseline="872"/>
+<rect x="448" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-4" data-baseline="872"/>
+<rect x="468" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-5" data-baseline="872"/>
+<rect x="488" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-6" data-baseline="872"/>
+<rect x="508" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-7" data-baseline="872"/>
+<rect x="555" y="774" width="196" height="108" rx="7" fill="#fff" stroke="#d6dfe6"/>
+<text x="653" y="790" class="fert-label-small" text-anchor="middle" font-weight="600">Trajectory #3</text>
+<rect x="573" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.00s"/><rect x="593" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.16s"/><rect x="613" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.32s"/><rect x="633" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.48s"/><rect x="653" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.64s"/><rect x="673" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.80s"/><rect x="693" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.96s"/><rect x="713" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:1.12s"/>
+<rect x="573" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.00s" id="fert-buffer-2-0"/><rect x="593" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.16s" id="fert-buffer-2-1"/><rect x="613" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.32s" id="fert-buffer-2-2"/><rect x="633" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.48s" id="fert-buffer-2-3"/><rect x="653" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.64s" id="fert-buffer-2-4"/><rect x="673" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.80s" id="fert-buffer-2-5"/><rect x="693" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.96s" id="fert-buffer-2-6"/><rect x="713" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:1.12s" id="fert-buffer-2-7"/>
+<path d="M568 845V872H741" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="573" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-0" data-baseline="872"/>
+<rect x="593" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-1" data-baseline="872"/>
+<rect x="613" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-2" data-baseline="872"/>
+<rect x="633" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-3" data-baseline="872"/>
+<rect x="653" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-4" data-baseline="872"/>
+<rect x="673" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-5" data-baseline="872"/>
+<rect x="693" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-6" data-baseline="872"/>
+<rect x="713" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-7" data-baseline="872"/>
+<rect x="760" y="774" width="196" height="108" rx="7" fill="#fff" stroke="#d6dfe6"/>
+<text x="858" y="790" class="fert-label-small" text-anchor="middle" font-weight="600">Trajectory #4</text>
+<rect x="778" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.00s"/><rect x="798" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.16s"/><rect x="818" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.32s"/><rect x="838" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.48s"/><rect x="858" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.64s"/><rect x="878" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.80s"/><rect x="898" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.96s"/><rect x="918" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:1.12s"/>
+<rect x="778" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.00s" id="fert-buffer-3-0"/><rect x="798" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.16s" id="fert-buffer-3-1"/><rect x="818" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.32s" id="fert-buffer-3-2"/><rect x="838" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.48s" id="fert-buffer-3-3"/><rect x="858" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.64s" id="fert-buffer-3-4"/><rect x="878" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.80s" id="fert-buffer-3-5"/><rect x="898" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.96s" id="fert-buffer-3-6"/><rect x="918" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:1.12s" id="fert-buffer-3-7"/>
+<path d="M773 845V872H946" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="778" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-0" data-baseline="872"/>
+<rect x="798" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-1" data-baseline="872"/>
+<rect x="818" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-2" data-baseline="872"/>
+<rect x="838" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-3" data-baseline="872"/>
+<rect x="858" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-4" data-baseline="872"/>
+<rect x="878" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-5" data-baseline="872"/>
+<rect x="898" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-6" data-baseline="872"/>
+<rect x="918" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-7" data-baseline="872"/>
+</g>
+<path d="M371 85H433" class="fert-path" /><path d="M371 194H433" class="fert-path" /><path d="M881 247C918 274 930 311 914 340" class="fert-path" /><path d="M150 440V488Q150 507 129 507H8V575H35" class="fert-path" />
+<path d="M375 85H428" class="fert-flow" /><path d="M375 194H428" class="fert-flow" /><path d="M885 251C916 278 926 309 915 334" class="fert-flow flow-red" /><path d="M150 447V488Q150 507 129 507H16V551" class="fert-flow flow-green" />
+</svg></div>
+      <p class="fert-demo-note">Four illustrative trajectories show temporal matching and sampling. The manuscript uses up to 10 retrieved candidates and extends each selected interval by 30 frames on each side.</p>
+    </div>
+    <div class="fert-steps">
+      <p class="fert-steps-heading">Four algorithm steps</p>
+      <div class="fert-step">
+        <button type="button" class="fert-step-button" data-step="1" aria-expanded="true" aria-controls="fert-panel-1"><span class="fert-step-number">1</span><span>Asynchronous collection</span><span class="fert-step-caret" aria-hidden="true">›</span></button>
+        <div class="fert-step-content" data-step="1" id="fert-panel-1">
+          <p>Robots execute the policy independently. Each completed trajectory receives a binary task-outcome label.</p>
+          <p><strong>Successful trajectories</strong> enter a rolling collective experience buffer. <strong>Failure contexts</strong> provide queries for retrieval. Robots contribute at different rates while policy optimization continues.</p>
+          <span class="fert-step-fact">Autonomous rollouts<br>Binary task outcomes</span>
+        </div>
       </div>
-      <figcaption>Autonomous rollouts are encoded, matched against the success buffer and sampled for policy fine-tuning. The updated policy returns to the fleet.</figcaption>
-    </figure><div class="reading-width project-details"><details class="method-details"><summary>Failure-guided retrieval</summary><div class="details-copy"><p>FERT initializes an empty rolling success buffer and freezes a copy of the policy’s vision tower. Retrieval combines normalized visual features and joint state; subsequence dynamic time warping aligns failure contexts with segments of successful trajectories.</p>
-<p>A query contains up to 90 frames, ending 10 frames before the failed episode’s recorded endpoint. The ten lowest-cost matches are extended by 30 frames on each side. At 30 Hz, these settings provide up to three seconds of query context and one-second extensions.</p>
-<p>Each action chunk’s sampling priority increases in proportion to its overlap with retrieved intervals. Previous priorities decay at each valid retrieval event. Fine-tuning samples successful action chunks in proportion to these weights and maximizes the likelihood of their recorded actions.</p></div></details></div>
+      <div class="fert-step">
+        <button type="button" class="fert-step-button" data-step="2" aria-expanded="false" aria-controls="fert-panel-2"><span class="fert-step-number">2</span><span>Experience encoding</span><span class="fert-step-caret" aria-hidden="true">›</span></button>
+        <div class="fert-step-content" data-step="2" id="fert-panel-2" hidden>
+          <p>A <strong>frozen copy of the policy’s vision tower</strong> encodes camera views. Spatial pooling reduces each view’s 16 × 16 visual-token grid to 4 × 4.</p>
+          <p>Visual features and joint state are normalized separately, then concatenated into a retrieval representation. Successful-trajectory embeddings are cached as experience arrives.</p>
+          <div class="fert-formula" aria-label="The retrieval embedding concatenates separately normalized visual features and joint state">zₜ = [normalize(hₜ); normalize(sₜ)]</div>
+          <span class="fert-step-fact">Frozen visual encoder<br>Consistent retrieval space</span>
+        </div>
+      </div>
+      <div class="fert-step">
+        <button type="button" class="fert-step-button" data-step="3" aria-expanded="false" aria-controls="fert-panel-3"><span class="fert-step-number">3</span><span>Failure-guided retrieval</span><span class="fert-step-caret" aria-hidden="true">›</span></button>
+        <div class="fert-step-content" data-step="3" id="fert-panel-3" hidden>
+          <p>A query contains <strong>up to 90 frames</strong> of observations, ending 10 frames before the failed episode’s recorded endpoint.</p>
+          <p>Slope-constrained subsequence dynamic time warping aligns this query with each successful trajectory. The lowest-cost candidates supply retrieved intervals for the next priority update.</p>
+          <div class="fert-control"><label for="fert-query-frame">Illustrative query frame <output id="fert-query-readout" for="fert-query-frame">1 / 3</output></label><input id="fert-query-frame" type="range" min="1" max="3" step="1" value="1"><p>Each query frame matches one candidate frame. Successive matches advance by one or two frames.</p></div>
+          <span class="fert-step-fact" id="fert-retrieval-readout">Lowest-cost candidates: #4 and #1</span>
+        </div>
+      </div>
+      <div class="fert-step">
+        <button type="button" class="fert-step-button" data-step="4" aria-expanded="false" aria-controls="fert-panel-4"><span class="fert-step-number">4</span><span>Prioritized fine-tuning</span><span class="fert-step-caret" aria-hidden="true">›</span></button>
+        <div class="fert-step-content" data-step="4" id="fert-panel-4" hidden>
+          <p>Retrieved intervals increase the priority of overlapping successful action chunks. The retention factor ρ decays previous priorities at each valid retrieval event.</p>
+          <p>Training samples chunks in proportion to their updated weights and maximizes the likelihood of recorded successful actions. The updated policy returns to the fleet.</p>
+          <div class="fert-formula" aria-label="New priority equals retention times previous priority plus retrieved overlap divided by the action chunk horizon">wᵢ′ = ρwᵢ + ∑ |idx(Aᵢ) ∩ R| / H</div>
+          <div class="fert-control"><label for="fert-retention">Priority retention ρ <output id="fert-retention-readout" for="fert-retention">0.80</output></label><input id="fert-retention" type="range" min="0" max="1" step="0.05" value="0.8"><p>Illustrative update. The highlighted intervals supply the new priority increments.</p></div>
+          <span class="fert-step-fact" id="fert-sampling-readout">Sampling follows the updated weights.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <figcaption><span>Collection continues during optimization. Policy updates return to the robot fleet.</span><span class="fert-focus-status" id="fert-focus-status" role="status">Full workflow</span></figcaption>
+  <noscript><style>.fert-layout,.fert-view-controls{display:none}</style><img src="assets/fert/framework-v5.png" width="1958" height="1749" alt="Revised four-step FERT framework: asynchronous collection, experience encoding, failure-guided retrieval, and prioritized fine-tuning." style="display:block;width:100%;height:auto"></noscript>
+</figure>
 </section>
 <section class="project-section" id="results">
 <div class="reading-width section-heading"><p class="section-index">04 / Experimental Results</p><h2>Experimental Results</h2>
@@ -189,7 +502,9 @@
   </main>
   <footer class="reading-width site-footer"><a class="wordmark" href="#top">Collective Experience Learning</a><p>Tsinghua University · AgiBot · Infinigence AI</p><a href="#top">Back to top</a></footer>
   <script src="research-data.js?v=20261010-cel" defer></script>
-  <script src="app.js?v=20261010-photo-cover" defer></script>
+  <script src="app.js?v=20261011-fert-framework" defer></script>
+  <script src="fert-model.js?v=20261011-framework-v5" defer></script>
+  <script src="fert.js?v=20261011-framework-v5" defer></script>
   <script src="results.js?v=20261010-paper-palette" defer></script>
 </body>
 </html>

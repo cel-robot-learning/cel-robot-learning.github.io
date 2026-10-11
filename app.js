@@ -289,7 +289,7 @@ showTask(0);
     '.section-heading > *', '.overview-highlights > div', '.project-details',
     '.task-showcase > .figure-header', '.task-carousel-caption > *',
     '.stages-figure > .figure-header', '.stages > div', '.stages-figure > figcaption',
-    '.retrieval-figure', '.research-results > .results-heading',
+    '.retrieval-figure', '.fert-framework', '.research-results > .results-heading',
     '.research-results > .results-legend', '.research-results > figcaption',
     '.research-results > details', '.research-results > .fault-analysis-intro',
     '.fault-analysis-figure > .paper-diagram', '.prose > h3', '.prose > p',
