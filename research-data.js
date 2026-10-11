@@ -10,7 +10,7 @@ window.RESEARCH_DATA = {
   tasks: {
     packaging: {
       title: 'Phone Packaging', category: 'Long-horizon manipulation',
-      description: 'The robot packs a manual, charging cable, adapter, phone case and phone into a phone box, then aligns and closes the lid. The sequence includes handing the adapter between grippers and bracing the box during closure.',
+      description: 'The robot packs a manual, charging cable, charger, phone case and phone, then aligns and closes the lid. The sequence takes roughly two to three minutes, and each placement matters: an item left in the wrong position can make a later step harder.',
       steps: ['Arrange the contents', 'Place the phone', 'Close the box'],
       media: 'Footage placeholder: a continuous overhead view of the complete packing sequence.',
       fert: [[4, 61], [8, 85], [16, 104], [32, 111], [64, 114], [96, 118]],
@@ -20,7 +20,7 @@ window.RESEARCH_DATA = {
     },
     flowers: {
       title: 'Flower Arrangement', category: 'Flexible objects & precise insertion',
-      description: 'The left gripper holds the vase while the right gripper inserts two roses and one leaf in sequence. The robot then releases the vase, leaving all three stems inside it.',
+      description: 'A flexible stem can sway on its way to the vase, making insertion harder. The robot steadies the vase with its left gripper and uses the right to insert two flowers and one leaf in sequence. Smooth movement and careful alignment matter throughout.',
       steps: ['Pick up a stem', 'Align with the vase', 'Complete the arrangement'],
       media: 'Footage placeholder: close views of flexible stems, smooth transport, and insertion into the vase.',
       fert: [[4, 116], [8, 119], [16, 119]],
@@ -30,7 +30,7 @@ window.RESEARCH_DATA = {
     },
     folding: {
       title: 'Clothes Folding', category: 'Deformable-object manipulation',
-      description: 'Using both grippers, the robot folds each side of the T-shirt inward. It then folds the garment in half and smooths it with the right gripper.',
+      description: 'The T-shirt changes shape as the robot folds it. The robot brings both sides inward, folds the shirt in half, then smooths it with the right gripper. The roughly 40-second sequence requires handling fabric while maintaining controlled contact with the table.',
       steps: ['Grasp the fabric', 'Follow the fold sequence', 'Finish the folded shirt'],
       media: 'Footage placeholder: a top-down view showing the full T-shirt folding sequence and tabletop contact.',
       fert: [[4, 100], [8, 113], [16, 118]],
@@ -40,7 +40,7 @@ window.RESEARCH_DATA = {
     },
     charging: {
       title: 'Phone Charging', category: 'Precise alignment & contact control',
-      description: 'The robot inserts the charging adapter into a power socket, disconnects the USB-C cable from the phone, then places the phone on its box.',
+      description: 'A small alignment error can prevent the charging plug from entering the power strip. The robot must line up and insert the plug, then disconnect the Type-C cable from the phone and place the phone on its box.',
       steps: ['Align the plug', 'Handle the cable', 'Place the phone'],
       media: 'Footage placeholder: close views of connector alignment, cable handling, and final phone placement.',
       fert: [[2, 48], [4, 108], [8, 114], [16, 117]],
@@ -50,7 +50,7 @@ window.RESEARCH_DATA = {
     },
     stool: {
       title: 'Stool Assembly', category: 'Small-object manipulation & tool use',
-      description: 'The robot places two screws in the stool’s designated holes, picks up a screwdriver and aligns it with each screw to tighten them.',
+      description: 'Small screws make alignment demanding. The robot places two screws in the stool’s holes, picks up a screwdriver and tightens them. If the screwdriver does not line up with a screw, the robot adjusts the tool before continuing.',
       steps: ['Position two screws', 'Pick up the screwdriver', 'Align and tighten'],
       media: 'Footage placeholder: detailed views of screw placement, tool use, and alignment readjustments.',
       fert: [[8, 90], [16, 111], [32, 112]],
