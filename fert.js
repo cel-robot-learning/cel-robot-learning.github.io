@@ -3,252 +3,142 @@
   const framework = document.getElementById('fert-framework');
   const model = window.FertModel;
   if (!framework || !model) return;
-  const svg = document.getElementById('fert-diagram');
-  const scene = document.getElementById('fert-scene');
-  const buttons = [...framework.querySelectorAll('.fert-step-button')];
-  const modules = [...svg.querySelectorAll('.fert-module')];
-  const panels = [...framework.querySelectorAll('.fert-step-content')];
-  const queryInput = document.getElementById('fert-query-frame');
-  const retentionInput = document.getElementById('fert-retention');
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const views = {
-    all:[-12,-10,1024,940],
-    1:[-12,-10,424,268],
-    2:[398,-10,615,268],
-    3:[-12,248,1024,268],
-    4:[-12,503,1024,420]
-  };
+  const zh = framework.dataset.locale === 'zh';
+  const tabs = [...framework.querySelectorAll('[role="tab"]')];
+  const panels = [...framework.querySelectorAll('[role="tabpanel"]')];
   const matches = model.trajectories.map(trajectory => model.align(model.query, trajectory));
-  const selected = matches.map((match, trajectory) => ({...match, trajectory})).sort((a, b) => a.cost - b.cost).slice(0, 2);
+  const selected = matches.map((match, trajectory) => ({...match, trajectory})).sort((a,b) => a.cost - b.cost).slice(0,2);
   const intervals = selected.map(match => ({trajectory:match.trajectory, start:match.interval[0], end:match.interval[1]}));
-  let activeStep = 1;
-  let currentView = [...views.all];
-  let baseView = 'all';
-  let zoom = 1;
-  let viewAnimation = 0;
+  // Reduced-size example; the retention factor uses the manuscript's default.
+  const before = model.probabilities(model.priorities);
+  const after = model.probabilities(model.updatePriorities(model.priorities, intervals, .88, 2));
+  const maxProbability = Math.max(...before.flat(), ...after.flat());
+  const overlaps = (trajectory, chunk) => intervals.some(interval => interval.trajectory === trajectory && chunk < interval.end && chunk + 2 > interval.start);
+  const share = probabilities => probabilities.reduce((sum,row,t) => sum + row.reduce((part,p,c) => part + (overlaps(t,c) ? p : 0),0),0);
+  const percentage = value => `${(value * 100).toFixed(1)}%`;
+  let step = 1;
+  let mode = 'before';
+  let inspectedChunk = null;
   let visible = false;
-  let queryPinned = false;
-  let probability = [];
-  let seed = 21;
-  let drag = null;
-  let suppressClick = false;
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  const previous = document.getElementById('fert-prev');
+  const next = document.getElementById('fert-next');
 
-  function setView(view, animate = true) {
-    cancelAnimationFrame(viewAnimation);
-    const from = [...currentView];
-    const begin = performance.now();
-    function draw(now) {
-      const t = animate && !reduced.matches ? Math.min(1, (now - begin) / 650) : 1;
-      const ease = 1 - (1 - t) ** 3;
-      currentView = from.map((start, index) => start + (view[index] - start) * ease);
-      svg.setAttribute('viewBox', currentView.join(' '));
-      if (t < 1) viewAnimation = requestAnimationFrame(draw);
-    }
-    draw(begin);
-    scene.classList.toggle('is-pannable', zoom > 1);
-    document.getElementById('fert-zoom-out').disabled = zoom <= 1;
-    document.getElementById('fert-zoom-in').disabled = zoom >= 2.5;
+  function selectStep(value) {
+    step = Number(value);
+    tabs.forEach((tab,i) => { tab.setAttribute('aria-selected', String(i + 1 === step)); tab.tabIndex = i + 1 === step ? 0 : -1; });
+    panels.forEach((panel,i) => { panel.hidden = i + 1 !== step; });
+    previous.disabled = step === 1;
+    next.innerHTML = `${step === 4 ? next.dataset.replay : next.dataset.next} <span aria-hidden="true">${step === 4 ? '↺' : '→'}</span>`;
+    document.getElementById('fert-focus-status').textContent = `0${step} / 04`;
+    // No automatic page scroll, zoom, crop, or canvas reflow when a step changes.
   }
-
-  function focusedView() {
-    const [x,y,width,height] = views[baseView];
-    return [x + width * (1 - 1 / zoom) / 2, y + height * (1 - 1 / zoom) / 2, width / zoom, height / zoom];
-  }
-
-  function selectStep(step, focus = true) {
-    activeStep = Number(step);
-    buttons.forEach(button => button.setAttribute('aria-expanded', String(Number(button.dataset.step) === activeStep)));
-    panels.forEach(panel => { panel.hidden = Number(panel.dataset.step) !== activeStep; });
-    modules.forEach(module => {
-      const selected = Number(module.dataset.step) === activeStep;
-      module.classList.toggle('is-active', selected);
-      module.setAttribute('aria-pressed', String(selected));
-    });
-    if (focus) {
-      baseView = activeStep;
-      zoom = 1;
-      scene.classList.add('is-focused');
-      modules.forEach(module => { module.setAttribute('aria-hidden', String(Number(module.dataset.step) !== activeStep)); module.setAttribute('tabindex', Number(module.dataset.step) === activeStep ? '0' : '-1'); });
-      setView(focusedView());
-      document.getElementById('fert-focus-status').textContent = `Step ${activeStep} / 4`;
-      const position = framework.getBoundingClientRect().top;
-      if (position < 24 || position > 120) framework.scrollIntoView({behavior:reduced.matches ? 'auto' : 'smooth', block:'start'});
-    }
-  }
-
-  modules.forEach(module => {
-    module.addEventListener('click', () => {
-      if (suppressClick) { suppressClick = false; return; }
-      selectStep(module.dataset.step);
-    });
-    module.addEventListener('keydown', event => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        selectStep(module.dataset.step);
-      }
-    });
-  });
-  buttons.forEach(button => {
-    button.addEventListener('click', () => selectStep(button.dataset.step));
-    button.addEventListener('keydown', event => {
-      const direction = ['ArrowDown','ArrowRight'].includes(event.key) ? 1 : ['ArrowUp','ArrowLeft'].includes(event.key) ? -1 : 0;
-      if (!direction) return;
+  tabs.forEach((tab,index) => {
+    tab.addEventListener('click', () => selectStep(index + 1));
+    tab.addEventListener('keydown', event => {
+      let target;
+      if (event.key === 'ArrowRight') target = (index + 1) % 4;
+      if (event.key === 'ArrowLeft') target = (index + 3) % 4;
+      if (event.key === 'Home') target = 0;
+      if (event.key === 'End') target = 3;
+      if (target === undefined) return;
       event.preventDefault();
-      const next = (Number(button.dataset.step) - 1 + direction + 4) % 4;
-      buttons[next].focus({preventScroll:true});
-      selectStep(next + 1);
+      selectStep(target + 1);
+      tabs[target].focus({preventScroll:true});
     });
   });
-  document.getElementById('fert-overview').addEventListener('click', () => {
-    baseView = 'all';
-    zoom = 1;
-    scene.classList.remove('is-focused');
-    modules.forEach(module => { module.removeAttribute('aria-hidden'); module.setAttribute('tabindex','0'); });
-    setView(views.all);
-    document.getElementById('fert-focus-status').textContent = 'Full workflow';
-  });
-  function changeZoom(direction) {
-    if (baseView === 'all' && direction > 0) selectStep(activeStep);
-    zoom = Math.min(2.5, Math.max(1, zoom + direction * .35));
-    setView(focusedView());
-    document.getElementById('fert-focus-status').textContent = `Step ${activeStep} / 4${zoom > 1 ? ` · ${Math.round(zoom * 100)}%` : ''}`;
-  }
-  document.getElementById('fert-zoom-in').addEventListener('click', () => changeZoom(1));
-  document.getElementById('fert-zoom-out').addEventListener('click', () => changeZoom(-1));
+  previous.addEventListener('click', () => selectStep(Math.max(1,step - 1)));
+  next.addEventListener('click', () => selectStep(step % 4 + 1));
 
-  scene.addEventListener('pointerdown', event => {
-    if (zoom <= 1 || event.button !== 0) return;
-    cancelAnimationFrame(viewAnimation);
-    drag = {id:event.pointerId, x:event.clientX, y:event.clientY, view:[...currentView], moved:false};
-    scene.setPointerCapture(event.pointerId);
-    scene.classList.add('is-dragging');
-  });
-  scene.addEventListener('pointermove', event => {
-    if (!drag || event.pointerId !== drag.id) return;
-    const scale = Math.min(scene.clientWidth / drag.view[2], scene.clientHeight / drag.view[3]);
-    const dx = event.clientX - drag.x;
-    const dy = event.clientY - drag.y;
-    if (Math.hypot(dx, dy) > 4) drag.moved = true;
-    const limit = views[baseView];
-    const x = Math.max(limit[0] - currentView[2] * .2, Math.min(limit[0] + limit[2] - currentView[2] * .8, drag.view[0] - dx / scale));
-    const y = Math.max(limit[1] - currentView[3] * .2, Math.min(limit[1] + limit[3] - currentView[3] * .8, drag.view[1] - dy / scale));
-    currentView = [x,y,drag.view[2],drag.view[3]];
-    svg.setAttribute('viewBox', currentView.join(' '));
-  });
-  function finishDrag(event) {
-    if (!drag || event.pointerId !== drag.id) return;
-    suppressClick = drag.moved;
-    setTimeout(() => { suppressClick = false; }, 0);
-    drag = null;
-    scene.classList.remove('is-dragging');
-  }
-  scene.addEventListener('pointerup', finishDrag);
-  scene.addEventListener('pointercancel', finishDrag);
-  scene.addEventListener('lostpointercapture', () => { drag = null; scene.classList.remove('is-dragging'); });
-
-  const namespace = 'http://www.w3.org/2000/svg';
-  const lines = document.getElementById('fert-alignments');
-  matches.forEach((match, trajectory) => {
-    match.path.forEach((candidateFrame, queryFrame) => {
-      const startX = 807.5 + queryFrame * 26;
-      const endX = 648.5 + trajectory % 2 * 184 + candidateFrame * 21;
-      const endY = 388 + Math.floor(trajectory / 2) * 59;
-      const line = document.createElementNS(namespace, 'path');
-      line.setAttribute('d', `M${startX} 356C${startX} ${endY - 20} ${endX} ${endY - 25} ${endX} ${endY}`);
-      line.setAttribute('class', 'fert-alignment');
-      line.dataset.queryFrame = queryFrame;
-      lines.append(line);
-    });
-    const maxCost = Math.max(...matches.map(item => item.cost));
-    const bar = document.getElementById(`fert-cost-${trajectory}`);
-    bar.setAttribute('width', Math.max(8, match.cost / maxCost * 173));
-    bar.classList.toggle('is-selected', selected.some(item => item.trajectory === trajectory));
-    document.getElementById(`fert-cost-value-${trajectory}`).textContent = match.cost.toFixed(2);
-    const outline = document.getElementById(`fert-interval-${trajectory}`);
-    outline.setAttribute('x', 639 + trajectory % 2 * 184 + match.interval[0] * 21);
-    outline.setAttribute('y', 387 + Math.floor(trajectory / 2) * 59);
-    outline.setAttribute('width', (match.interval[1] - match.interval[0]) * 21 - 2);
-    outline.setAttribute('height', 19);
+  matches.forEach((match,trajectory) => {
+    const chosen = selected.some(item => item.trajectory === trajectory);
+    framework.querySelector(`[data-match-row="${trajectory}"]`).classList.toggle('is-selected',chosen);
+    const cost = framework.querySelector(`[data-cost="${trajectory}"]`);
+    cost.textContent = match.cost.toFixed(2);
+    cost.classList.toggle('is-selected',chosen);
+    const range = framework.querySelector(`[data-interval="${trajectory}"]`);
+    range.setAttribute('x',String(137 + match.interval[0] * 44));
+    range.setAttribute('width',String((match.interval[1] - match.interval[0]) * 44 + 1));
+    range.style.opacity = chosen ? '1' : '.35';
     for (let frame = 0; frame < model.trajectories[trajectory].length; frame++) {
-      const matched = frame >= match.interval[0] && frame < match.interval[1];
-      document.getElementById(`fert-candidate-${trajectory}-${frame}`).classList.toggle('is-matched', matched);
-      document.getElementById(`fert-retrieved-${trajectory}-${frame}`)?.classList.toggle('is-matched', matched);
+      framework.querySelector(`[data-candidate="${trajectory}-${frame}"]`).classList.toggle('is-matched',frame >= match.interval[0] && frame < match.interval[1]);
     }
   });
-  document.getElementById('fert-retrieval-readout').textContent = `Lowest-cost candidates: ${selected.map(item => `#${item.trajectory + 1}`).join(' and ')}`;
-
-  function showQueryFrame() {
-    const frame = Number(queryInput.value) - 1;
-    document.getElementById('fert-query-readout').textContent = `${frame + 1} / 3`;
-    svg.querySelectorAll('.fert-query-token').forEach((token, index) => token.classList.toggle('is-current', index === frame));
-    lines.querySelectorAll('path').forEach(line => line.classList.toggle('is-current', Number(line.dataset.queryFrame) === frame));
-    matches.forEach((match, trajectory) => {
-      for (let index = 0; index < model.trajectories[trajectory].length; index++) {
-        document.getElementById(`fert-candidate-${trajectory}-${index}`).classList.toggle('is-current', index === match.path[frame]);
+  function selectFrame(frame) {
+    framework.querySelectorAll('[data-frame]').forEach(button => button.setAttribute('aria-pressed',String(Number(button.dataset.frame) === frame)));
+    framework.querySelectorAll('[data-query]').forEach(token => token.classList.toggle('is-current',Number(token.dataset.query) === frame));
+    matches.forEach((match,trajectory) => {
+      for (let i = 0; i < model.trajectories[trajectory].length; i++) {
+        framework.querySelector(`[data-candidate="${trajectory}-${i}"]`).classList.toggle('is-current',i === match.path[frame]);
       }
     });
+    const positions = selected.map(match => `#${match.trajectory + 1} → ${match.path[frame] + 1}`).join(' · ');
+    document.getElementById('fert-match-readout').textContent = zh ? `查询帧 ${frame + 1} 对齐到成功轨迹的位置：${positions}。紫色方块标出对应帧。` : `Query frame ${frame + 1} maps to positions ${positions}. Purple blocks mark the corresponding frames.`;
   }
-  queryInput.addEventListener('input', () => { queryPinned = true; showQueryFrame(); });
+  framework.querySelectorAll('[data-frame]').forEach(button => button.addEventListener('click',() => selectFrame(Number(button.dataset.frame))));
 
-  function showPriorities() {
-    const retention = Number(retentionInput.value);
-    const weights = model.updatePriorities(model.priorities, intervals, retention, 2);
-    probability = model.probabilities(weights);
-    const max = Math.max(...model.priorities.flat(), ...weights.flat());
-    model.priorities.forEach((row, trajectory) => row.forEach((weight, chunk) => {
-      for (const [prefix, value, maxHeight] of [['fert-current',weight,29],['fert-updated',weights[trajectory][chunk],29],['fert-buffer-weight',weights[trajectory][chunk],29]]) {
-        const bar = document.getElementById(`${prefix}-${trajectory}-${chunk}`);
-        const height = value / max * maxHeight;
-        bar.setAttribute('height', height.toFixed(2));
-        bar.setAttribute('y', (Number(bar.dataset.baseline) - height).toFixed(2));
-        const overlap = intervals.some(interval => interval.trajectory === trajectory && chunk < interval.end && chunk + 2 > interval.start);
-        bar.classList.toggle('is-retrieved', prefix !== 'fert-current' && overlap);
-      }
+  function inspectChunk(key) {
+    inspectedChunk = key;
+    const [trajectory,chunk] = key.split('-').map(Number);
+    const p = (mode === 'after' ? after : before)[trajectory][chunk];
+    framework.querySelectorAll('[data-chunk]').forEach(mark => mark.classList.toggle('is-selected',mark.dataset.chunk === key));
+    const label = zh ? `轨迹 #${trajectory+1} · 动作块 ${chunk+1}：${percentage(before[trajectory][chunk])} → ${percentage(p)}${overlaps(trajectory,chunk) ? '，与检索片段重叠。' : '。'}` : `Trajectory #${trajectory+1} · chunk ${chunk+1}: ${percentage(before[trajectory][chunk])} → ${percentage(p)}${overlaps(trajectory,chunk) ? ' · overlaps a retrieved interval.' : '.'}`;
+    document.getElementById('fert-chunk-readout').textContent = label;
+  }
+  function selectPriority(value) {
+    mode = value;
+    const probabilities = mode === 'after' ? after : before;
+    framework.querySelectorAll('[data-priority]').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.priority === mode)));
+    probabilities.forEach((row,trajectory) => row.forEach((p,chunk) => {
+      const key = `${trajectory}-${chunk}`;
+      const bar = framework.querySelector(`[data-weight="${key}"]`);
+      const height = p / maxProbability * 50;
+      const y = Number(bar.dataset.baseline) - height;
+      bar.setAttribute('y',y.toFixed(2));
+      bar.setAttribute('height',height.toFixed(2));
+      bar.classList.toggle('is-retrieved',overlaps(trajectory,chunk));
+      const label = framework.querySelector(`[data-bar-value="${key}"]`);
+      label.textContent = percentage(p);
+      label.setAttribute('y',(y - 7).toFixed(2));
+      framework.querySelector(`[data-chunk="${key}"]`).setAttribute('aria-label',zh ? `轨迹 ${trajectory+1}，动作块 ${chunk+1}，采样概率 ${percentage(p)}` : `Trajectory ${trajectory+1}, chunk ${chunk+1}, sampling probability ${percentage(p)}`);
     }));
-    const retrievedMass = probability.reduce((sum, row, trajectory) => sum + row.reduce((total, value, chunk) => total + (intervals.some(interval => interval.trajectory === trajectory && chunk < interval.end && chunk + 2 > interval.start) ? value : 0), 0), 0);
-    document.getElementById('fert-retention-readout').textContent = retention.toFixed(2);
-    document.getElementById('fert-sampling-readout').textContent = `Chunks overlapping retrieved intervals: ${(retrievedMass * 100).toFixed(1)}% of illustrative sampling probability.`;
-    showBatch();
+    document.getElementById('fert-share-before').textContent = percentage(share(before));
+    document.getElementById('fert-share-now').textContent = percentage(share(probabilities));
+    document.getElementById('fert-share-meter').style.width = percentage(share(probabilities));
+    const count = model.priorities.flatMap((row,t) => row.map((_,c) => overlaps(t,c))).filter(Boolean).length;
+    document.getElementById('fert-sampling-readout').textContent = zh
+      ? `${count} 个粉色动作块，共 32 个。${mode === 'after' ? '检索提高了这些相关动作被抽入训练的总概率。' : '当前显示检索更新前的采样分布。点击“检索加权后”查看变化。'}`
+      : `${count} pink chunks out of 32. ${mode === 'after' ? 'Retrieval raises their combined probability of being sampled for training.' : 'This is the existing sampling distribution. Select “After retrieval” to see the change.'}`;
+    if (inspectedChunk) inspectChunk(inspectedChunk);
   }
-
-  function showBatch() {
-    svg.querySelectorAll('.fert-buffer-token-sampled').forEach(token => { token.classList.remove('fert-buffer-token-sampled'); token.removeAttribute('stroke'); token.removeAttribute('stroke-width'); });
-    for (let index = 0; index < 9; index++) {
-      seed = (1664525 * seed + 1013904223) >>> 0;
-      const sample = model.sample(probability, seed / 4294967296);
-      if (!sample) continue;
-      const source = document.getElementById(`fert-buffer-${sample.trajectory}-${sample.chunk}`);
-      source.classList.add('fert-buffer-token-sampled');
-      source.setAttribute('stroke','#b57aa8');
-      source.setAttribute('stroke-width','2');
-      const token = document.getElementById(`fert-batch-${index}`);
-      token.setAttribute('fill', ['#79abc5','#8aafc3','#709d83','#a0bfae'][sample.trajectory]);
-      token.setAttribute('aria-label', `Trajectory ${sample.trajectory + 1}, chunk ${sample.chunk + 1}`);
-    }
+  framework.querySelectorAll('[data-priority]').forEach(button => button.addEventListener('click',() => selectPriority(button.dataset.priority)));
+  framework.querySelectorAll('[data-chunk]').forEach(mark => {
+    mark.addEventListener('click',() => inspectChunk(mark.dataset.chunk));
+    mark.addEventListener('keydown',event => {
+      if (!['Enter',' '].includes(event.key)) return;
+      event.preventDefault(); inspectChunk(mark.dataset.chunk);
+    });
+  });
+  // Keep the mobile controls beside the drawing they change.
+  const compact = matchMedia('(max-width:760px)');
+  const controlPositions = [...framework.querySelectorAll('.fert-controls')].map(control => ({
+    control, parent:control.parentNode, next:control.nextSibling,
+    scene:control.closest('.fert-panel').querySelector('.fert-scene')
+  }));
+  function placeControls() {
+    controlPositions.forEach(({control,parent,next,scene}) => {
+      if (compact.matches) scene.before(control);
+      else parent.insertBefore(control,next);
+    });
   }
-  retentionInput.addEventListener('input', showPriorities);
-
-  function syncMotion() { framework.classList.toggle('is-live', visible && !document.hidden && !reduced.matches); }
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(entries => { visible = entries[0].isIntersecting; syncMotion(); }, {threshold:.08}).observe(framework);
-  } else { visible = true; syncMotion(); }
-  document.addEventListener('visibilitychange', syncMotion);
-  reduced.addEventListener('change', () => { cancelAnimationFrame(viewAnimation); setView(focusedView(), false); syncMotion(); });
-  const clock = setInterval(() => {
-    if (!visible || document.hidden || reduced.matches) return;
-    if (!queryPinned) { queryInput.value = Number(queryInput.value) % 3 + 1; showQueryFrame(); }
-    showBatch();
-  }, 3200);
-  window.addEventListener('pagehide', event => { if (!event.persisted) clearInterval(clock); });
-
-  showQueryFrame();
-  showPriorities();
-  selectStep(1, false);
-  if (matchMedia('(max-width:760px)').matches) {
-    baseView = 1;
-    scene.classList.add('is-focused');
-    modules.forEach(module => { module.setAttribute('aria-hidden', String(Number(module.dataset.step) !== 1)); module.setAttribute('tabindex', Number(module.dataset.step) === 1 ? '0' : '-1'); });
-    setView(views[1], false);
-    document.getElementById('fert-focus-status').textContent = 'Step 1 / 4';
-  } else { setView(views.all, false); }
+  compact.addEventListener('change',placeControls);
+  placeControls();
+  const syncMotion = () => framework.classList.toggle('is-live',visible && !document.hidden && !motion.matches);
+  if ('IntersectionObserver' in window) new IntersectionObserver(entries => { visible=entries[0].isIntersecting; syncMotion(); },{threshold:.05}).observe(framework);
+  else { visible=true; syncMotion(); }
+  document.addEventListener('visibilitychange',syncMotion);
+  motion.addEventListener('change',syncMotion);
+  selectFrame(0);
+  selectPriority('before');
+  selectStep(1);
 })();

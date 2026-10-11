@@ -12,7 +12,7 @@ body{line-height:1.95}
 .wordmark{letter-spacing:.02em}.section-index,.eyebrow{letter-spacing:.055em}
 .task-carousel-caption>p:not(.task-carousel-metrics){line-height:1.9;font-style:normal;font-family:var(--sans)}
 .task-carousel-metrics strong{margin-right:.35em}
-.fert-scene svg{font-family:var(--sans)}.fert-title{font-size:22px}.fert-step-content p{line-height:1.9}
+.fert-scene svg{font-family:var(--sans)}
 .result-card-heading h4,.result-task-name{letter-spacing:0}.checkpoint-note{line-height:1.8}
 .stage-label,.stage-signal{line-height:1.8}
-@media(max-width:760px){.review-banner{inset:14px 16px auto;font-size:11px;gap:10px}.review-source{display:none}.hero-heading{width:calc(100% - 40px)}.research-hero h1{font-size:clamp(32px,8vw,46px)}.hero-title-statement{font-size:.65em;max-width:13em}.hero-partner-names{letter-spacing:.02em;font-size:11px}.section-heading h2{font-size:32px}.site-header{gap:18px}.site-header nav{gap:16px;flex-wrap:wrap}.fert-framework-header .eyebrow{line-height:1.6}.fert-step-content{padding-left:0}}
+@media(max-width:760px){.review-banner{inset:14px 16px auto;font-size:11px;gap:10px}.review-source{display:none}.hero-heading{width:calc(100% - 40px)}.research-hero h1{font-size:clamp(32px,8vw,46px)}.hero-title-statement{font-size:.65em;max-width:13em}.hero-partner-names{letter-spacing:.02em;font-size:11px}.section-heading h2{font-size:32px}.site-header{gap:18px}.site-header nav{gap:16px;flex-wrap:wrap}}

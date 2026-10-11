@@ -41,3 +41,11 @@ html.hero-transition{scroll-behavior:auto}
 @media(max-width:600px){.hero-partner-mark--agibot img{transform:translateY(-3px)}}
 @media(max-height:500px) and (orientation:landscape){.hero-heading{width:calc(100% - 64px)}.research-hero h1{font-size:clamp(30px,7vh,42px)}.hero-partners{width:min(560px,calc(100% - 64px));bottom:16px}.hero-partner-mark{height:34px}.hero-partner-mark img,.hero-partner-mark svg{width:150px;max-height:34px}.hero-partner-names{margin-top:12px;font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-photograph,.hero-heading{transform:none;will-change:auto}.hero-heading,.hero-partners{opacity:1;will-change:auto}.chart-motion-pending .result-bar{transform:none}.chart-motion-pending .comparison-mark .error-bar,.chart-motion-pending .bar-value{opacity:1}.chart-motion-pending .plot-series{clip-path:none}.content-reveal-in,[data-content-reveal=pending]{animation:none;opacity:1;transform:none}}
+/* Retrieval ablation: a deliberate reveal, with values readable throughout. */
+@media(prefers-reduced-motion:no-preference){
+  html.has-ablation-motion .ablation-chart:not([data-ablation-motion]) .ablation-row i,
+  .ablation-chart[data-ablation-motion=pending] .ablation-row i{transform:scaleX(0);transform-origin:left}
+  .ablation-chart[data-ablation-motion=played] .ablation-row i{transform-origin:left;animation:ablation-grow 1.8s cubic-bezier(.16,.7,.2,1) both}
+  .ablation-chart[data-ablation-motion=played] .ablation-row:nth-child(2) i{animation-delay:.2s}
+}
+@keyframes ablation-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
