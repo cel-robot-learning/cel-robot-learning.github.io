@@ -1,6 +1,6 @@
 /* The supplied diagram remains the visual source; interaction is a light overlay. */
 #fats-framework{background:#fff;overflow:hidden}
-.fats-scroll{max-width:1020px;margin:0 auto;overflow:auto;-webkit-overflow-scrolling:touch}
+.fats-scroll{max-width:760px;margin:0 auto;overflow:auto;-webkit-overflow-scrolling:touch}
 .fats-diagram{display:block;width:100%;height:auto;min-width:610px;overflow:visible}
 .fats-node{cursor:pointer;outline:none}
 .fats-node rect{fill:transparent;stroke:transparent;stroke-width:2;vector-effect:non-scaling-stroke;transition:stroke .2s,fill .2s}
