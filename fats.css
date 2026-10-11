@@ -1,0 +1,21 @@
+/* The supplied diagram remains the visual source; interaction is a light overlay. */
+#fats-framework{background:#fff;overflow:hidden}
+.fats-scroll{max-width:1020px;margin:0 auto;overflow:auto;-webkit-overflow-scrolling:touch}
+.fats-diagram{display:block;width:100%;height:auto;min-width:610px;overflow:visible}
+.fats-node{cursor:pointer;outline:none}
+.fats-node rect{fill:transparent;stroke:transparent;stroke-width:2;vector-effect:non-scaling-stroke;transition:stroke .2s,fill .2s}
+.fats-node:hover rect,.fats-node:focus-visible rect{stroke:#527f9c;fill:#79abc50b}
+.fats-node.is-active rect{stroke:#527f9c;fill:#79abc510}
+.fats-flow{fill:none;stroke-width:80;stroke-linecap:round;stroke-dasharray:2 14;opacity:0;pointer-events:none}
+#fats-framework.is-live .fats-flow.is-active{opacity:.8;animation:fats-stream 3.6s linear infinite}
+.fats-choices{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:24px 0 20px}
+.fats-choices button{border:1px solid #dce3e8;background:white;color:#526877;border-radius:7px;padding:9px 15px;min-height:40px;font:13px/1.4 var(--sans);cursor:pointer}
+.fats-choices button:hover,.fats-choices button[aria-pressed=true]{color:#203249;background:#edf5fa;border-color:#91b5c8}
+.fats-choices button:focus-visible{outline:2px solid #527f9c;outline-offset:3px}
+.fats-detail{max-width:940px;min-height:108px;margin:0 auto 28px;padding:20px 24px;border-left:3px solid #91b5c8;background:#f7fafc;box-sizing:border-box}
+.fats-detail h3{margin:0 0 9px;font:600 16px/1.4 var(--sans)}
+.fats-detail p{margin:0;font:14px/1.75 var(--sans);color:#526877}
+@keyframes fats-stream{to{stroke-dashoffset:-32}}
+@media(max-width:760px){.fats-scroll{margin:0 -12px}.fats-choices{justify-content:flex-start;margin-top:16px;gap:6px}.fats-choices button{font-size:12px;padding:8px 10px}.fats-detail{min-height:180px;padding:16px}.fats-detail p{font-size:13px}#fats-framework .figure-header{align-items:flex-start;gap:8px;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){#fats-framework.is-live .fats-flow.is-active{animation:none;opacity:.5;stroke-dasharray:none}.fats-node rect{transition:none}}
+@media print{.fats-choices,.fats-flow,.fats-node{display:none}.fats-diagram{min-width:0}.fats-detail{min-height:0}}

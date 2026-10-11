@@ -1,144 +1,132 @@
+/* The v5 drawing stays in place. Every control changes only its corresponding data. */
 (() => {
   'use strict';
-  const framework = document.getElementById('fert-framework');
+  const root = document.getElementById('fert-framework');
   const model = window.FertModel;
-  if (!framework || !model) return;
-  const zh = framework.dataset.locale === 'zh';
-  const tabs = [...framework.querySelectorAll('[role="tab"]')];
-  const panels = [...framework.querySelectorAll('[role="tabpanel"]')];
-  const matches = model.trajectories.map(trajectory => model.align(model.query, trajectory));
-  const selected = matches.map((match, trajectory) => ({...match, trajectory})).sort((a,b) => a.cost - b.cost).slice(0,2);
-  const intervals = selected.map(match => ({trajectory:match.trajectory, start:match.interval[0], end:match.interval[1]}));
-  // Reduced-size example; the retention factor uses the manuscript's default.
-  const before = model.probabilities(model.priorities);
-  const after = model.probabilities(model.updatePriorities(model.priorities, intervals, .88, 2));
-  const maxProbability = Math.max(...before.flat(), ...after.flat());
-  const overlaps = (trajectory, chunk) => intervals.some(interval => interval.trajectory === trajectory && chunk < interval.end && chunk + 2 > interval.start);
-  const share = probabilities => probabilities.reduce((sum,row,t) => sum + row.reduce((part,p,c) => part + (overlaps(t,c) ? p : 0),0),0);
-  const percentage = value => `${(value * 100).toFixed(1)}%`;
-  let step = 1;
-  let mode = 'before';
-  let inspectedChunk = null;
-  let visible = false;
-  const motion = matchMedia('(prefers-reduced-motion: reduce)');
-  const previous = document.getElementById('fert-prev');
-  const next = document.getElementById('fert-next');
+  if (!root || !model) return;
+  const zh = root.dataset.locale === 'zh';
+  const tr = (en, cn) => zh ? cn : en;
+  const svg = root.querySelector('#fert-diagram');
+  const steps = [...root.querySelectorAll('.fert-step-button')];
+  const modules = [...svg.querySelectorAll('.fert-module')];
+  const panels = [...root.querySelectorAll('.fert-step-content')];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const matches = model.trajectories.map(t => model.align(model.query, t));
+  const selected = matches.map((m,t) => ({...m,trajectory:t})).sort((a,b) => a.cost-b.cost).slice(0,2);
+  const intervals = selected.map(m => ({trajectory:m.trajectory,start:m.interval[0],end:m.interval[1]}));
+  const updated = model.updatePriorities(model.priorities, intervals, .88, 2);
+  const overlaps = (t,c) => intervals.some(i => i.trajectory===t && c<i.end && c+2>i.start);
+  let probability, active = 1, after = true, visible = false, seed = 21, batch = 0;
+  const get = id => root.querySelector('#'+id);
 
   function selectStep(value) {
-    step = Number(value);
-    tabs.forEach((tab,i) => { tab.setAttribute('aria-selected', String(i + 1 === step)); tab.tabIndex = i + 1 === step ? 0 : -1; });
-    panels.forEach((panel,i) => { panel.hidden = i + 1 !== step; });
-    previous.disabled = step === 1;
-    next.innerHTML = `${step === 4 ? next.dataset.replay : next.dataset.next} <span aria-hidden="true">${step === 4 ? '↺' : '→'}</span>`;
-    document.getElementById('fert-focus-status').textContent = `0${step} / 04`;
-    // No automatic page scroll, zoom, crop, or canvas reflow when a step changes.
+    active = Number(value);
+    steps.forEach(b => b.setAttribute('aria-expanded',String(+b.dataset.step===active)));
+    panels.forEach(p => {p.hidden = +p.dataset.step!==active;});
+    modules.forEach(m => {const on = +m.dataset.step===active; m.classList.toggle('is-active',on); m.setAttribute('aria-pressed',String(on));});
+    get('fert-focus-status').textContent = tr(`Step ${active} / 4`,`第 ${active} / 4 步`);
   }
-  tabs.forEach((tab,index) => {
-    tab.addEventListener('click', () => selectStep(index + 1));
-    tab.addEventListener('keydown', event => {
-      let target;
-      if (event.key === 'ArrowRight') target = (index + 1) % 4;
-      if (event.key === 'ArrowLeft') target = (index + 3) % 4;
-      if (event.key === 'Home') target = 0;
-      if (event.key === 'End') target = 3;
-      if (target === undefined) return;
-      event.preventDefault();
-      selectStep(target + 1);
-      tabs[target].focus({preventScroll:true});
+  [...steps,...modules].forEach(el => {
+    el.addEventListener('click',()=>selectStep(el.dataset.step));
+    el.addEventListener('keydown',event=>{
+      if (['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)) {
+        event.preventDefault();
+        const next = event.key==='Home'?1:event.key==='End'?4:(active-1+(['ArrowRight','ArrowDown'].includes(event.key)?1:3))%4+1;
+        selectStep(next); steps[next-1].focus({preventScroll:true});
+      } else if (el.matches('.fert-module') && ['Enter',' '].includes(event.key)) {event.preventDefault();selectStep(el.dataset.step);}
     });
   });
-  previous.addEventListener('click', () => selectStep(Math.max(1,step - 1)));
-  next.addEventListener('click', () => selectStep(step % 4 + 1));
 
-  matches.forEach((match,trajectory) => {
-    const chosen = selected.some(item => item.trajectory === trajectory);
-    framework.querySelector(`[data-match-row="${trajectory}"]`).classList.toggle('is-selected',chosen);
-    const cost = framework.querySelector(`[data-cost="${trajectory}"]`);
-    cost.textContent = match.cost.toFixed(2);
-    cost.classList.toggle('is-selected',chosen);
-    const range = framework.querySelector(`[data-interval="${trajectory}"]`);
-    range.setAttribute('x',String(137 + match.interval[0] * 44));
-    range.setAttribute('width',String((match.interval[1] - match.interval[0]) * 44 + 1));
-    range.style.opacity = chosen ? '1' : '.35';
-    for (let frame = 0; frame < model.trajectories[trajectory].length; frame++) {
-      framework.querySelector(`[data-candidate="${trajectory}-${frame}"]`).classList.toggle('is-matched',frame >= match.interval[0] && frame < match.interval[1]);
-    }
+  const ns = 'http://www.w3.org/2000/svg';
+  const lines = get('fert-alignments');
+  matches.forEach((match,t)=>{
+    match.path.forEach((candidate,q)=>{
+      const x1=807.5+q*26, x2=648.5+t%2*184+candidate*21, y2=388+Math.floor(t/2)*59;
+      const path=document.createElementNS(ns,'path');
+      path.setAttribute('d',`M${x1} 356C${x1} ${y2-20} ${x2} ${y2-25} ${x2} ${y2}`);
+      path.setAttribute('class','fert-alignment'); path.dataset.queryFrame=q; lines.append(path);
+    });
+    get(`fert-cost-${t}`).setAttribute('width',Math.max(8,match.cost/Math.max(...matches.map(m=>m.cost))*173));
+    get(`fert-cost-${t}`).classList.toggle('is-selected',selected.some(m=>m.trajectory===t));
+    get(`fert-cost-value-${t}`).textContent=match.cost.toFixed(2);
+    const outline=get(`fert-interval-${t}`);
+    Object.entries({x:639+t%2*184+match.interval[0]*21,y:387+Math.floor(t/2)*59,width:(match.interval[1]-match.interval[0])*21-2,height:19}).forEach(([k,v])=>outline.setAttribute(k,v));
+    model.trajectories[t].forEach((_,f)=>{
+      const on=f>=match.interval[0]&&f<match.interval[1];
+      get(`fert-candidate-${t}-${f}`).classList.toggle('is-matched',on);
+      get(`fert-retrieved-${t}-${f}`)?.classList.toggle('is-matched',on);
+    });
   });
-  function selectFrame(frame) {
-    framework.querySelectorAll('[data-frame]').forEach(button => button.setAttribute('aria-pressed',String(Number(button.dataset.frame) === frame)));
-    framework.querySelectorAll('[data-query]').forEach(token => token.classList.toggle('is-current',Number(token.dataset.query) === frame));
-    matches.forEach((match,trajectory) => {
-      for (let i = 0; i < model.trajectories[trajectory].length; i++) {
-        framework.querySelector(`[data-candidate="${trajectory}-${i}"]`).classList.toggle('is-current',i === match.path[frame]);
+  get('fert-retrieval-readout').textContent=tr('Lowest-cost candidates: #4 and #1','检索代价最低的候选：#4 和 #1');
+  function showQuery(q) {
+    root.querySelectorAll('[data-query-frame]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.queryFrame===q)));
+    svg.querySelectorAll('.fert-query-token').forEach((token,i)=>token.classList.toggle('is-current',i===q));
+    lines.querySelectorAll('path').forEach(line=>line.classList.toggle('is-current',+line.dataset.queryFrame===q));
+    matches.forEach((match,t)=>model.trajectories[t].forEach((_,f)=>get(`fert-candidate-${t}-${f}`).classList.toggle('is-current',f===match.path[q])));
+    const target=selected.map(m=>`#${m.trajectory+1}: ${m.path[q]+1}`).join(' · ');
+    get('fert-query-readout').textContent=tr(`Frame ${q+1} → matched positions ${target}`,`第 ${q+1} 帧 → 匹配位置 ${target}`);
+  }
+  root.querySelectorAll('[data-query-frame]').forEach(b=>b.addEventListener('click',()=>showQuery(+b.dataset.queryFrame)));
+  svg.querySelectorAll('.fert-query-token').forEach((b,q)=>b.addEventListener('click',event=>{event.stopPropagation(); selectStep(3);showQuery(q);}));
+
+  function showPriorities() {
+    const weights=after?updated:model.priorities;
+    probability=model.probabilities(weights);
+    const max=Math.max(...model.priorities.flat(),...updated.flat());
+    model.priorities.forEach((row,t)=>row.forEach((weight,c)=>{
+      for (const [prefix,value] of [['fert-current',weight],['fert-updated',weights[t][c]],['fert-buffer-weight',weights[t][c]]]) {
+        const bar=get(`${prefix}-${t}-${c}`), height=value/max*29;
+        bar.setAttribute('height',height.toFixed(2)); bar.setAttribute('y',(+bar.dataset.baseline-height).toFixed(2));
+        bar.classList.toggle('is-retrieved',prefix!=='fert-current'&&overlaps(t,c));
+        let title=bar.querySelector('title');if(!title){title=document.createElementNS(ns,'title');bar.append(title);}
+        title.textContent=tr(`Trajectory ${t+1}, chunk ${c+1}: weight ${value.toFixed(2)}`,`轨迹 ${t+1}，动作块 ${c+1}：权重 ${value.toFixed(2)}`);
       }
-    });
-    const positions = selected.map(match => `#${match.trajectory + 1} → ${match.path[frame] + 1}`).join(' · ');
-    document.getElementById('fert-match-readout').textContent = zh ? `查询帧 ${frame + 1} 对齐到成功轨迹的位置：${positions}。紫色方块标出对应帧。` : `Query frame ${frame + 1} maps to positions ${positions}. Purple blocks mark the corresponding frames.`;
-  }
-  framework.querySelectorAll('[data-frame]').forEach(button => button.addEventListener('click',() => selectFrame(Number(button.dataset.frame))));
-
-  function inspectChunk(key) {
-    inspectedChunk = key;
-    const [trajectory,chunk] = key.split('-').map(Number);
-    const p = (mode === 'after' ? after : before)[trajectory][chunk];
-    framework.querySelectorAll('[data-chunk]').forEach(mark => mark.classList.toggle('is-selected',mark.dataset.chunk === key));
-    const label = zh ? `轨迹 #${trajectory+1} · 动作块 ${chunk+1}：${percentage(before[trajectory][chunk])} → ${percentage(p)}${overlaps(trajectory,chunk) ? '，与检索片段重叠。' : '。'}` : `Trajectory #${trajectory+1} · chunk ${chunk+1}: ${percentage(before[trajectory][chunk])} → ${percentage(p)}${overlaps(trajectory,chunk) ? ' · overlaps a retrieved interval.' : '.'}`;
-    document.getElementById('fert-chunk-readout').textContent = label;
-  }
-  function selectPriority(value) {
-    mode = value;
-    const probabilities = mode === 'after' ? after : before;
-    framework.querySelectorAll('[data-priority]').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.priority === mode)));
-    probabilities.forEach((row,trajectory) => row.forEach((p,chunk) => {
-      const key = `${trajectory}-${chunk}`;
-      const bar = framework.querySelector(`[data-weight="${key}"]`);
-      const height = p / maxProbability * 50;
-      const y = Number(bar.dataset.baseline) - height;
-      bar.setAttribute('y',y.toFixed(2));
-      bar.setAttribute('height',height.toFixed(2));
-      bar.classList.toggle('is-retrieved',overlaps(trajectory,chunk));
-      const label = framework.querySelector(`[data-bar-value="${key}"]`);
-      label.textContent = percentage(p);
-      label.setAttribute('y',(y - 7).toFixed(2));
-      framework.querySelector(`[data-chunk="${key}"]`).setAttribute('aria-label',zh ? `轨迹 ${trajectory+1}，动作块 ${chunk+1}，采样概率 ${percentage(p)}` : `Trajectory ${trajectory+1}, chunk ${chunk+1}, sampling probability ${percentage(p)}`);
     }));
-    document.getElementById('fert-share-before').textContent = percentage(share(before));
-    document.getElementById('fert-share-now').textContent = percentage(share(probabilities));
-    document.getElementById('fert-share-meter').style.width = percentage(share(probabilities));
-    const count = model.priorities.flatMap((row,t) => row.map((_,c) => overlaps(t,c))).filter(Boolean).length;
-    document.getElementById('fert-sampling-readout').textContent = zh
-      ? `${count} 个粉色动作块，共 32 个。${mode === 'after' ? '检索提高了这些相关动作被抽入训练的总概率。' : '当前显示检索更新前的采样分布。点击“检索加权后”查看变化。'}`
-      : `${count} pink chunks out of 32. ${mode === 'after' ? 'Retrieval raises their combined probability of being sampled for training.' : 'This is the existing sampling distribution. Select “After retrieval” to see the change.'}`;
-    if (inspectedChunk) inspectChunk(inspectedChunk);
+    const mass=probability.reduce((s,row,t)=>s+row.reduce((v,p,c)=>v+(overlaps(t,c)?p:0),0),0);
+    get('fert-sampling-readout').textContent=tr(`Overlapping chunks: ${(mass*100).toFixed(1)}% of illustrative sampling probability. ρ = 0.88.`,`重叠动作块的示例采样概率合计 ${(mass*100).toFixed(1)}%。ρ = 0.88。`);
+    root.querySelectorAll('[data-priority]').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.priority==='after')===after)));
+    showBatch();
   }
-  framework.querySelectorAll('[data-priority]').forEach(button => button.addEventListener('click',() => selectPriority(button.dataset.priority)));
-  framework.querySelectorAll('[data-chunk]').forEach(mark => {
-    mark.addEventListener('click',() => inspectChunk(mark.dataset.chunk));
-    mark.addEventListener('keydown',event => {
-      if (!['Enter',' '].includes(event.key)) return;
-      event.preventDefault(); inspectChunk(mark.dataset.chunk);
-    });
-  });
-  // Keep the mobile controls beside the drawing they change.
-  const compact = matchMedia('(max-width:760px)');
-  const controlPositions = [...framework.querySelectorAll('.fert-controls')].map(control => ({
-    control, parent:control.parentNode, next:control.nextSibling,
-    scene:control.closest('.fert-panel').querySelector('.fert-scene')
-  }));
-  function placeControls() {
-    controlPositions.forEach(({control,parent,next,scene}) => {
-      if (compact.matches) scene.before(control);
-      else parent.insertBefore(control,next);
-    });
+  function showBatch() {
+    svg.querySelectorAll('.fert-buffer-token-sampled').forEach(t=>{t.classList.remove('fert-buffer-token-sampled');t.removeAttribute('stroke');t.removeAttribute('stroke-width');});
+    const counts=[0,0,0,0];
+    for(let i=0;i<9;i++) {
+      seed=(1664525*seed+1013904223)>>>0;
+      const sample=model.sample(probability,seed/4294967296);if(!sample)continue;
+      counts[sample.trajectory]++;
+      const source=get(`fert-buffer-${sample.trajectory}-${sample.chunk}`);
+      source.classList.add('fert-buffer-token-sampled');source.setAttribute('stroke','#805b84');source.setAttribute('stroke-width','2.5');
+      const token=get(`fert-batch-${i}`);token.setAttribute('fill',['#79abc5','#8aafc3','#709d83','#a0bfae'][sample.trajectory]);
+    }
+    batch++;
+    get('fert-batch-readout').textContent=tr(`Batch ${batch} · 9 chunks. Sources: `,`第 ${batch} 组 · 9 个动作块。来源：`)+counts.map((n,t)=>`#${t+1} × ${n}`).join(' · ');
   }
-  compact.addEventListener('change',placeControls);
-  placeControls();
-  const syncMotion = () => framework.classList.toggle('is-live',visible && !document.hidden && !motion.matches);
-  if ('IntersectionObserver' in window) new IntersectionObserver(entries => { visible=entries[0].isIntersecting; syncMotion(); },{threshold:.05}).observe(framework);
-  else { visible=true; syncMotion(); }
-  document.addEventListener('visibilitychange',syncMotion);
-  motion.addEventListener('change',syncMotion);
-  selectFrame(0);
-  selectPriority('before');
-  selectStep(1);
+  root.querySelectorAll('[data-priority]').forEach(b=>b.addEventListener('click',()=>{after=b.dataset.priority==='after';showPriorities();}));
+  get('fert-sample').addEventListener('click',showBatch);
+  function motion(){root.classList.toggle('is-live',visible&&!document.hidden&&!reduced.matches);}
+  if('IntersectionObserver' in window)new IntersectionObserver(e=>{visible=e[0].isIntersecting;motion();},{threshold:.08}).observe(root);
+  else{visible=true;motion();}
+  document.addEventListener('visibilitychange',motion);reduced.addEventListener('change',motion);
+  const mobile=matchMedia('(max-width:760px)');
+  const hosts=steps.map(b=>b.parentElement);
+  const mobileNav=document.createElement('div');mobileNav.className='fert-mobile-nav';mobileNav.setAttribute('aria-label',tr('Algorithm steps','算法步骤'));
+  root.querySelector('.fert-visual').before(mobileNav);
+  function arrange(){steps.forEach((b,i)=>mobile.matches?mobileNav.append(b):hosts[i].prepend(b));}
+  mobile.addEventListener('change',arrange);arrange();
+  showQuery(0);showPriorities();selectStep(1);
+  // Reserve the tallest explanation so selection never moves the next section.
+  function reserveSpace(){
+    const side=root.querySelector('.fert-steps');side.style.minHeight='0';
+    let height=0;
+    panels.forEach(panel=>{
+      panels.forEach(p=>{p.hidden=p!==panel;});
+      height=Math.max(height,side.getBoundingClientRect().height);
+    });
+    panels.forEach(p=>{p.hidden=+p.dataset.step!==active;});
+    side.style.minHeight=`${Math.ceil(height)+8}px`;
+  }
+  reserveSpace();document.fonts?.ready.then(reserveSpace);
+  let resizeTimer;
+  window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(reserveSpace,120);});
+  root.querySelectorAll('.fert-rule').forEach(d=>d.addEventListener('toggle',reserveSpace));
 })();
