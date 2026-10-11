@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="集体经验学习中文临时审阅版：基于 PR #3 的研究博客文案，介绍 FERT 如何利用机器人群体的成功经验和失败情境持续改进策略。">
+  <title>集体经验学习实现可扩展的机器人后训练｜中文临时审阅版</title>
+  <link rel="canonical" href="https://cel-robot-post-training.github.io/tmp/zh/">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 32 32&#x27;%3E%3Crect width=&#x27;32&#x27; height=&#x27;32&#x27; rx=&#x27;5&#x27; fill=&#x27;%2332658a&#x27;/%3E%3Cpath d=&#x27;M7 7h7v7H7zm11 0h7v7h-7zM7 18h7v7H7zm11 0h7v7h-7z&#x27; fill=&#x27;%23ffffff&#x27;/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../../styles.css?v=20261010-compact-fats">
+  <link rel="stylesheet" href="../../results.css?v=20261010-paper-palette">
+  <link rel="preload" as="image" href="../../assets/cel-fleet-cover.png">
+  <link rel="preload" as="font" href="../../assets/fonts/source-serif-4-bold.woff2" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../motion.css?v=20261010-cover-logo-balance">
+  <link rel="stylesheet" href="../../fert.css?v=20261011-framework-v5">
+  <link rel="stylesheet" href="review.css?v=20261011-zh">
+</head>
+<body>
+  <aside class="review-banner" aria-label="审阅版本信息"><span><strong>中文临时审阅版</strong><span class="review-source"> · PR #3 博客文案</span></span><a href="../../">英文正式版 ↗</a></aside>
+  <a class="skip-link" href="#overview">跳至正文</a>
+  <main id="top">
+    <section class="research-hero" aria-labelledby="project-title">
+      <img class="hero-photograph" src="../../assets/cel-fleet-cover.png" width="1024" height="1536" alt="" fetchpriority="high" decoding="async">
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-heading">
+        <h1 id="project-title">
+          <span class="hero-title-name">集体经验学习</span>
+          <span class="hero-title-statement">实现可扩展的机器人后训练</span>
+        </h1>
+      </div>
+      <div class="hero-partners">
+        <div class="hero-partner-logos" aria-hidden="true">
+          <div class="hero-partner-mark"><img src="../../assets/logos/tsinghua.svg" width="1200" height="405" alt="" decoding="async"></div>
+          <div class="hero-partner-mark hero-partner-mark--agibot"><img src="../../assets/logos/agibot.png" width="600" height="125" alt="" decoding="async"></div>
+          <div class="hero-partner-mark">
+
+            <svg viewbox="301 300 2486 772" width="2486" height="772" aria-hidden="true"><image href="../../assets/logos/infinigence-ai.png" width="3088" height="1373"/></svg>
+          </div>
+        </div>
+        <p class="hero-partner-names">清华大学 · 智元机器人 · 无问芯穹</p>
+      </div>
+    </section>
+    <header class="site-header wide-width" id="project-content" tabindex="-1">
+      <a class="wordmark" href="#top"><span class="brand-symbol" aria-hidden="true">∷</span>集体经验学习</a>
+      <nav aria-label="主导航"><a href="#overview">核心思路</a><a href="#tasks">任务演示</a><a href="#method">FERT</a><a href="#results">实验发现</a><a href="#system">机器人群体</a></nav>
+    </header>
+    <figure class="title-video wide-width" aria-label="机器人群体测试视频">
+      <div class="title-video-window" id="title-video-window"><div class="title-video-shell">
+      <div class="title-video-frame" id="title-video-frame">
+
+        <video id="title-video" data-src="" autoplay muted loop playsinline controls preload="metadata" aria-label="机器人群体测试视频" hidden></video>
+        <div class="title-video-placeholder"><span class="small-mono">集体经验学习</span><p>视频占位</p></div>
+      </div>
+      </div></div>
+    </figure>
+<section class="project-section" id="overview">
+<div class="reading-width section-heading"><p class="section-index">01 / 核心思路</p><h2>FERT：从机器人群体自身的经验中学习</h2>
+<p>把一部手机装进包装盒，需要完成一连串操作。机器人要依次放入说明书、充电线、充电器、手机壳和手机，最后盖好盒盖。前面一次摆放不到位，就可能让后面的步骤变得更难。人类示范和纠正可以帮助机器人学会这套流程，但当越来越多的机器人同时练习时，持续提供人工纠正也会越来越困难。与此同时，这些机器人正在不断积累自己的<strong>真实世界经验</strong>。一台机器人的成功尝试中，可能就包含另一台机器人遇到困难时所需要的动作。</p>
+<p>我们开发了失败引导的经验检索微调（Failure-guided Experience Retrieval Fine-Tuning，FERT），让这些共同积累的实践经验转化为学习信号。成功尝试提供可学习的动作，失败尝试帮助找出值得重新学习的成功经验。这就是集体经验学习（Collective Experience Learning，CEL）的核心算法。人类示范和纠正建立初始策略后，FERT 只需要任务成功或失败的反馈，无需继续收集专家示范或纠正动作。在采集群体之外的机器人上，五项独立训练任务的成功率达到<strong>93.3–99.2%</strong>。在手机包装任务中，96 台机器人参与 FERT 训练，使成功率从<strong>79.2% 提升至 98.3%</strong>。</p></div>
+<dl class="reading-width overview-highlights"><div><dt>最大训练群体</dt><dd>96<span>台机器人</span></dd></div><div><dt>独立训练的任务</dt><dd>5<span>项真实世界任务</span></dd></div><div><dt>手机包装</dt><dd>98.3<span>% 成功率</span></dd></div></dl>
+</section>
+<section class="project-section" id="tasks">
+<div class="reading-width section-heading"><p class="section-index">02 / 机器人在工作</p><h2>从折叠 T 恤到包装手机</h2>
+<p>手机包装要求机器人在大约两到三分钟内，连续完成一系列正确的摆放操作。其他任务也各有难点：花茎移动时会摇摆，T 恤的形状会随着折叠而改变，充电插头则需要与插线板精确对齐。凳子组装还涉及小螺丝和螺丝刀。我们用这五项任务，检验从共同实践中学习的方法如何应对柔性物体、精细接触和工具使用。每项任务都在智元 G2 双臂机器人上单独训练一个策略。下面的视频展示了这些任务的执行过程。</p></div>
+    <figure class="task-showcase task-carousel wide-width" aria-labelledby="task-showcase-title">
+      <div class="figure-header"><span class="eyebrow" id="task-showcase-title">机器人在工作</span><span class="small-mono">五项任务演示</span></div>
+      <div class="task-carousel-viewport" id="task-frame" role="region" aria-roledescription="轮播" aria-label="任务演示视频" tabindex="0">
+        <div class="task-carousel-track" id="task-track">
+
+          <div class="task-video-slide is-active" data-task-slide="packaging" role="group" aria-roledescription="视频" aria-label="第 1 个，共 5 个：手机包装">
+            <div class="task-video-frame" data-task-media="packaging">
+              <video data-src="../../assets/phonepack-2x.mp4" autoplay muted loop playsinline controls preload="metadata" aria-label="手机包装演示" hidden></video>
+              <span class="task-video-label">手机包装</span>
+            </div>
+          </div>
+          <div class="task-video-slide" data-task-slide="flowers" role="group" aria-roledescription="视频" aria-label="第 2 个，共 5 个：插花">
+            <div class="task-video-frame" data-task-media="flowers">
+              <video data-src="../../assets/flower-2x.mp4" autoplay muted loop playsinline controls preload="metadata" aria-label="插花演示" hidden></video>
+              <span class="task-video-label">插花</span>
+            </div>
+          </div>
+          <div class="task-video-slide" data-task-slide="folding" role="group" aria-roledescription="视频" aria-label="第 3 个，共 5 个：衣物折叠">
+            <div class="task-video-frame" data-task-media="folding">
+              <video data-src="../../assets/cloth-2x.mp4" autoplay muted loop playsinline controls preload="metadata" aria-label="衣物折叠演示" hidden></video>
+              <span class="task-video-label">衣物折叠</span>
+            </div>
+          </div>
+          <div class="task-video-slide" data-task-slide="charging" role="group" aria-roledescription="视频" aria-label="第 4 个，共 5 个：手机充电">
+            <div class="task-video-frame" data-task-media="charging">
+              <video data-src="../../assets/phonecharge-2x.mp4" autoplay muted loop playsinline controls preload="metadata" aria-label="手机充电演示" hidden></video>
+              <span class="task-video-label">手机充电</span>
+            </div>
+          </div>
+          <div class="task-video-slide" data-task-slide="stool" role="group" aria-roledescription="视频" aria-label="第 5 个，共 5 个：凳子组装">
+            <div class="task-video-frame" data-task-media="stool">
+              <video data-src="../../assets/stool-2x.mp4" autoplay muted loop playsinline controls preload="metadata" aria-label="凳子组装演示" hidden></video>
+              <span class="task-video-label">凳子组装</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="task-carousel-navigation">
+        <div class="task-carousel-controls" role="group" aria-label="浏览任务视频">
+          <button id="task-previous" type="button" aria-label="上一个任务视频" aria-controls="task-frame" disabled><svg viewbox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button>
+          <button id="task-next" type="button" aria-label="下一个任务视频" aria-controls="task-frame"><svg viewbox="0 0 24 24" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button>
+        </div>
+        <p class="task-carousel-counter" id="task-position" role="status" aria-live="polite" aria-atomic="true">1 / 5</p>
+      </div>
+      <figcaption class="task-carousel-caption" id="task-details">
+        <h3 id="task-title">手机包装</h3>
+        <p id="task-description">机器人把说明书、充电线、充电器、手机壳和手机放入盒内，然后对齐并盖好盒盖。整个过程大约需要两到三分钟，每次摆放都很重要：一件物品的位置不对，就可能增加后续步骤的难度。</p>
+        <p class="task-carousel-metrics"><span><strong id="task-rate">98.3%</strong>FERT 成功率</span><span id="task-trials">120 次试验中成功 118 次</span><span id="task-robots">96 台训练机器人</span></p>
+      </figcaption>
+    </figure>
+</section>
+<section class="project-section" id="method">
+<div class="reading-width section-heading"><p class="section-index">03 / FERT 如何学习</p><h2>FERT：从失败中寻找有效的经验</h2>
+<p>知道一次尝试失败了，并不能直接告诉机器人哪些动作能够成功。在研究中的一个手机包装案例里，左臂反复调整盒盖角度，盒盖最终仍然翻倒。FERT 利用失败尝试结束前的观测，在机器人群体的成功执行记录中寻找相似片段，并沿时间序列匹配视觉特征和关节状态。随后，训练会更频繁地采样这些匹配片段附近的成功动作。这样，一台机器人遇到的困难，就能引导共享策略去学习另一台机器人积累的有用经验。更新后的策略再返回机器人群体，后续尝试又会产生新的学习经验。</p></div>    <figure class="stages-figure wide-width" aria-labelledby="stages-title">
+      <div class="figure-header"><span id="stages-title" class="eyebrow">从指导到实践</span><span class="small-mono">SFT · HG-DAgger · FERT</span></div>
+      <div class="stages">
+        <div><span class="stage-number">01</span><p class="stage-label">学会任务</p><p>人类示范帮助预训练的 π₀ 策略学会如何执行任务。</p><span class="stage-signal">学习来源：人类示范</span><h3 class="stage-name">SFT</h3></div>
+        <div><span class="stage-number">02</span><p class="stage-label">通过纠正改进行为</p><p>人在机器人练习时接管操作，展示应当如何纠正动作。</p><span class="stage-signal">学习来源：人工纠正</span><h3 class="stage-name">HG-DAgger</h3></div>
+        <div class="stage-highlight"><span class="stage-number">03</span><p class="stage-label">通过实践持续改进</p><p>机器人群体从成功经验中学习，并用失败尝试引导经验的选择。</p><span class="stage-signal">反馈：任务成功或失败</span><h3 class="stage-name">FERT</h3></div>
+      </div>
+      <figcaption>示范帮助机器人掌握任务，人工纠正进一步改进练习中的行为。FERT 从由此得到的初始策略出发，利用机器人群体自身的经验继续学习，无需再收集专家示范或纠正动作。</figcaption>
+    </figure>    <figure class="fert-framework wide-width" id="fert-framework" aria-labelledby="retrieval-title">
+  <div class="fert-framework-header">
+    <span class="eyebrow" id="retrieval-title">FERT 算法框架</span>
+    <div class="fert-view-controls" aria-label="图示视图">
+      <button type="button" id="fert-overview" aria-label="显示完整 FERT 流程">完整流程</button>
+      <button type="button" class="fert-zoom" id="fert-zoom-out" aria-label="缩小算法图">−</button>
+      <button type="button" class="fert-zoom" id="fert-zoom-in" aria-label="放大算法图">+</button>
+    </div>
+  </div>
+  <div class="fert-layout">
+    <div class="fert-visual">
+      <div class="fert-scene" id="fert-scene"><svg role="group" id="fert-diagram" viewbox="-12 -10 1024 940" xmlns="http://www.w3.org/2000/svg" aria-labelledby="fert-svg-title fert-svg-description">
+<title id="fert-svg-title">失败引导的经验检索微调</title><desc id="fert-svg-description">新版框架的四个步骤：机器人异步采集经验，利用冻结的视觉编码器和关节状态编码，基于 S-DTW 从成功轨迹中检索，以及更新优先级后进行加权采样和策略微调。</desc>
+<defs><marker id="fert-arrow" viewbox="0 0 10 10" refx="8.5" refy="5" markerwidth="5" markerheight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#718896"/></marker></defs>
+<g class="fert-module" data-step="1" role="button" tabindex="0" aria-label="1. 异步采集" aria-pressed="false" aria-controls="fert-panel-1">
+<rect x="0" y="0" width="400" height="245" rx="18" fill="#f0f7fb"/>
+<rect x="1.5" y="1.5" width="397" height="242" rx="17" fill="none" class="module-outline"/>
+<circle cx="30" cy="27" r="15" fill="#fff" stroke="#b3c6d1" stroke-width="1.3"/><text x="30" y="32" class="fert-label" text-anchor="middle" font-size="15">1</text><text x="57" y="34" class="fert-title">异步采集</text>
+<image href="../../assets/fert/robot.svg" x="26" y="65" width="63" height="51"/>
+<image href="../../assets/fert/globe.svg" x="29" y="177" width="58" height="58"/>
+<path d="M48 124 C22 130 23 155 48 161 M68 161 C91 157 92 134 68 126" class="fert-path"/>
+<text x="110" y="144" class="fert-label-small">机器人独立</text>
+<text x="110" y="161" class="fert-label-small">执行任务</text>
+<path d="M94 127 L138 96" class="fert-path"/><path d="M94 173 L138 198" class="fert-path"/>
+<path d="M145 98 C174 50 210 109 240 77" class="fert-path" style="stroke:#709d83;marker-end:none"/>
+<path d="M145 98 C174 50 210 109 240 77" class="fert-flow flow-green"/>
+<path d="M145 203 C173 172 205 212 240 188" class="fert-path" style="stroke:#cf8790;marker-end:none"/>
+<path d="M145 203 C173 172 205 212 240 188" class="fert-flow flow-red"/>
+<text x="242" y="74" class="fert-label" style="fill:#709d83;font-weight:700">✓</text>
+<text x="242" y="188" class="fert-label" style="fill:#b46470;font-size:26px">×</text>
+<rect x="280" y="76" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.00s"/><rect x="303" y="76" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.16s"/><rect x="326" y="76" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.32s"/><rect x="349" y="76" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.48s"/>
+<rect x="280" y="184" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.00s"/><rect x="303" y="184" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.16s"/><rect x="326" y="184" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.32s"/><rect x="349" y="184" width="18" height="18" rx="4" fill="#79abc5" class="fert-token-enter" style="--delay:0.48s"/>
+<text x="279" y="151" class="fert-label" style="fill:#507f99">轨迹</text>
+</g>
+<g class="fert-module" data-step="2" role="button" tabindex="0" aria-label="2. 经验编码" aria-pressed="false" aria-controls="fert-panel-2">
+<rect x="412" y="0" width="588" height="245" rx="18" fill="#f1f6f3"/>
+<rect x="413.5" y="1.5" width="585" height="242" rx="17" fill="none" class="module-outline"/>
+<circle cx="442" cy="27" r="15" fill="#fff" stroke="#b3c6d1" stroke-width="1.3"/><text x="442" y="32" class="fert-label" text-anchor="middle" font-size="15">2</text><text x="469" y="34" class="fert-title">经验编码</text>
+<g stroke="#526877" stroke-width="2.6" fill="none"><rect x="438" y="86" width="48" height="33" rx="6"/><path d="M446 86L451 78H471L477 86"/><circle cx="462" cy="102" r="10"/><circle cx="462" cy="102" r="6"/></g>
+<text x="462" y="142" class="fert-label-small" text-anchor="middle">相机画面</text>
+<image href="../../assets/fert/joint.svg" x="440" y="176" width="43" height="43"/>
+<text x="462" y="234" class="fert-label-small" text-anchor="middle">关节状态</text>
+<rect x="509" y="81" width="130" height="52" rx="8" fill="#fff" stroke="#aebfc9"/>
+<text x="574" y="102" class="fert-label-small" text-anchor="middle" font-weight="600">冻结的视觉</text>
+<text x="574" y="120" class="fert-label-small" text-anchor="middle" font-weight="600">编码器</text>
+<g stroke="#526877" stroke-width="1.5" fill="none"><rect x="568" y="134" width="12" height="9" rx="1"/><path d="M570 134V130a4 4 0 018 0v4"/></g>
+<rect x="665" y="86" width="103" height="43" rx="8" fill="#fff" stroke="#aebfc9"/><rect x="665" y="180" width="103" height="43" rx="8" fill="#fff" stroke="#aebfc9"/>
+<text x="716" y="112" class="fert-label-small" text-anchor="middle">归一化</text>
+<text x="716" y="205" class="fert-label-small" text-anchor="middle">归一化</text>
+<path d="M488 104H509" class="fert-path"/><path d="M640 104H665" class="fert-path"/><path d="M488 202H665" class="fert-path"/>
+<path d="M489 104H508" class="fert-flow"/><path d="M640 104H664" class="fert-flow"/><path d="M489 202H664" class="fert-flow"/>
+<path d="M768 107H784V155H804" class="fert-path"/><path d="M768 201H784V155" class="fert-path"/>
+<text x="781" y="176" class="fert-label-small" text-anchor="end">拼接</text>
+<rect x="804" y="127" width="176" height="56" rx="9" fill="#fff" stroke="#aebfc9"/>
+<text x="892" y="150" class="fert-label" text-anchor="middle" font-weight="600">检索</text>
+<text x="892" y="170" class="fert-label" text-anchor="middle" font-weight="600">表征</text>
+<rect x="843" y="65" width="14" height="14" rx="4" fill="#79abc5" class="fert-encoding-token" style="--delay:0.00s"/><rect x="861" y="65" width="14" height="14" rx="4" fill="#79abc5" class="fert-encoding-token" style="--delay:0.16s"/><rect x="879" y="65" width="14" height="14" rx="4" fill="#79abc5" class="fert-encoding-token" style="--delay:0.32s"/><rect x="897" y="65" width="14" height="14" rx="4" fill="#79abc5" class="fert-encoding-token" style="--delay:0.48s"/><rect x="915" y="65" width="14" height="14" rx="4" fill="#79abc5" class="fert-encoding-token" style="--delay:0.64s"/>
+<rect x="843" y="86" width="14" height="14" rx="4" fill="#709d83" class="fert-encoding-token" style="--delay:0.00s"/><rect x="861" y="86" width="14" height="14" rx="4" fill="#709d83" class="fert-encoding-token" style="--delay:0.16s"/><rect x="879" y="86" width="14" height="14" rx="4" fill="#709d83" class="fert-encoding-token" style="--delay:0.32s"/><rect x="897" y="86" width="14" height="14" rx="4" fill="#709d83" class="fert-encoding-token" style="--delay:0.48s"/><rect x="915" y="86" width="14" height="14" rx="4" fill="#709d83" class="fert-encoding-token" style="--delay:0.64s"/>
+<text x="887" y="50" class="fert-label-small" text-anchor="middle" style="fill:#547e64">成功轨迹表征</text>
+<rect x="843" y="208" width="14" height="14" rx="4" fill="#cf8790" class="fert-encoding-token" style="--delay:0.00s"/><rect x="861" y="208" width="14" height="14" rx="4" fill="#cf8790" class="fert-encoding-token" style="--delay:0.16s"/><rect x="879" y="208" width="14" height="14" rx="4" fill="#cf8790" class="fert-encoding-token" style="--delay:0.32s"/><rect x="897" y="208" width="14" height="14" rx="4" fill="#cf8790" class="fert-encoding-token" style="--delay:0.48s"/><rect x="915" y="208" width="14" height="14" rx="4" fill="#cf8790" class="fert-encoding-token" style="--delay:0.64s"/>
+<text x="834" y="235" class="fert-label-small" style="fill:#b46470">失败查询表征</text>
+<path d="M891 126C877 111 879 109 887 103" class="fert-path" style="stroke:#709d83"/>
+<path d="M891 184C877 195 879 198 887 204" class="fert-path" style="stroke:#cf8790"/>
+</g>
+<g class="fert-module" data-step="3" role="button" tabindex="0" aria-label="3. 失败引导检索" aria-pressed="false" aria-controls="fert-panel-3">
+<rect x="0" y="260" width="1000" height="240" rx="18" fill="#f8f2f7"/>
+<rect x="1.5" y="261.5" width="997" height="237" rx="17" fill="none" class="module-outline"/>
+<circle cx="30" cy="287" r="15" fill="#fff" stroke="#b3c6d1" stroke-width="1.3"/><text x="30" y="292" class="fert-label" text-anchor="middle" font-size="15">3</text><text x="57" y="294" class="fert-title">失败引导检索</text>
+<text x="28" y="320" class="fert-subhead">检索区间</text><text x="319" y="320" class="fert-subhead">检索代价</text><text x="630" y="320" class="fert-subhead">时间对齐（S-DTW）</text>
+<text x="27" y="368" class="fert-label-small">#1</text><rect x="52" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-retrieved-0-0"/><rect x="77" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-retrieved-0-1"/><rect x="102" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-retrieved-0-2"/><rect x="127" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-retrieved-0-3"/><rect x="152" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-retrieved-0-4"/><rect x="177" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-retrieved-0-5"/><rect x="202" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-retrieved-0-6"/><rect x="227" y="352" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-retrieved-0-7"/>
+<text x="27" y="425" class="fert-label-small">#4</text><rect x="52" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-retrieved-3-0"/><rect x="77" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-retrieved-3-1"/><rect x="102" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-retrieved-3-2"/><rect x="127" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-retrieved-3-3"/><rect x="152" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-retrieved-3-4"/><rect x="177" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-retrieved-3-5"/><rect x="202" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-retrieved-3-6"/><rect x="227" y="409" width="21" height="21" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-retrieved-3-7"/>
+<rect x="313" y="337" width="269" height="133" rx="10" fill="#fff" stroke="#d4dbe4"/>
+<text x="327" y="362" class="fert-label-small">#1</text>
+<rect x="360" y="351" width="173" height="13" rx="6" fill="#ecf0f3"/>
+<rect x="360" y="351" width="60" height="13" rx="6" fill="#c2d8ca" class="fert-cost-bar" id="fert-cost-0"/>
+<text x="544" y="362" class="fert-cost-value" id="fert-cost-value-0" text-anchor="end"></text>
+<text x="327" y="387" class="fert-label-small">#2</text>
+<rect x="360" y="376" width="173" height="13" rx="6" fill="#ecf0f3"/>
+<rect x="360" y="376" width="60" height="13" rx="6" fill="#c2d8ca" class="fert-cost-bar" id="fert-cost-1"/>
+<text x="544" y="387" class="fert-cost-value" id="fert-cost-value-1" text-anchor="end"></text>
+<text x="327" y="412" class="fert-label-small">#3</text>
+<rect x="360" y="401" width="173" height="13" rx="6" fill="#ecf0f3"/>
+<rect x="360" y="401" width="60" height="13" rx="6" fill="#c2d8ca" class="fert-cost-bar" id="fert-cost-2"/>
+<text x="544" y="412" class="fert-cost-value" id="fert-cost-value-2" text-anchor="end"></text>
+<text x="327" y="437" class="fert-label-small">#4</text>
+<rect x="360" y="426" width="173" height="13" rx="6" fill="#ecf0f3"/>
+<rect x="360" y="426" width="60" height="13" rx="6" fill="#c2d8ca" class="fert-cost-bar" id="fert-cost-3"/>
+<text x="544" y="437" class="fert-cost-value" id="fert-cost-value-3" text-anchor="end"></text>
+<text x="447" y="487" class="fert-label-small" text-anchor="middle">代价越低，对齐越接近</text>
+<text x="653" y="350" class="fert-label-small" style="fill:#b46470">失败查询</text>
+<rect x="797" y="335" width="21" height="21" rx="4" fill="#cf8790" class="fert-query-token" style="--delay:0.00s" id="fert-query-0"/><rect x="823" y="335" width="21" height="21" rx="4" fill="#cf8790" class="fert-query-token" style="--delay:0.16s" id="fert-query-1"/><rect x="849" y="335" width="21" height="21" rx="4" fill="#cf8790" class="fert-query-token" style="--delay:0.32s" id="fert-query-2"/>
+<g id="fert-alignments"></g>
+<text x="623" y="400" class="fert-label-small">#1</text>
+<rect x="640" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-candidate-0-0"/><rect x="661" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-candidate-0-1"/><rect x="682" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-candidate-0-2"/><rect x="703" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-candidate-0-3"/><rect x="724" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-candidate-0-4"/><rect x="745" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-candidate-0-5"/><rect x="766" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-candidate-0-6"/><rect x="787" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-candidate-0-7"/>
+<rect x="640" y="388" width="17" height="17" rx="4" fill="none" id="fert-interval-0" stroke="#8ba995" stroke-dasharray="4 3"/>
+<text x="807" y="400" class="fert-label-small">#2</text>
+<rect x="824" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-candidate-1-0"/><rect x="845" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-candidate-1-1"/><rect x="866" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-candidate-1-2"/><rect x="887" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-candidate-1-3"/><rect x="908" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-candidate-1-4"/><rect x="929" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-candidate-1-5"/><rect x="950" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-candidate-1-6"/><rect x="971" y="388" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-candidate-1-7"/>
+<rect x="824" y="388" width="17" height="17" rx="4" fill="none" id="fert-interval-1" stroke="#8ba995" stroke-dasharray="4 3"/>
+<text x="623" y="459" class="fert-label-small">#3</text>
+<rect x="640" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-candidate-2-0"/><rect x="661" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-candidate-2-1"/><rect x="682" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-candidate-2-2"/><rect x="703" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-candidate-2-3"/><rect x="724" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-candidate-2-4"/><rect x="745" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-candidate-2-5"/><rect x="766" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-candidate-2-6"/><rect x="787" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-candidate-2-7"/>
+<rect x="640" y="447" width="17" height="17" rx="4" fill="none" id="fert-interval-2" stroke="#8ba995" stroke-dasharray="4 3"/>
+<text x="807" y="459" class="fert-label-small">#4</text>
+<rect x="824" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.00s" id="fert-candidate-3-0"/><rect x="845" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.16s" id="fert-candidate-3-1"/><rect x="866" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.32s" id="fert-candidate-3-2"/><rect x="887" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.48s" id="fert-candidate-3-3"/><rect x="908" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.64s" id="fert-candidate-3-4"/><rect x="929" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.80s" id="fert-candidate-3-5"/><rect x="950" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:0.96s" id="fert-candidate-3-6"/><rect x="971" y="447" width="17" height="17" rx="4" fill="#c2d8ca" class="fert-candidate-token" style="--delay:1.12s" id="fert-candidate-3-7"/>
+<rect x="824" y="447" width="17" height="17" rx="4" fill="none" id="fert-interval-3" stroke="#8ba995" stroke-dasharray="4 3"/>
+<path d="M298 397H272" class="fert-path"/><path d="M613 397H591" class="fert-path"/>
+<path d="M608 397H593" class="fert-flow flow-green"/><path d="M293 397H274" class="fert-flow flow-green"/>
+</g>
+<g class="fert-module" data-step="4" role="button" tabindex="0" aria-label="4. 优先采样微调" aria-pressed="false" aria-controls="fert-panel-4">
+<rect x="0" y="515" width="1000" height="395" rx="18" fill="#f0f7fb"/>
+<rect x="1.5" y="516.5" width="997" height="392" rx="17" fill="none" class="module-outline"/>
+<circle cx="30" cy="542" r="15" fill="#fff" stroke="#b3c6d1" stroke-width="1.3"/><text x="30" y="547" class="fert-label" text-anchor="middle" font-size="15">4</text><text x="57" y="549" class="fert-title">优先采样微调</text>
+<rect x="18" y="568" width="337" height="146" rx="12" fill="#fff" stroke="#cdd6df"/><rect x="368" y="568" width="337" height="146" rx="12" fill="#fff" stroke="#cdd6df"/>
+<text x="186" y="592" class="fert-label" text-anchor="middle" font-weight="600">当前优先级</text>
+<text x="536" y="592" class="fert-label" text-anchor="middle" font-weight="600">更新后优先级</text>
+<text x="34" y="614" class="fert-label-small">#1</text>
+<path d="M34 620V644H166" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="42" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-0" data-baseline="644"/>
+<rect x="57" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-1" data-baseline="644"/>
+<rect x="72" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-2" data-baseline="644"/>
+<rect x="87" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-3" data-baseline="644"/>
+<rect x="102" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-4" data-baseline="644"/>
+<rect x="117" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-5" data-baseline="644"/>
+<rect x="132" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-6" data-baseline="644"/>
+<rect x="147" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-0-7" data-baseline="644"/>
+<text x="192" y="614" class="fert-label-small">#2</text>
+<path d="M192 620V644H324" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="200" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-0" data-baseline="644"/>
+<rect x="215" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-1" data-baseline="644"/>
+<rect x="230" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-2" data-baseline="644"/>
+<rect x="245" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-3" data-baseline="644"/>
+<rect x="260" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-4" data-baseline="644"/>
+<rect x="275" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-5" data-baseline="644"/>
+<rect x="290" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-6" data-baseline="644"/>
+<rect x="305" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-1-7" data-baseline="644"/>
+<text x="34" y="676" class="fert-label-small">#3</text>
+<path d="M34 682V706H166" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="42" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-0" data-baseline="706"/>
+<rect x="57" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-1" data-baseline="706"/>
+<rect x="72" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-2" data-baseline="706"/>
+<rect x="87" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-3" data-baseline="706"/>
+<rect x="102" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-4" data-baseline="706"/>
+<rect x="117" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-5" data-baseline="706"/>
+<rect x="132" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-6" data-baseline="706"/>
+<rect x="147" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-2-7" data-baseline="706"/>
+<text x="192" y="676" class="fert-label-small">#4</text>
+<path d="M192 682V706H324" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="200" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-0" data-baseline="706"/>
+<rect x="215" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-1" data-baseline="706"/>
+<rect x="230" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-2" data-baseline="706"/>
+<rect x="245" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-3" data-baseline="706"/>
+<rect x="260" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-4" data-baseline="706"/>
+<rect x="275" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-5" data-baseline="706"/>
+<rect x="290" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-6" data-baseline="706"/>
+<rect x="305" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-current-3-7" data-baseline="706"/>
+<text x="384" y="614" class="fert-label-small">#1</text>
+<path d="M384 620V644H516" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="392" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-0" data-baseline="644"/>
+<rect x="407" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-1" data-baseline="644"/>
+<rect x="422" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-2" data-baseline="644"/>
+<rect x="437" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-3" data-baseline="644"/>
+<rect x="452" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-4" data-baseline="644"/>
+<rect x="467" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-5" data-baseline="644"/>
+<rect x="482" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-6" data-baseline="644"/>
+<rect x="497" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-0-7" data-baseline="644"/>
+<text x="542" y="614" class="fert-label-small">#2</text>
+<path d="M542 620V644H674" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="550" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-0" data-baseline="644"/>
+<rect x="565" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-1" data-baseline="644"/>
+<rect x="580" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-2" data-baseline="644"/>
+<rect x="595" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-3" data-baseline="644"/>
+<rect x="610" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-4" data-baseline="644"/>
+<rect x="625" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-5" data-baseline="644"/>
+<rect x="640" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-6" data-baseline="644"/>
+<rect x="655" y="629" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-1-7" data-baseline="644"/>
+<text x="384" y="676" class="fert-label-small">#3</text>
+<path d="M384 682V706H516" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="392" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-0" data-baseline="706"/>
+<rect x="407" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-1" data-baseline="706"/>
+<rect x="422" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-2" data-baseline="706"/>
+<rect x="437" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-3" data-baseline="706"/>
+<rect x="452" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-4" data-baseline="706"/>
+<rect x="467" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-5" data-baseline="706"/>
+<rect x="482" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-6" data-baseline="706"/>
+<rect x="497" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-2-7" data-baseline="706"/>
+<text x="542" y="676" class="fert-label-small">#4</text>
+<path d="M542 682V706H674" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="550" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-0" data-baseline="706"/>
+<rect x="565" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-1" data-baseline="706"/>
+<rect x="580" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-2" data-baseline="706"/>
+<rect x="595" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-3" data-baseline="706"/>
+<rect x="610" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-4" data-baseline="706"/>
+<rect x="625" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-5" data-baseline="706"/>
+<rect x="640" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-6" data-baseline="706"/>
+<rect x="655" y="691" width="11" height="15" rx="2" fill="#e6d2e2" class="fert-priority-bar" id="fert-updated-3-7" data-baseline="706"/>
+<path d="M327 565C344 543 372 543 398 565" class="fert-path"/>
+<path d="M331 561C347 546 371 546 394 561" class="fert-flow"/>
+<text x="914" y="593" class="fert-label" text-anchor="middle" font-weight="600">微调</text>
+<image href="../../assets/fert/trained-robot.svg" x="928" y="602" width="58" height="46"/>
+<path d="M874 625H925" class="fert-path"/><path d="M816 687V650" class="fert-path"/>
+<path d="M878 625H924" class="fert-flow"/><path d="M816 684V652" class="fert-flow"/>
+<rect x="787" y="601" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-0" class="fert-sampled-token"/>
+<rect x="811" y="601" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-1" class="fert-sampled-token"/>
+<rect x="835" y="601" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-2" class="fert-sampled-token"/>
+<rect x="787" y="623" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-3" class="fert-sampled-token"/>
+<rect x="811" y="623" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-4" class="fert-sampled-token"/>
+<rect x="835" y="623" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-5" class="fert-sampled-token"/>
+<rect x="787" y="645" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-6" class="fert-sampled-token"/>
+<rect x="811" y="645" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-7" class="fert-sampled-token"/>
+<rect x="835" y="645" width="19" height="18" rx="3" fill="#79abc5" id="fert-batch-8" class="fert-sampled-token"/>
+<text x="817" y="670" class="fert-label-small" text-anchor="middle">训练批次</text>
+<text x="815" y="709" class="fert-label" font-weight="600">按优先级采样</text>
+<path d="M690 691C733 704 747 740 735 767" class="fert-path"/><path d="M733 735C753 731 789 710 815 694" class="fert-path"/>
+<path d="M693 694C725 708 741 737 736 764" class="fert-flow"/><path d="M738 734C757 726 788 710 812 696" class="fert-flow"/>
+<rect x="18" y="738" width="964" height="155" rx="15" fill="#fff" stroke="#aebfc9" stroke-dasharray="5 5"/>
+<text x="500" y="762" class="fert-label" text-anchor="middle" font-weight="700">集体经验缓冲区</text>
+<text x="29" y="804" class="fert-label-small" style="fill:#547e64" font-weight="600">表征</text>
+<text x="29" y="833" class="fert-label-small" style="fill:#507f99" font-weight="600">轨迹</text>
+<text x="29" y="858" class="fert-label-small" style="fill:#805b84" font-weight="600">采样</text>
+<text x="29" y="876" class="fert-label-small" style="fill:#805b84" font-weight="600">优先级</text>
+<rect x="145" y="774" width="196" height="108" rx="7" fill="#fff" stroke="#d6dfe6"/>
+<text x="243" y="790" class="fert-label-small" text-anchor="middle" font-weight="600">轨迹 #1</text>
+<rect x="163" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.00s"/><rect x="183" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.16s"/><rect x="203" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.32s"/><rect x="223" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.48s"/><rect x="243" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.64s"/><rect x="263" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.80s"/><rect x="283" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.96s"/><rect x="303" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:1.12s"/>
+<rect x="163" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.00s" id="fert-buffer-0-0"/><rect x="183" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.16s" id="fert-buffer-0-1"/><rect x="203" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.32s" id="fert-buffer-0-2"/><rect x="223" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.48s" id="fert-buffer-0-3"/><rect x="243" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.64s" id="fert-buffer-0-4"/><rect x="263" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.80s" id="fert-buffer-0-5"/><rect x="283" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.96s" id="fert-buffer-0-6"/><rect x="303" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:1.12s" id="fert-buffer-0-7"/>
+<path d="M158 845V872H331" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="163" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-0" data-baseline="872"/>
+<rect x="183" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-1" data-baseline="872"/>
+<rect x="203" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-2" data-baseline="872"/>
+<rect x="223" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-3" data-baseline="872"/>
+<rect x="243" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-4" data-baseline="872"/>
+<rect x="263" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-5" data-baseline="872"/>
+<rect x="283" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-6" data-baseline="872"/>
+<rect x="303" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-0-7" data-baseline="872"/>
+<rect x="350" y="774" width="196" height="108" rx="7" fill="#fff" stroke="#d6dfe6"/>
+<text x="448" y="790" class="fert-label-small" text-anchor="middle" font-weight="600">轨迹 #2</text>
+<rect x="368" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.00s"/><rect x="388" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.16s"/><rect x="408" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.32s"/><rect x="428" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.48s"/><rect x="448" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.64s"/><rect x="468" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.80s"/><rect x="488" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.96s"/><rect x="508" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:1.12s"/>
+<rect x="368" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.00s" id="fert-buffer-1-0"/><rect x="388" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.16s" id="fert-buffer-1-1"/><rect x="408" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.32s" id="fert-buffer-1-2"/><rect x="428" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.48s" id="fert-buffer-1-3"/><rect x="448" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.64s" id="fert-buffer-1-4"/><rect x="468" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.80s" id="fert-buffer-1-5"/><rect x="488" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.96s" id="fert-buffer-1-6"/><rect x="508" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:1.12s" id="fert-buffer-1-7"/>
+<path d="M363 845V872H536" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="368" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-0" data-baseline="872"/>
+<rect x="388" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-1" data-baseline="872"/>
+<rect x="408" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-2" data-baseline="872"/>
+<rect x="428" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-3" data-baseline="872"/>
+<rect x="448" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-4" data-baseline="872"/>
+<rect x="468" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-5" data-baseline="872"/>
+<rect x="488" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-6" data-baseline="872"/>
+<rect x="508" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-1-7" data-baseline="872"/>
+<rect x="555" y="774" width="196" height="108" rx="7" fill="#fff" stroke="#d6dfe6"/>
+<text x="653" y="790" class="fert-label-small" text-anchor="middle" font-weight="600">轨迹 #3</text>
+<rect x="573" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.00s"/><rect x="593" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.16s"/><rect x="613" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.32s"/><rect x="633" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.48s"/><rect x="653" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.64s"/><rect x="673" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.80s"/><rect x="693" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.96s"/><rect x="713" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:1.12s"/>
+<rect x="573" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.00s" id="fert-buffer-2-0"/><rect x="593" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.16s" id="fert-buffer-2-1"/><rect x="613" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.32s" id="fert-buffer-2-2"/><rect x="633" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.48s" id="fert-buffer-2-3"/><rect x="653" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.64s" id="fert-buffer-2-4"/><rect x="673" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.80s" id="fert-buffer-2-5"/><rect x="693" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.96s" id="fert-buffer-2-6"/><rect x="713" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:1.12s" id="fert-buffer-2-7"/>
+<path d="M568 845V872H741" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="573" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-0" data-baseline="872"/>
+<rect x="593" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-1" data-baseline="872"/>
+<rect x="613" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-2" data-baseline="872"/>
+<rect x="633" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-3" data-baseline="872"/>
+<rect x="653" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-4" data-baseline="872"/>
+<rect x="673" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-5" data-baseline="872"/>
+<rect x="693" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-6" data-baseline="872"/>
+<rect x="713" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-2-7" data-baseline="872"/>
+<rect x="760" y="774" width="196" height="108" rx="7" fill="#fff" stroke="#d6dfe6"/>
+<text x="858" y="790" class="fert-label-small" text-anchor="middle" font-weight="600">轨迹 #4</text>
+<rect x="778" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.00s"/><rect x="798" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.16s"/><rect x="818" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.32s"/><rect x="838" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.48s"/><rect x="858" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.64s"/><rect x="878" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.80s"/><rect x="898" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:0.96s"/><rect x="918" y="798" width="15" height="15" rx="4" fill="#709d83" class="" style="--delay:1.12s"/>
+<rect x="778" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.00s" id="fert-buffer-3-0"/><rect x="798" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.16s" id="fert-buffer-3-1"/><rect x="818" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.32s" id="fert-buffer-3-2"/><rect x="838" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.48s" id="fert-buffer-3-3"/><rect x="858" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.64s" id="fert-buffer-3-4"/><rect x="878" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.80s" id="fert-buffer-3-5"/><rect x="898" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:0.96s" id="fert-buffer-3-6"/><rect x="918" y="822" width="15" height="15" rx="4" fill="#79abc5" class="" style="--delay:1.12s" id="fert-buffer-3-7"/>
+<path d="M773 845V872H946" class="fert-path" style="stroke-width:1;marker-end:none"/>
+<rect x="778" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-0" data-baseline="872"/>
+<rect x="798" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-1" data-baseline="872"/>
+<rect x="818" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-2" data-baseline="872"/>
+<rect x="838" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-3" data-baseline="872"/>
+<rect x="858" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-4" data-baseline="872"/>
+<rect x="878" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-5" data-baseline="872"/>
+<rect x="898" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-6" data-baseline="872"/>
+<rect x="918" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-7" data-baseline="872"/>
+</g>
+<path d="M371 85H433" class="fert-path"/><path d="M371 194H433" class="fert-path"/><path d="M881 247C918 274 930 311 914 340" class="fert-path"/><path d="M150 440V488Q150 507 129 507H8V575H35" class="fert-path"/>
+<path d="M375 85H428" class="fert-flow"/><path d="M375 194H428" class="fert-flow"/><path d="M885 251C916 278 926 309 915 334" class="fert-flow flow-red"/><path d="M150 447V488Q150 507 129 507H16V551" class="fert-flow flow-green"/>
+</svg></div>
+      <p class="fert-demo-note">用四条示意轨迹展示时间匹配和采样。论文中最多检索 10 条候选轨迹，并将每个选中区间向前、向后各扩展 30 帧。</p>
+    </div>
+    <div class="fert-steps">
+      <p class="fert-steps-heading">算法的四个步骤</p>
+      <div class="fert-step">
+        <button type="button" class="fert-step-button" data-step="1" aria-expanded="true" aria-controls="fert-panel-1"><span class="fert-step-number">1</span><span>异步采集</span><span class="fert-step-caret" aria-hidden="true">›</span></button>
+        <div class="fert-step-content" data-step="1" id="fert-panel-1">
+          <p>各台机器人独立执行策略。每条完成的轨迹都会得到一个二元任务结果标签。</p>
+          <p><strong>成功轨迹</strong>进入滚动维护的集体经验缓冲区。<strong>失败情境</strong>提供检索查询。在策略持续优化的同时，各台机器人以不同速率贡献经验。</p>
+          <span class="fert-step-fact">自主执行<br>二元任务结果</span>
+        </div>
+      </div>
+      <div class="fert-step">
+        <button type="button" class="fert-step-button" data-step="2" aria-expanded="false" aria-controls="fert-panel-2"><span class="fert-step-number">2</span><span>经验编码</span><span class="fert-step-caret" aria-hidden="true">›</span></button>
+        <div class="fert-step-content" data-step="2" id="fert-panel-2" hidden>
+          <p>利用<strong>策略视觉主干网络的一份冻结副本</strong>对相机画面编码。空间池化将每个视角的 16 × 16 视觉 token 网格缩减为 4 × 4。</p>
+          <p>视觉特征与关节状态分别归一化，再拼接成检索表征。成功轨迹的表征会在经验进入缓冲区时计算并缓存。</p>
+          <div class="fert-formula" aria-label="检索表征由分别归一化的视觉特征和关节状态拼接而成">zₜ = [normalize(hₜ); normalize(sₜ)]</div>
+          <span class="fert-step-fact">冻结的视觉编码器<br>一致的检索表征空间</span>
+        </div>
+      </div>
+      <div class="fert-step">
+        <button type="button" class="fert-step-button" data-step="3" aria-expanded="false" aria-controls="fert-panel-3"><span class="fert-step-number">3</span><span>失败引导检索</span><span class="fert-step-caret" aria-hidden="true">›</span></button>
+        <div class="fert-step-content" data-step="3" id="fert-panel-3" hidden>
+          <p>查询由<strong>最多 90 帧</strong>观测组成，终止于失败回合记录终点之前 10 帧的位置。</p>
+          <p>带斜率约束的子序列动态时间规整将查询与每条成功轨迹对齐。代价最低的候选轨迹提供检索区间，用于下一次优先级更新。</p>
+          <div class="fert-control"><label for="fert-query-frame">示意查询帧<output id="fert-query-readout" for="fert-query-frame">1 / 3</output></label><input id="fert-query-frame" type="range" min="1" max="3" step="1" value="1"><p>每个查询帧匹配一个候选帧；相邻匹配在候选轨迹中前进一帧或两帧。</p></div>
+          <span class="fert-step-fact" id="fert-retrieval-readout">代价最低的候选：#4 和 #1</span>
+        </div>
+      </div>
+      <div class="fert-step">
+        <button type="button" class="fert-step-button" data-step="4" aria-expanded="false" aria-controls="fert-panel-4"><span class="fert-step-number">4</span><span>优先采样微调</span><span class="fert-step-caret" aria-hidden="true">›</span></button>
+        <div class="fert-step-content" data-step="4" id="fert-panel-4" hidden>
+          <p>检索区间会提高与其重叠的成功动作块的采样优先级。每次有效检索发生时，保留系数 ρ 对已有优先级进行衰减。</p>
+          <p>训练按更新后的权重比例采样动作块，并最大化已记录成功动作的似然。更新后的策略随后返回机器人群体。</p>
+          <div class="fert-formula" aria-label="新优先级等于保留系数乘以旧优先级，再加上检索重叠长度与动作块长度之比">wᵢ′ = ρwᵢ + ∑ |idx(Aᵢ) ∩ R| / H</div>
+          <div class="fert-control"><label for="fert-retention">优先级保留系数 ρ<output id="fert-retention-readout" for="fert-retention">0.80</output></label><input id="fert-retention" type="range" min="0" max="1" step="0.05" value="0.8"><p>此处为更新示意。高亮区间提供新增的优先级增量。</p></div>
+          <span class="fert-step-fact" id="fert-sampling-readout">按更新后的权重采样。</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <figcaption><span>优化期间，经验采集持续进行。更新后的策略返回机器人群体。</span><span class="fert-focus-status" id="fert-focus-status" role="status">完整流程</span></figcaption>
+  <noscript><style>.fert-layout,.fert-view-controls{display:none}</style><img src="../../assets/fert/framework-v5.png" width="1958" height="1749" alt="新版 FERT 四步框架：异步采集、经验编码、失败引导检索和优先采样微调。" style="display:block;width:100%;height:auto"></noscript>
+</figure>
+</section>
+<section class="project-section" id="results">
+<div class="reading-width section-heading"><p class="section-index">04 / 实验发现</p><h2>从完成任务，到更稳定地完成任务</h2>
+<p>手机充电任务的提升最大，成功率从 60.0% 升至 97.5%。在五项独立训练的任务上，FERT 将经过人类示范和纠正后的平均成功率从 81.0% 提升到 97.3%，提高了 16.3 个百分点。为了检验这种提升能否迁移到经验采集群体之外的机器人，我们在另外两台智元 G2 机器人上测试每个策略，每台完成 60 次试验，每项任务共 120 次，全程无人干预。下方图表给出成功率及 95% Wilson 置信区间。这些评测衡量的是，采集群体的实践经验能在多大程度上帮助同平台的其他机器人。</p></div>    <figure class="research-results wide-width" id="main-results" aria-labelledby="comparison-title">
+      <div class="results-heading"><div><p class="eyebrow">五项任务中的可靠性</p><h3 id="comparison-title">FERT 如何提高可靠性</h3></div></div>
+      <div id="comparison-legend" class="results-legend" role="group" aria-label="高亮一种比较方法"></div>
+      <div id="comparison-cards" class="comparison-cards"></div>
+      <details class="comparison-data"><summary>查看各项任务的详细结果</summary><div class="results-table-header"><h4>各方法的成功率</h4><label>任务排序<select id="comparison-sort"><option value="paper">论文顺序</option><option value="fert">FERT 成功率</option><option value="gain">相对 HG-DAgger 的提升</option></select></label></div>
+      <div class="results-table-scroll" tabindex="0" role="region" aria-label="可交互的方法比较表格"><table class="comparison-table"><caption class="sr-only">各任务、各方法的成功率。选择单元格可查看成功次数和置信区间。</caption><thead><tr><th scope="col">任务</th><th scope="col">人工遥操作</th><th scope="col">SFT</th><th scope="col">(M)HG-DAgger</th><th scope="col">RLT</th><th scope="col">RECAP</th><th scope="col">FERT</th></tr></thead><tbody id="results-table"></tbody></table></div>
+      </details>
+      <figcaption>从群体经验中学习，提升了全部五项任务的成功率。按图中顺序，FERT 策略分别使用 8、16、16、32 和 96 台机器人训练，每个策略均评测 120 次。插花任务使用 8 台或 16 台训练机器人时，都在 120 次试验中成功了 119 次。</figcaption>
+      <div class="result-tooltip" id="comparison-tooltip" role="tooltip" hidden></div>
+    </figure><div class="reading-width prose" id="scaling-evidence"><h3>更多机器人参与，会带来什么变化？</h3><p>手机包装任务展示了共同实践的经验量为何重要。使用 4、16 和 96 台机器人进行 FERT 训练时，成功率分别达到<strong>50.8%、86.7% 和 98.3%</strong>。4 台机器人的结果低于初始策略的<strong>79.2%</strong>，而从 16 台扩展到 96 台，则增加了 11.6 个百分点。我们固定每台机器人的采集时间，因此更大的群体会提供更多总经验。在五项任务中，扩大群体通常能提高 FERT 的表现，但较小的群体也可能低于其初始策略。共享经验为改进创造了机会，可用经验的数量同样重要。</p></div>    <figure class="research-results wide-width" id="fleet-scaling" aria-labelledby="scaling-title">
+      <div class="results-heading"><div><p class="eyebrow">更多机器人，更多经验</p><h3 id="scaling-title">更大的群体带来了什么</h3></div></div>
+      <div id="scaling-legend" class="results-legend" role="group" aria-label="显示或隐藏规模扩展曲线"></div>
+      <div id="scaling-cards" class="scaling-cards"></div>
+      <div id="scaling-readout" class="scaling-selection" aria-live="polite" aria-atomic="true"></div>
+      <details class="scaling-data"><summary>查看不同群体规模的结果</summary><div class="scaling-data-controls"><label>任务<select id="scaling-table-task"><option value="packaging">手机包装</option><option value="flowers">插花</option><option value="folding">衣物折叠</option><option value="charging">手机充电</option><option value="stool">凳子组装</option></select></label></div><div class="results-table-scroll" tabindex="0" role="region" aria-label="规模扩展结果表格"><table class="scaling-table"><caption class="sr-only">选择一项规模扩展结果。点击列标题，可按机器人数量或成功率排序。</caption><thead><tr><th scope="col">方法</th><th scope="col" id="scaling-robots-heading" aria-sort="ascending"><button data-scaling-sort="robots">机器人数量 ↕</button></th><th scope="col" id="scaling-rate-heading" aria-sort="none"><button data-scaling-sort="rate">成功率 ↕</button></th><th scope="col">成功次数</th><th scope="col">95% Wilson 置信区间</th></tr></thead><tbody id="scaling-data-table"></tbody></table></div></details>
+      <figcaption>在同一任务和方法下，每台机器人的采集时间保持不变，因此更多机器人能够提供更多实践经验。虚线表示不同的初始策略：蓝色为 HG-DAgger 的 SFT 起点，品红色为 FERT 所采用的多机器人 HG-DAgger 起点。每个数据点都来自采集群体之外两台机器人的 120 次评测试验。</figcaption>
+      <div class="result-tooltip" id="scaling-tooltip" role="tooltip" hidden></div>
+    </figure>
+    <section class="reading-width prose ablation-section">
+      <h3>选择值得练习的经验</h3>
+      <p>策略还需要有效利用这些经验。在使用 16 台训练机器人的手机包装任务中，我们将完整 FERT 与从同一个成功经验缓冲区均匀采样的版本进行比较。移除失败引导检索后，成功率从<strong>86.7%</strong>降至<strong>64.2%</strong>，下降了 22.5 个百分点。两个版本都从成功尝试中学习动作。FERT 在这里的优势，来自对当前失败情境相关经验的更多关注。</p>
+      <figure class="ablation-chart" aria-label="失败检索消融实验：移除检索时成功率为 64.2%，完整 FERT 为 86.7%"><div class="ablation-row"><span>移除检索</span><div><i style="width:64.1667%"></i></div><strong>64.2%</strong></div><div class="ablation-row"><span>完整 FERT</span><div><i class="fert-bar" style="width:86.6667%"></i></div><strong>86.7%</strong></div><figcaption>手机包装 · 16 台训练机器人 · 每个模型评测 120 次。</figcaption></figure>
+
+      <p>匹配片段前后的动作也有帮助。FERT 在每个检索片段前后各保留一秒，纳入进入该片段之前和离开之后的动作。在同样使用 16 台机器人的手机包装实验中，移除这些上下文后，成功率从<strong>86.7% 降至 57.5%</strong>。这一结果表明，有用的实践经验还包括匹配时刻周围的动作。</p>
+      <details class="method-details"><summary>跟上新经验的变化</summary><p>学习需要响应新的失败，同时保留早先尝试中的有用经验。我们测试了 0.80、0.88 和 0.95 三种优先级保留系数，对应成功率分别为 70.8%、86.7% 和 82.5%。我们也测试了向机器人发送更新策略的频率：每 100、500 或 1,500 个训练步骤更新一次，对应成功率分别为 75.0%、86.7% 和 80.0%。这两组测试中，中间设置的表现最好。所有比较均使用 16 台机器人训练手机包装任务，每种设置评测 120 次。</p></details>
+    </section><div class="reading-width project-details"><details class="method-details"><summary>如何理解这些比较</summary><div class="details-copy"><p>对于每项任务，FERT、RLT 和 RECAP 都从同一个选定的多机器人 HG-DAgger 策略出发，再分别训练。手机充电、凳子组装和手机包装的初始策略，使用了不同群体规模 HG-DAgger 运行中汇集的初始化数据。比较中还包括另外两种从经验中学习的方法：RLT 的单机器人在线强化学习，以及 RECAP 在群体数据上进行的一轮离线强化学习。我们实现的 RLT 和 RECAP 在后训练期间都使用人工纠正动作；FERT 无需这些动作。各方法的数据采集规模和训练设置有所不同，因此图表比较的是本研究报告的具体实现。人工基准由六名遥操作员完成，每人在每项任务上进行 20 次试验。</p></div></details></div>
+</section>
+<section class="project-section" id="system">
+<div class="reading-width section-heading"><p class="section-index">05 / 让机器人群体持续运转</p><h2>共同学习，无需等待每一台机器人</h2>
+<p>机器人不会在同一时刻完成任务。有的还在执行，有的需要复位，有的遇到了故障。如果学习必须等待所有机器人完成一轮，一次中断就可能拖住整个群体。我们基于 RLinf 构建了容错异步训练系统（Fault-tolerant Asynchronous Training System，FATS），让这些活动协同推进。机器人交互和策略推理在边缘侧运行，训练在云端进行。<strong>HotSwarm</strong>负责管理工作进程的退出、恢复和重新加入，让可用机器人继续采集经验，训练与策略更新也同步推进。</p></div>    <figure class="retrieval-figure hardware-figure wide-width" aria-labelledby="hardware-title">
+      <div class="figure-header"><span class="eyebrow" id="hardware-title">连接机器人与训练</span><span class="small-mono">边缘推理 · 云端训练</span></div>
+      <div class="paper-diagram">
+        <img class="method-image" src="../../assets/fats-hardware.png?v=20261010-cel" width="3093" height="1462" loading="lazy" alt="FATS 硬件拓扑：两台一级交换机连接三台二级交换机。三组机器人容量分别标为 40、40 和 20 台。蓝色箭头表示双路 100 Gbps 链路，连接云端的紫色链路为 30 Gbps。边缘侧连接网络附加存储。">
+      </div>
+      <dl class="hardware-facts"><div><dt>边缘节点</dt><dd>50<span>NVIDIA RTX 4090</span></dd></div><div><dt>机器人容量</dt><dd>100<span>最大训练群体使用 96 台</span></dd></div><div><dt>云端 GPU</dt><dd>48<span>NVIDIA A800 · 6 台服务器</span></dd></div><div><dt>边缘—云端链路</dt><dd>30<span>Gbps · 专用连接</span></dd></div></dl>
+      <figcaption>这个学习循环将 50 个 RTX 4090 边缘节点上的机器人交互和推理，与六台云服务器、共 48 块 A800 GPU 上的训练连接起来。经验和策略更新通过专用的 30 Gbps 链路传输。系统可容纳 100 台机器人，本研究最大规模的实验使用了 96 台。</figcaption>
+    </figure><div class="reading-width prose"><h3>当实践被中断时</h3><p>一次从约 10:30 持续到 18:30、包含 96 台机器人的训练运行，展示了这种设计的重要性。其中<strong>22 台机器人</strong>至少遇到一次系统错误。其他机器人继续运行，部分受影响的机器人在恢复后重新开始采集。此次运行中，操作员负责判断尝试是否成功并复位环境，没有提供纠正动作或额外示范。时间线也包含操作员的休息时段。让其余机器人保持运行，使群体在局部中断期间仍能持续产生经验。</p></div>
+    <figure class="research-results fault-analysis-figure wide-width" id="fleet-faults" aria-labelledby="faults-title">
+      <div class="results-heading"><div><p class="eyebrow">在中断中持续学习</p><h3 id="faults-title">当一台机器人遇到错误</h3></div><span class="results-hint">96 台机器人 · 22 台记录到错误</span></div>
+      <p class="fault-analysis-intro">中断原因包括关节、电池和传感器故障，以及主机内存、网络和启动问题。下方时间线展示了这些问题发生的时刻，以及哪些位置进行了恢复尝试、哪些位置恢复受阻。</p>
+
+      <div class="paper-diagram fault-timeline-slot" id="fault-timeline-slot" aria-label="当前论文中的系统错误时间线">
+        <img class="method-image" src="../../assets/system-errors.png?v=20261010-cel" width="2600" height="1293" loading="lazy" alt="96 台机器人运行期间，22 台机器人的系统错误按机器人编号和时间绘制。颜色区分硬件故障、计算与网络故障以及启动问题。交叉阴影表示重启，斜线阴影表示恢复受阻。">
+      </div>
+      <figcaption>96 台机器人运行期间的系统错误，按机器人和时间排列。交叉阴影表示重启，斜线阴影表示恢复受阻。</figcaption>
+    </figure>
+<div class="reading-width project-details"><details class="method-details"><summary>在机器人与训练之间传递经验</summary><div class="details-copy"><p>机器人动作需要及时响应，而传输完整的一次尝试或新策略则涉及大得多的数据量。FATS 让这些大规模传输与交互、推理并行异步进行。实验室网络使用两台一级交换机和三台二级交换机，互联交换机之间配备双路 100 Gbps 链路。NAS 提供边缘存储，GPFS 提供云端共享存储。经验与策略更新经过专用的 30 Gbps 边缘—云端链路传输，使训练能够使用已采集的尝试，同时让机器人继续执行任务。</p></div></details></div>
+</section>
+<section class="project-section" id="discussion">
+<div class="reading-width section-heading"><p class="section-index">06 / 下一步</p><h2>从共同实践走向生产现场</h2>
+<p>我们还将这套方法带到了龙旗的电子产品生产线。八台机器人在那里运行了六天，报告的运行成功率为 99%，将这项工作从受控评测推进到了工业流程中。更广泛的机会在于，让不断扩大的机器人群体成为不断增长的学习来源：示范和纠正帮助掌握任务，成功尝试提供进一步改进所需的动作，失败则引导经验的选择。目前的研究在同一种机器人平台上，为五项任务分别训练策略，仍需要任务结果反馈和物理环境复位。将这一方法扩展到更多任务与机器人平台，是下一步的重要方向。</p></div>
+</section>
+  </main>
+  <footer class="reading-width site-footer"><a class="wordmark" href="#top">集体经验学习</a><p>清华大学 · 智元机器人 · 无问芯穹</p><a href="#top">返回顶部</a></footer>
+  <script src="research-data.js?v=20261011-zh-review-1" defer></script>
+  <script src="app.js?v=20261011-zh-review-1" defer></script>
+  <script src="../../fert-model.js?v=20261011-framework-v5" defer></script>
+  <script src="fert.js?v=20261011-zh-review-1" defer></script>
+  <script src="results.js?v=20261011-zh-review-1" defer></script>
+</body>
+</html>

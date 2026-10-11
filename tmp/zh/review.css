@@ -1,0 +1,18 @@
+/* Standalone Chinese review of PR #3, with the current interactive FERT framework. */
+:root{--sans:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",system-ui,sans-serif;--serif:"Noto Serif CJK SC","Songti SC","STSong",SimSun,serif;--mono:"SFMono-Regular",Consolas,"PingFang SC","Microsoft YaHei",monospace}
+body{line-height:1.95}
+.research-hero h1{font-family:var(--serif);font-size:clamp(38px,5.4vw,74px);line-height:1.35;letter-spacing:.025em}
+.hero-title-statement{max-width:17em;font-size:.7em;line-height:1.5;letter-spacing:.02em}
+.hero-partner-names{letter-spacing:.12em}
+.review-banner{position:absolute;z-index:5;inset:18px 24px auto;display:flex;justify-content:space-between;align-items:center;gap:16px;color:#fff;font:12px/1.6 var(--sans)}
+.review-banner>span{padding:7px 12px;border:1px solid #ffffff35;background:#111b2880;border-radius:6px}
+.review-banner strong{font-weight:500}.review-source{color:#ffffffb3}.review-banner>a{color:#ffffffe0;text-decoration:none;padding:6px 0;border-bottom:1px solid #ffffff70;white-space:nowrap}
+.section-heading h2,.prose h3,.ablation-section h3,.results-heading h3{line-height:1.45;letter-spacing:0;text-wrap:pretty}
+.section-heading>p:not(.section-index),.prose p,.ablation-section>p{line-height:2;max-width:820px}
+.wordmark{letter-spacing:.02em}.section-index,.eyebrow{letter-spacing:.055em}
+.task-carousel-caption>p:not(.task-carousel-metrics){line-height:1.9;font-style:normal;font-family:var(--sans)}
+.task-carousel-metrics strong{margin-right:.35em}
+.fert-scene svg{font-family:var(--sans)}.fert-title{font-size:22px}.fert-step-content p{line-height:1.9}
+.result-card-heading h4,.result-task-name{letter-spacing:0}.checkpoint-note{line-height:1.8}
+.stage-label,.stage-signal{line-height:1.8}
+@media(max-width:760px){.review-banner{inset:14px 16px auto;font-size:11px;gap:10px}.review-source{display:none}.hero-heading{width:calc(100% - 40px)}.research-hero h1{font-size:clamp(32px,8vw,46px)}.hero-title-statement{font-size:.65em;max-width:13em}.hero-partner-names{letter-spacing:.02em;font-size:11px}.section-heading h2{font-size:32px}.site-header{gap:18px}.site-header nav{gap:16px;flex-wrap:wrap}.fert-framework-header .eyebrow{line-height:1.6}.fert-step-content{padding-left:0}}
