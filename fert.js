@@ -128,5 +128,4 @@
   reserveSpace();document.fonts?.ready.then(reserveSpace);
   let resizeTimer;
   window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(reserveSpace,120);});
-  root.querySelectorAll('.fert-rule').forEach(d=>d.addEventListener('toggle',reserveSpace));
 })();

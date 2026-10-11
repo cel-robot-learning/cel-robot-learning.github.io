@@ -118,5 +118,3 @@
  .fert-mobile-nav .fert-step-caret{display:none}.fert-mobile-nav .fert-step-button[aria-expanded=true]{background:#f0f7fb}
  .fert-steps{min-height:480px;padding:20px}.fert-steps-heading{display:none}.fert-step{border:0}.fert-step-content{padding:0}.fert-demo-note{padding:10px 0 0}
 }
-
-.fert-rule{font:12px/1.5 var(--sans);color:#526877;margin:14px 0}.fert-rule summary{cursor:pointer}.fert-rule .fert-formula{font-size:13px}
