@@ -52,7 +52,7 @@
        <g class="com.sun.star.drawing.CustomShape">
         <g id="id14">
          <rect class="BoundingBox" stroke="none" fill="none" x="23698" y="11466" width="3772" height="855" />
-         <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="23961" y="12085"><tspan font-family="Arial, Helvetica, sans-serif" font-size="494px" font-weight="700" lengthAdjust="spacingAndGlyphs" textLength="1403" fill="rgb(182,109,51)" stroke="none" style="white-space: pre">Cloud</tspan><tspan font-family="Arial, Helvetica, sans-serif" font-size="494px" font-weight="700" lengthAdjust="spacingAndGlyphs" textLength="1844" fill="rgb(182,109,51)" stroke="none" style="white-space: pre"> Cluster</tspan></tspan></tspan></text>
+         <text font-family="Arial, Helvetica, sans-serif" font-size="494px" font-weight="700" fill="rgb(182,109,51)" stroke="none" x="25584.5" y="12085" text-anchor="middle">Cloud Cluster</text>
         </g>
        </g>
        <g class="com.sun.star.drawing.ConnectorShape">
@@ -600,7 +600,7 @@
        <g class="com.sun.star.drawing.CustomShape">
         <g id="id81">
          <rect class="BoundingBox" stroke="none" fill="none" x="5339" y="9903" width="3358" height="855" />
-         <text class="SVGTextShape"><tspan class="TextParagraph"><tspan class="TextPosition" x="5589" y="10522"><tspan font-family="Arial, Helvetica, sans-serif" font-size="494px" font-weight="700" lengthAdjust="spacingAndGlyphs" textLength="2092" fill="rgb(104,81,127)" stroke="none" style="white-space: pre">100Gbps</tspan><tspan font-family="Arial, Helvetica, sans-serif" font-size="494px" font-weight="700" lengthAdjust="spacingAndGlyphs" textLength="743" fill="rgb(104,81,127)" stroke="none" style="white-space: pre"> * 2</tspan></tspan></tspan></text>
+         <text font-family="Arial, Helvetica, sans-serif" font-size="494px" font-weight="700" fill="rgb(104,81,127)" stroke="none" x="7006.5" y="10522" text-anchor="middle">100Gbps * 2</text>
         </g>
        </g>
        <g class="com.sun.star.drawing.CustomShape">
