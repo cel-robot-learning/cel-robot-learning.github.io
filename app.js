@@ -1,7 +1,6 @@
 'use strict';
 
-const {tasks, trials} = window.RESEARCH_DATA;
-const percent = count => (100 * count / trials).toFixed(1);
+const {tasks} = window.RESEARCH_DATA;
 const byId = id => document.getElementById(id);
 
 const titleVideo = byId('title-video');
@@ -45,12 +44,7 @@ function showTask(index) {
   activeTask = index;
   const key = taskSlides[index].dataset.taskSlide;
   const task = tasks[key];
-  const [robots, successes] = task.fert.at(-1);
-  byId('task-title').textContent = task.title;
   byId('task-description').textContent = task.description;
-  byId('task-rate').innerHTML = `${percent(successes)}<span>%</span>`;
-  byId('task-trials').textContent = `${successes} successful trials out of ${trials}`;
-  byId('task-robots').textContent = `${robots} training robots`;
   byId('task-position').textContent = `${index + 1} / ${taskSlides.length}`;
   byId('task-previous').disabled = index === 0;
   byId('task-next').disabled = index === taskSlides.length - 1;
@@ -287,11 +281,8 @@ showTask(0);
 
   const blocks = [...document.querySelectorAll([
     '.section-heading > *', '.overview-highlights > div', '.project-details',
-    '.task-showcase > .figure-header', '.task-carousel-caption > *',
-    '.stages-figure > .figure-header', '.stages > div', '.stages-figure > figcaption',
-    '.retrieval-figure', '.fert-framework', '.research-results > .results-heading',
-    '.research-results > .results-legend', '.research-results > figcaption',
-    '.research-results > details', '.research-results > .fault-analysis-intro',
+    '.stages > div', '.retrieval-figure', '.fert-framework',
+    '.research-results > .results-legend', '.research-results > details',
     '.fault-analysis-figure > .paper-diagram', '.prose > h3', '.prose > p',
     '.prose > figure', '.prose > details', '.site-footer'
   ].join(','))];

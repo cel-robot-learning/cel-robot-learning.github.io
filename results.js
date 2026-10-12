@@ -115,7 +115,7 @@
   let pinnedComparison = comparisonResult('packaging', 'fert');
   let highlightedMethod = null;
   byId('comparison-legend').innerHTML = methods.map(method => `<button class="legend-chip" data-highlight="${method}" aria-label="Highlight ${labels[method]}" aria-pressed="false" style="--method-color:${colors[method]}"><i></i>${labels[method]}</button>`).join('');
-  byId('comparison-cards').innerHTML = order.map((key,index) => `<div class="result-chart-card" data-card="${key}"><div class="result-card-heading"><span class="small-mono">0${index+1}</span><h4>${tasks[key].title}</h4></div>${comparisonSVG(key)}<p class="checkpoint-note">${tasks[key].initialLabel} · FERT: ${tasks[key].mainFertRobots} robots</p></div>`).join('') + '<div class="comparison-insight" id="comparison-readout" aria-live="polite" aria-atomic="true"></div>';
+  byId('comparison-cards').innerHTML = order.map((key,index) => `<div class="result-chart-card" data-card="${key}"><div class="result-card-heading"><span class="small-mono">0${index+1}</span><h4>${tasks[key].title}</h4></div>${comparisonSVG(key)}</div>`).join('') + '<div class="comparison-insight" id="comparison-readout" aria-live="polite" aria-atomic="true"></div>';
 
   function renderComparisonTable() {
     const sorting = byId('comparison-sort').value;
@@ -139,7 +139,7 @@
   function updateComparison(result) {
     comparisonRoot.style.setProperty('--selected-color',colors[result.method]);
     comparisonRoot.style.setProperty('--selected-ink',result.method === 'fert' ? '#713f64' : '#243746');
-    byId('comparison-readout').innerHTML = `<span class="small-mono">Selected result</span>${resultDetails(result)}`;
+    byId('comparison-readout').innerHTML = `${resultDetails(result)}`;
     comparisonRoot.querySelectorAll('[data-result]').forEach(element => {
       const current = comparisonResult(element.dataset.task,element.dataset.method);
       element.classList.toggle('is-selected',sameResult(current,result));
@@ -169,7 +169,7 @@
   let scalingSort = {field:'robots',direction:1};
   const scalingMethods = ['dagger','fert','sft','initial'];
   byId('scaling-legend').innerHTML = scalingMethods.map(method => `<button class="legend-chip series-chip" data-series="${method}" aria-label="Show ${scalingLabels[method]}" aria-pressed="true" style="--method-color:${scalingColors[method]}"><i class="${['sft','initial'].includes(method) ? 'dashed' : 'solid'}"></i>${scalingLabels[method]}</button>`).join('');
-  byId('scaling-cards').innerHTML = order.map((key,index) => `<div class="result-chart-card scaling-card ${key === 'packaging' ? 'scaling-card-wide' : ''}" data-card="${key}"><div class="result-card-heading"><span class="small-mono">0${index+1}</span><h4>${tasks[key].title}</h4><span class="fleet-range">Up to ${tasks[key].fert.at(-1)[0]} robots</span></div><div class="scaling-plot" id="scale-${key}"></div></div>`).join('');
+  byId('scaling-cards').innerHTML = order.map((key,index) => `<div class="result-chart-card scaling-card ${key === 'packaging' ? 'scaling-card-wide' : ''}" data-card="${key}"><div class="result-card-heading"><span class="small-mono">0${index+1}</span><h4>${tasks[key].title}</h4></div><div class="scaling-plot" id="scale-${key}"></div></div>`).join('');
 
   function renderScalingPlot(key) {
     const task = tasks[key], host = byId(`scale-${key}`);
