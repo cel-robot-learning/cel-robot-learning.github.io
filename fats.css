@@ -21,3 +21,6 @@
 @media print{.fats-choices,.fats-flow,.fats-node{display:none}.fats-diagram{min-width:0}.fats-detail{min-height:0}}
 
 .fats-concept{box-sizing:border-box;margin-block:30px 44px;padding:clamp(12px,2.4vw,30px);border:1px solid var(--line);border-radius:5px;background:#fff}.fats-concept img{display:block;width:100%;height:auto}
+
+.fats-mechanism-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fats-mechanism img{min-width:600px;max-width:960px;margin-inline:auto}
