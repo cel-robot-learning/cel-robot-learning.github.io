@@ -3,7 +3,8 @@
 // Every entry is a number of successes out of 120 evaluation trials.
 // FERT and DAgger points are [number of training robots, number of successes].
 // Human teleoperation pools six operators, with 20 trials per operator and task.
-// Main results use 8-robot FERT for Flower Arrangement; 8 and 16 robots both score 119/120.
+// Main results use 16-robot FERT for Flower Arrangement in CEL (3).zip (2026-10-13).
+// Its 8- and 16-robot scaling points both score 119/120.
 // Descriptions follow source/experiments/setup.tex and source/appendix/task_setup.tex.
 window.RESEARCH_DATA = {
   trials: 120,
@@ -25,7 +26,7 @@ window.RESEARCH_DATA = {
       media: 'Footage placeholder: close views of flexible stems, smooth transport, and insertion into the vase.',
       fert: [[4, 116], [8, 119], [16, 119]],
       dagger: [[1, 103], [4, 109], [8, 118]],
-      human: 109, mainFertRobots: 8, initialRobots: 8, initialLabel: '8-robot HG-DAgger',
+      human: 109, mainFertRobots: 16, initialRobots: 8, initialLabel: '8-robot HG-DAgger',
       initial: 118, sft: 43, rlt: 114, recap: 114
     },
     folding: {
