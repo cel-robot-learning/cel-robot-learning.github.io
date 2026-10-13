@@ -20,4 +20,4 @@
 @media(prefers-reduced-motion:reduce){#fats-framework.is-live .fats-flow.is-active{animation:none;opacity:.5;stroke-dasharray:none}.fats-node rect{transition:none}}
 @media print{.fats-choices,.fats-flow,.fats-node{display:none}.fats-diagram{min-width:0}.fats-detail{min-height:0}}
 
-.fats-concept{margin-block:30px 44px;background:#fff}.fats-concept img{display:block;width:100%;height:auto}
+.fats-concept{box-sizing:border-box;margin-block:30px 44px;padding:clamp(12px,2.4vw,30px);border:1px solid var(--line);border-radius:5px;background:#fff}.fats-concept img{display:block;width:100%;height:auto}
