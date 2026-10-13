@@ -97,7 +97,7 @@
 .scaling-table tbody tr:hover,.scaling-table tbody tr.is-selected{background:var(--accent-soft)}
 .scaling-table-result{font:12px var(--mono);color:var(--accent);border:0;background:transparent;padding:6px 10px;min-height:34px}
 /* Figure 2 uses the manuscript palette for its labels and interaction states. */
-#main-results{--chart-ink:#243746;--chart-muted:#657581;--chart-grid:#e6ecef;--selected-color:#956c8e;--selected-ink:#713f64}
+#main-results{--chart-ink:#243746;--chart-muted:#657581;--chart-grid:#e6ecef;--selected-color:#b76549;--selected-ink:#944a35}
 #main-results .result-card-heading h4{color:var(--chart-ink)}
 #main-results .plot-grid{stroke:var(--chart-grid)}
 #main-results .plot-caption,#main-results .plot-tick,#main-results .plot-method{fill:var(--chart-muted)}

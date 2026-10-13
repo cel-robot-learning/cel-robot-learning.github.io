@@ -6,9 +6,9 @@
   const methods = ['human', 'sft', 'dagger', 'rlt', 'recap', 'fert'];
   const labels = {human:'Human', sft:'SFT', dagger:'(M)HG-DAgger', rlt:'RLT', recap:'RECAP', fert:'FERT'};
   const scalingLabels = {dagger:'HG-DAgger', fert:'FERT', sft:'Init. with SFT', initial:'Init. with (M)HG-DAgger'};
-  // Each figure retains its own palette from the latest manuscript PDFs.
-  const colors = {human:'#dedce1', sft:'#b7bfcb', dagger:'#7b8fa5', rlt:'#c7bdb7', recap:'#b1a4bf', fert:'#956c8e'};
-  const scalingColors = {dagger:'#486fb8', fert:'#c70272', sft:'#486fb8', initial:'#c70272'};
+  // Exact vector fill colors from CEL (2).zip, 2026-10-13; shared by both result figures.
+  const colors = {human:'#d8dee3', sft:'#aab7c4', dagger:'#6f8ba4', rlt:'#b9c8c7', recap:'#9691ad', fert:'#b76549'};
+  const scalingColors = {dagger:colors.dagger, fert:colors.fert, sft:colors.dagger, initial:colors.fert};
   const resultLabel = result => (result.group === 'scaling' ? scalingLabels : labels)[result.method];
   const resultColor = result => (result.group === 'scaling' ? scalingColors : colors)[result.method];
   const byId = id => document.getElementById(id);
@@ -104,7 +104,7 @@
       const x = left + step * (index + .5), barWidth = step * .66;
       const barHeight = bottom - y(rate(result.count));
       const textY = y(wilson(result.count)[1]) - 9;
-      const textColor = method === 'fert' ? '#713f64' : '#243746';
+      const textColor = method === 'fert' ? '#944a35' : '#243746';
       const methodText = method === 'dagger' ? `<tspan x="${x}" dy="0">(M)HG-</tspan><tspan x="${x}" dy="13">DAgger</tspan>` : labels[method];
       return `<g class="result-mark comparison-mark" style="--mark-index:${index};--method-color:${colors[method]}" ${attributes(result, 'comparison')} tabindex="0" role="button" aria-pressed="false" aria-label="${accessibleLabel(result)}"><rect class="bar-glow" x="${x-step/2+3}" y="${top-5}" width="${step-6}" height="${bottom-top+10}" rx="5"/><rect class="result-bar" x="${x-barWidth/2}" y="${y(rate(result.count))}" width="${barWidth}" height="${barHeight}" rx="3" fill="${colors[method]}"/>${errorBar(x,result.count,y,'#243746')}<text class="bar-value" x="${x}" y="${textY}" fill="${textColor}" font-weight="${method === 'fert' ? '700' : '400'}" text-anchor="middle">${percent(result.count)}</text><text class="plot-method" x="${x}" y="${bottom+23}" text-anchor="middle">${methodText}</text></g>`;
     }).join('');
@@ -138,7 +138,7 @@
 
   function updateComparison(result) {
     comparisonRoot.style.setProperty('--selected-color',colors[result.method]);
-    comparisonRoot.style.setProperty('--selected-ink',result.method === 'fert' ? '#713f64' : '#243746');
+    comparisonRoot.style.setProperty('--selected-ink',result.method === 'fert' ? '#944a35' : '#243746');
     byId('comparison-readout').innerHTML = `${resultDetails(result)}`;
     comparisonRoot.querySelectorAll('[data-result]').forEach(element => {
       const current = comparisonResult(element.dataset.task,element.dataset.method);
