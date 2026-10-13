@@ -10,7 +10,7 @@
 .fert-view-controls button:disabled{opacity:.4}
 .fert-layout{display:grid;grid-template-columns:minmax(0,2.15fr) minmax(290px,1fr);align-items:start}
 .fert-visual{position:sticky;top:24px;padding:22px 16px 16px 24px;min-width:0}
-.fert-scene{position:relative;width:100%;aspect-ratio:1000/910;overflow:hidden;border-radius:12px;background:#fff;touch-action:pan-y}
+.fert-scene{position:relative;width:100%;aspect-ratio:1060/940;overflow:hidden;border-radius:12px;background:#fff;touch-action:pan-y}
 .fert-scene.is-pannable{cursor:grab;touch-action:none}
 .fert-scene.is-dragging{cursor:grabbing}
 .fert-scene svg{width:100%;height:100%;max-width:none;overflow:hidden;user-select:none;font-family:Arial,Helvetica,sans-serif}
@@ -76,7 +76,6 @@
 .fert-control input[type=range]{display:block;width:100%;min-height:36px;margin:6px 0 0;accent-color:#b57aa8;cursor:ew-resize}
 .fert-control input:focus-visible{outline:2px solid #b57aa8;outline-offset:3px;border-radius:6px}
 .fert-control p{font:11px/1.65 var(--sans);margin:8px 0 0;color:#718896}
-.fert-formula{margin:16px 0;padding:12px;border-radius:8px;background:#f8f2f7;color:#805b84;font:15px/1.6 Georgia,serif;text-align:center;overflow-x:auto}
 .fert-framework>figcaption{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid #e9edf0;padding:17px 28px;margin:0;font-size:12px;color:#718896}
 .fert-framework>figcaption span:last-child{font:10px/1.5 var(--mono);white-space:nowrap;color:#8a99a4}
 .fert-focus-status{color:#805b84}
@@ -87,12 +86,12 @@
 @media(max-width:1000px){.fert-layout{grid-template-columns:minmax(0,1.7fr) minmax(270px,1fr)}.fert-steps{padding-inline:16px}.fert-visual{padding:20px 12px}.fert-step-button{font-size:15px;gap:8px}.fert-step-content{padding-left:40px}.fert-step-content p{font-size:13px}}
 @media(max-width:760px){.fert-framework-header{padding:18px 16px;align-items:flex-start}.fert-framework-header .eyebrow{font-size:10px;max-width:170px}.fert-view-controls{gap:5px}.fert-view-controls button{font-size:10px;padding-inline:8px}.fert-view-controls .fert-zoom{width:31px;font-size:17px}.fert-layout{grid-template-columns:minmax(0,1fr)}.fert-visual{position:relative;top:auto;padding:12px}.fert-scene{aspect-ratio:1.22;max-height:480px}.fert-scene.is-focused{aspect-ratio:1.4}.fert-steps{border-left:0;border-top:1px solid #e9edf0;padding:20px}.fert-step-button{font-size:16px;padding-block:16px}.fert-step-content p{font-size:14px}.fert-steps-heading{margin-bottom:8px}.fert-demo-note{font-size:10px}.fert-framework>figcaption{padding:16px;display:block}.fert-framework>figcaption span{display:block}.fert-framework>figcaption span:last-child{margin-top:6px}}
 @media(prefers-reduced-motion:reduce){.fert-framework *{transition:none!important}.fert-framework.is-live .fert-flow{animation:none;stroke-dasharray:none;opacity:.5}.fert-framework.is-live .fert-token-enter,.fert-framework.is-live .fert-encoding-token{animation:none;opacity:1;transform:none}}
-@media print{.fert-layout{display:block}.fert-visual{position:static}.fert-scene{aspect-ratio:1000/910}.fert-steps{border:0;display:block}.fert-step-content[hidden]{display:block}.fert-view-controls,.fert-control{display:none}.fert-framework.is-live .fert-flow,.fert-framework.is-live .fert-token-enter,.fert-framework.is-live .fert-encoding-token{animation:none;opacity:1}.fert-framework{break-inside:avoid;border:0}.fert-framework-header{display:none}}
+@media print{.fert-layout{display:block}.fert-visual{position:static}.fert-scene{aspect-ratio:1060/940}.fert-steps{border:0;display:block}.fert-step-content[hidden]{display:block}.fert-view-controls,.fert-control{display:none}.fert-framework.is-live .fert-flow,.fert-framework.is-live .fert-token-enter,.fert-framework.is-live .fert-encoding-token{animation:none;opacity:1}.fert-framework{break-inside:avoid;border:0}.fert-framework-header{display:none}}
 
 /* Keep the original composition steady while the adjacent explanation changes. */
 .fert-layout{align-items:start;grid-template-columns:minmax(0,2.05fr) minmax(300px,1fr)}
 .fert-visual{position:relative;top:auto;padding:24px 20px}
-.fert-scene{aspect-ratio:1024/940;max-height:none;overflow:visible}
+.fert-scene{aspect-ratio:1060/940;max-height:none;overflow:visible}
 .fert-scene svg{overflow:visible}
 .fert-module .module-outline{stroke-width:3}
 .fert-alignment{pointer-events:none}
@@ -112,7 +111,7 @@
 @media(max-width:760px){
  .fert-layout{display:flex;flex-direction:column}.fert-visual,.fert-steps{width:100%;box-sizing:border-box}
  .fert-framework-header{flex-direction:column;gap:6px}.fert-framework-header .eyebrow{max-width:none}
- .fert-visual{padding:14px 10px}.fert-scene{aspect-ratio:1024/940;max-height:none}
+ .fert-visual{padding:14px 10px}.fert-scene{aspect-ratio:1060/940;max-height:none}
  .fert-mobile-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;border-bottom:1px solid #e9edf0}
  .fert-mobile-nav .fert-step-button{display:flex;flex-direction:column;text-align:center;font-size:11px;line-height:1.35;padding:12px 4px;gap:7px}
  .fert-mobile-nav .fert-step-caret{display:none}.fert-mobile-nav .fert-step-button[aria-expanded=true]{background:#f0f7fb}

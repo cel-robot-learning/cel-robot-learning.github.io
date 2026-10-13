@@ -83,7 +83,7 @@
       }
     }));
     const mass=probability.reduce((s,row,t)=>s+row.reduce((v,p,c)=>v+(overlaps(t,c)?p:0),0),0);
-    get('fert-sampling-readout').textContent=tr(`Overlapping chunks: ${(mass*100).toFixed(1)}% of illustrative sampling probability. ρ = 0.88.`,`重叠动作块的示例采样概率合计 ${(mass*100).toFixed(1)}%。ρ = 0.88。`);
+    get('fert-sampling-readout').textContent=tr(`Overlapping chunks: ${(mass*100).toFixed(1)}% of illustrative sampling probability.`,`重叠动作块的示例采样概率合计 ${(mass*100).toFixed(1)}%。`);
     root.querySelectorAll('[data-priority]').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.priority==='after')===after)));
     showBatch();
   }

@@ -6,7 +6,7 @@
 .fats-node rect{fill:transparent;stroke:transparent;stroke-width:2;vector-effect:non-scaling-stroke;transition:stroke .2s,fill .2s}
 .fats-node:hover rect,.fats-node:focus-visible rect{stroke:#527f9c;fill:#79abc50b}
 .fats-node.is-active rect{stroke:#527f9c;fill:#79abc510}
-.fats-flow{fill:none;stroke-width:80;stroke-linecap:round;stroke-dasharray:2 14;opacity:0;pointer-events:none}
+.fats-flow{fill:none;stroke-width:2;stroke-linecap:round;stroke-dasharray:2 14;opacity:0;pointer-events:none}
 #fats-framework.is-live .fats-flow.is-active{opacity:.8;animation:fats-stream 3.6s linear infinite}
 .fats-choices{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:24px 0 20px}
 .fats-choices button{border:1px solid #dce3e8;background:white;color:#526877;border-radius:7px;padding:9px 15px;min-height:40px;font:13px/1.4 var(--sans);cursor:pointer}
@@ -19,3 +19,5 @@
 @media(max-width:760px){.fats-scroll{margin:0 -12px}.fats-choices{justify-content:flex-start;margin-top:16px;gap:6px}.fats-choices button{font-size:12px;padding:8px 10px}.fats-detail{min-height:180px;padding:16px}.fats-detail p{font-size:13px}#fats-framework .figure-header{align-items:flex-start;gap:8px;flex-direction:column}}
 @media(prefers-reduced-motion:reduce){#fats-framework.is-live .fats-flow.is-active{animation:none;opacity:.5;stroke-dasharray:none}.fats-node rect{transition:none}}
 @media print{.fats-choices,.fats-flow,.fats-node{display:none}.fats-diagram{min-width:0}.fats-detail{min-height:0}}
+
+.fats-concept{margin-block:30px 44px;background:#fff}.fats-concept img{display:block;width:100%;height:auto}
