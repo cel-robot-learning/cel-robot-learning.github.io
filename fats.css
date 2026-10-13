@@ -24,3 +24,25 @@
 
 .fats-mechanism-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .fats-mechanism img{min-width:600px;max-width:960px;margin-inline:auto}
+
+/* Three data paths, laid out independently of the manuscript bitmap. */
+.swarmlink-flows{padding-block:8px}
+.swarm-flow{--flow-color:#087da3;--flow-tint:#f4f8fa;padding-block:24px}
+.swarm-flow+.swarm-flow{border-top:1px solid var(--line)}
+.swarm-flow--policy{--flow-color:#b76748;--flow-tint:#fcf6f3}
+.swarm-flow-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:16px}
+.swarm-flow-heading h4{margin:0;font:600 18px/1.4 var(--sans);color:var(--flow-color)}
+.swarm-flow-heading>span{font:14px/1.4 var(--sans);color:var(--muted)}
+.swarm-flow-path{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px;padding:0;margin:0;list-style:none}
+.swarm-flow-path li{position:relative;display:flex;flex-direction:column;justify-content:center;gap:7px;min-width:0;min-height:100px;padding:16px;border:1px solid #dce3e8;border-radius:6px;background:var(--flow-tint)}
+.swarm-flow-path li:not(:last-child)::after{content:'→';position:absolute;left:calc(100% + 1px);top:50%;width:26px;transform:translateY(-50%);text-align:center;color:var(--flow-color);font:22px/1 var(--sans)}
+.swarm-flow-path li>span{font:13px/1.4 var(--sans);color:#526877}
+.swarm-flow-path li>strong{font:600 16px/1.4 var(--sans);color:#293d4a}
+@media(max-width:760px){
+  .swarm-flow-path{grid-template-columns:1fr;gap:25px}
+  .swarm-flow-path li{min-height:76px;padding:13px 16px}
+  .swarm-flow-path li:not(:last-child)::after{content:'↓';left:50%;top:100%;width:24px;height:24px;line-height:24px;transform:translateX(-50%)}
+  .swarm-flow-heading{gap:10px}
+  .swarm-flow-heading h4{font-size:17px}
+  .swarm-flow-heading>span{font-size:12px}
+}
