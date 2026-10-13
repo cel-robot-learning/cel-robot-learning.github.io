@@ -12,7 +12,7 @@
 .fats-choices button{border:1px solid #dce3e8;background:white;color:#526877;border-radius:7px;padding:9px 15px;min-height:40px;font:13px/1.4 var(--sans);cursor:pointer}
 .fats-choices button:hover,.fats-choices button[aria-pressed=true]{color:#203249;background:#edf5fa;border-color:#91b5c8}
 .fats-choices button:focus-visible{outline:2px solid #527f9c;outline-offset:3px}
-.fats-detail{max-width:940px;min-height:108px;margin:0 auto 28px;padding:20px 24px;border-left:3px solid #91b5c8;background:#f7fafc;box-sizing:border-box}
+.fats-detail{max-width:none;min-height:108px;margin:0 auto 28px;padding:20px 24px;border-left:3px solid #91b5c8;background:#f7fafc;box-sizing:border-box}
 .fats-detail h3{margin:0 0 9px;font:600 16px/1.4 var(--sans)}
 .fats-detail p{margin:0;font:14px/1.75 var(--sans);color:#526877}
 @keyframes fats-stream{to{stroke-dashoffset:-32}}
