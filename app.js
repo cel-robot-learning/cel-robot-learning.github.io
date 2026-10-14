@@ -1,6 +1,7 @@
 'use strict';
 
-const {tasks} = window.RESEARCH_DATA;
+const {tasks, trials} = window.RESEARCH_DATA;
+const percent = count => (100 * count / trials).toFixed(1);
 const byId = id => document.getElementById(id);
 
 const titleVideo = byId('title-video');
@@ -44,7 +45,12 @@ function showTask(index) {
   activeTask = index;
   const key = taskSlides[index].dataset.taskSlide;
   const task = tasks[key];
+  const [robots, successes] = task.fert.find(([robots]) => robots === task.mainFertRobots);
+  byId('task-title').textContent = task.title;
   byId('task-description').textContent = task.description;
+  byId('task-rate').innerHTML = `${percent(successes)}<span>%</span>`;
+  byId('task-trials').textContent = `${successes} successful trials out of ${trials}`;
+  byId('task-robots').textContent = `${robots} training robots`;
   byId('task-position').textContent = `${index + 1} / ${taskSlides.length}`;
   byId('task-previous').disabled = index === 0;
   byId('task-next').disabled = index === taskSlides.length - 1;
