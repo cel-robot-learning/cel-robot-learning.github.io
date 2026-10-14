@@ -10,7 +10,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%2332658a'/%3E%3Cpath d='M7 7h7v7H7zm11 0h7v7h-7zM7 18h7v7H7zm11 0h7v7h-7z' fill='%23ffffff'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261013-full-width-copy">
   <link rel="stylesheet" href="results.css?v=20261013-paper-palette">
-  <link rel="stylesheet" href="ablation.css?v=20261014-copy-trim">
+  <link rel="stylesheet" href="ablation.css?v=20261014-ablation-footer">
   <link rel="preload" as="image" href="assets/cel-fleet-cover.png">
   <link rel="preload" as="font" href="assets/fonts/source-serif-4-bold.woff2" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="fert.css?v=20261014-copy-trim">
@@ -503,13 +503,12 @@
       <div class="result-tooltip" id="scaling-tooltip" role="tooltip" hidden></div>
     </figure>
     <section class="reading-width prose ablation-section">
-      <h3 id="ablation-title">Ablation study: What makes the learning loop work</h3>
+      <h3 id="ablation-title">Ablation study: What makes the learning loop work?</h3>
       <p>We tested four design choices on phone packaging with 16 training robots and 120 evaluation trials per configuration. The full configuration reaches <strong>86.7%</strong> success. Disabling failure-guided retrieval (FR) lowers it to <strong>64.2%</strong>; removing the 30 frames of context on either side of each retrieved segment, while keeping retrieval, lowers it to <strong>57.5%</strong>. Both choosing relevant examples and keeping the surrounding movements matter for learning the sequence. We also varied how often robots receive updated policies and how much previous sampling priority carries forward. Among the settings we tested, synchronizing every <strong>500 optimizer steps</strong> and retaining <strong>88%</strong> of previous priorities each gave the highest success rate.</p>
     </section>
     <!-- CEL (4).zip: actual trial counts in source/appendix/exp_res.tex, tab:detail-abl. -->
     <figure id="fert-ablations" class="fert-ablations wide-width" aria-labelledby="ablation-title">
       <div id="ablation-cards" class="ablation-cards"></div>
-      <div id="ablation-readout" class="ablation-readout" role="status" aria-live="polite" aria-atomic="true"></div>
     </figure>
 </section>
 <section class="project-section" id="discussion">
@@ -524,7 +523,7 @@
   <script src="fert.js?v=20261014-copy-trim" defer></script>
   <script src="results.js?v=20261014-copy-trim" defer></script>
   <script src="ablation-data.js?v=20261014-ablation-complete" defer></script>
-  <script src="ablation.js?v=20261014-copy-trim" defer></script>
+  <script src="ablation.js?v=20261014-ablation-footer" defer></script>
   <script src="fats.js?v=20261014-copy-trim" defer></script>
 </body>
 </html>

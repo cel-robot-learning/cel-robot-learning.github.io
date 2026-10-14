@@ -3,10 +3,8 @@
 (() => {
   const root = document.getElementById('fert-ablations');
   const cards = document.getElementById('ablation-cards');
-  const readout = document.getElementById('ablation-readout');
   const data = window.ABLATION_DATA;
-  if (!root || !cards || !readout || !data) return;
-  readout.setAttribute('aria-atomic', 'true');
+  if (!root || !cards || !data) return;
 
   const {groups, trials} = data;
   // Exact ablation fills match the paper and the other experiment figures.
@@ -45,7 +43,7 @@
       const [low, high] = wilson(setting.successes);
       const color = setting.baseline ? colors.baseline : colors.alternative;
       const barTop = y(rate(setting.successes));
-      return `<g class="ablation-mark${setting.baseline ? ' ablation-baseline' : ''}" data-ablation-group="${group.key}" data-ablation-setting="${setting.key}" style="--ablation-color:${color};--ablation-order:${index}" tabindex="0" role="button" aria-pressed="false" aria-controls="ablation-readout" aria-label="${escape(accessibleLabel(group,setting))}"><rect class="ablation-hit" x="${x-spacing/2+5}" y="${top-12}" width="${spacing-10}" height="${bottom-top+49}" rx="7"/><rect class="ablation-bar" x="${x-barWidth/2}" y="${barTop}" width="${barWidth}" height="${bottom-barTop}" rx="3" fill="${color}"/><g class="ablation-interval" stroke="#243746" stroke-width="1.35"><line x1="${x}" x2="${x}" y1="${y(high)}" y2="${y(low)}"/><line x1="${x-5}" x2="${x+5}" y1="${y(high)}" y2="${y(high)}"/><line x1="${x-5}" x2="${x+5}" y1="${y(low)}" y2="${y(low)}"/></g><text class="ablation-value" x="${x}" y="${y(high)-10}" text-anchor="middle">${percent(setting.successes)}%</text><text class="ablation-setting-label" x="${x}" y="${bottom+22}" text-anchor="middle">${escape(setting.label)}</text></g>`;
+      return `<g class="ablation-mark${setting.baseline ? ' ablation-baseline' : ''}" data-ablation-group="${group.key}" data-ablation-setting="${setting.key}" style="--ablation-color:${color};--ablation-order:${index}" tabindex="0" role="button" aria-pressed="false" aria-label="${escape(accessibleLabel(group,setting))}"><rect class="ablation-hit" x="${x-spacing/2+5}" y="${top-12}" width="${spacing-10}" height="${bottom-top+49}" rx="7"/><rect class="ablation-bar" x="${x-barWidth/2}" y="${barTop}" width="${barWidth}" height="${bottom-barTop}" rx="3" fill="${color}"/><g class="ablation-interval" stroke="#243746" stroke-width="1.35"><line x1="${x}" x2="${x}" y1="${y(high)}" y2="${y(low)}"/><line x1="${x-5}" x2="${x+5}" y1="${y(high)}" y2="${y(high)}"/><line x1="${x-5}" x2="${x+5}" y1="${y(low)}" y2="${y(low)}"/></g><text class="ablation-value" x="${x}" y="${y(high)-10}" text-anchor="middle">${percent(setting.successes)}%</text><text class="ablation-setting-label" x="${x}" y="${bottom+22}" text-anchor="middle">${escape(setting.label)}</text></g>`;
     }).join('');
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" role="group" aria-label="${escape(group.title)}: success rate by setting"><text class="ablation-axis" x="${left}" y="14">Success rate (%)</text>${grid}${marks}<text class="ablation-axis ablation-x-axis" x="${(left+right)/2}" y="${height-9}" text-anchor="middle">${escape(group.axis)}</text></svg>`;
   }
@@ -88,14 +86,9 @@
   }
 
   function select(mark) {
-    const group = groups.find(item => item.key === mark.dataset.ablationGroup);
-    const setting = group.settings.find(item => item.key === mark.dataset.ablationSetting);
     if (selected === mark) return;
     selected = mark;
     marks.forEach(item => item.setAttribute('aria-pressed', String(item === mark)));
-    readout.style.setProperty('--ablation-selected-color', setting.baseline ? '#944a35' : '#243746');
-    const [low, high] = wilson(setting.successes);
-    readout.innerHTML = `<div class="ablation-selection"><span>${escape(group.title)}</span><strong>${escape(setting.description)}</strong></div><div class="ablation-stat"><strong>${percent(setting.successes)}<span>%</span></strong><span>${setting.successes} / ${trials} successful trials</span></div><div class="ablation-uncertainty"><span>95% Wilson interval</span><strong>${low.toFixed(1)}–${high.toFixed(1)}%</strong></div>`;
   }
 
   function reveal(card) {
