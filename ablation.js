@@ -95,7 +95,7 @@
     marks.forEach(item => item.setAttribute('aria-pressed', String(item === mark)));
     readout.style.setProperty('--ablation-selected-color', setting.baseline ? '#944a35' : '#243746');
     const [low, high] = wilson(setting.successes);
-    readout.innerHTML = `<div class="ablation-selection"><span>${escape(group.title)}</span><strong>${escape(setting.description)}</strong>${setting.baseline ? '<span class="ablation-default">Full FERT setting</span>' : ''}</div><div class="ablation-stat"><strong>${percent(setting.successes)}<span>%</span></strong><span>${setting.successes} / ${trials} successful trials</span></div><div class="ablation-uncertainty"><span>95% Wilson interval</span><strong>${low.toFixed(1)}–${high.toFixed(1)}%</strong><span>Robot 1: ${setting.robot1}/60 · Robot 2: ${setting.robot2}/60</span></div>`;
+    readout.innerHTML = `<div class="ablation-selection"><span>${escape(group.title)}</span><strong>${escape(setting.description)}</strong></div><div class="ablation-stat"><strong>${percent(setting.successes)}<span>%</span></strong><span>${setting.successes} / ${trials} successful trials</span></div><div class="ablation-uncertainty"><span>95% Wilson interval</span><strong>${low.toFixed(1)}–${high.toFixed(1)}%</strong></div>`;
   }
 
   function reveal(card) {

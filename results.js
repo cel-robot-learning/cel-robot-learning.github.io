@@ -60,14 +60,14 @@
     const task = tasks[key];
     const robots = method === 'fert' ? task.mainFertRobots : method === 'dagger' ? task.initialRobots : undefined;
     const count = method === 'fert' ? task.fert.find(point => point[0] === robots)[1] : method === 'dagger' ? task.initial : task[method];
-    const context = method === 'human' ? '6 operators · 20 trials each' : method === 'fert' ? fleetLabel(robots) : method === 'dagger' ? task.initialLabel : 'Reported checkpoint';
+    const context = method === 'human' ? '6 operators · 20 trials each' : method === 'fert' ? fleetLabel(robots) : method === 'dagger' ? task.initialLabel : '';
     return {key, method, count, robots, context, group:'comparison'};
   }
 
   function scalingResult(key, method, robots) {
     const task = tasks[key];
     const count = method === 'sft' ? task.sft : method === 'initial' ? task.initial : task[method].find(point => point[0] === robots)[1];
-    const context = method === 'sft' ? 'Starting checkpoint for (M)HG-DAgger' : method === 'initial' ? `${task.initialLabel} · starting checkpoint for FERT` : fleetLabel(robots);
+    const context = method === 'sft' ? '' : method === 'initial' ? task.initialLabel : fleetLabel(robots);
     return {key, method, count, robots, context, group:'scaling'};
   }
 
@@ -78,7 +78,8 @@
 
   function accessibleLabel(result) {
     const [low, high] = wilson(result.count);
-    return `${tasks[result.key].title}, ${resultLabel(result)}, ${result.context}: ${percent(result.count)} percent, ${result.count} ${result.count === 1 ? 'success' : 'successes'} out of ${trials}, 95 percent Wilson interval ${low.toFixed(1)} to ${high.toFixed(1)} percent`;
+    const description = [tasks[result.key].title, resultLabel(result), result.context].filter(Boolean).join(', ');
+    return `${description}: ${percent(result.count)} percent, ${result.count} ${result.count === 1 ? 'success' : 'successes'} out of ${trials}, 95 percent Wilson interval ${low.toFixed(1)} to ${high.toFixed(1)} percent`;
   }
 
   function errorBar(x, count, y, color, cap = 3) {
@@ -92,7 +93,7 @@
 
   function resultDetails(result) {
     const [low, high] = wilson(result.count);
-    return `<span class="result-method" style="--method-color:${resultColor(result)}">${resultLabel(result)}</span><span class="result-task-name">${tasks[result.key].title}</span><strong>${percent(result.count)}<span>%</span></strong><span>${result.context}</span><div class="result-detail-line"><span>Successful trials</span><b>${result.count} / ${trials}</b></div><div class="result-detail-line"><span>95% Wilson interval</span><b>${low.toFixed(1)}–${high.toFixed(1)}%</b></div>`;
+    return `<span class="result-method" style="--method-color:${resultColor(result)}">${resultLabel(result)}</span><span class="result-task-name">${tasks[result.key].title}</span><strong>${percent(result.count)}<span>%</span></strong>${result.context ? `<span>${result.context}</span>` : ''}<div class="result-detail-line"><span>Successful trials</span><b>${result.count} / ${trials}</b></div><div class="result-detail-line"><span>95% Wilson interval</span><b>${low.toFixed(1)}–${high.toFixed(1)}%</b></div>`;
   }
 
   function comparisonSVG(key) {
@@ -200,8 +201,8 @@
   function updateScaling(result) {
     const [low,high] = wilson(result.count);
     const gain = rate(result.count) - rate(tasks[result.key].initial);
-    const gainText = result.method === 'fert' ? `${gain >= 0 ? '+' : ''}${gain.toFixed(1)} percentage points vs. starting (M)HG-DAgger` : result.context;
-    byId('scaling-readout').innerHTML = `<div><span class="result-method" style="--method-color:${resultColor(result)}">${resultLabel(result)}</span><h4>${tasks[result.key].title}</h4><span class="selection-context">${result.context}</span></div><div><strong>${percent(result.count)}<span>%</span></strong><span>${result.count} / ${trials} successful trials</span></div><div><span class="small-mono">95% Wilson interval</span><b>${low.toFixed(1)}–${high.toFixed(1)}%</b><span>${gainText}</span></div>`;
+    const gainText = result.method === 'fert' ? `${gain >= 0 ? '+' : ''}${gain.toFixed(1)} percentage points vs. starting (M)HG-DAgger` : '';
+    byId('scaling-readout').innerHTML = `<div><span class="result-method" style="--method-color:${resultColor(result)}">${resultLabel(result)}</span><h4>${tasks[result.key].title}</h4>${result.context ? `<span class="selection-context">${result.context}</span>` : ''}</div><div><strong>${percent(result.count)}<span>%</span></strong><span>${result.count} / ${trials} successful trials</span></div><div><span class="small-mono">95% Wilson interval</span><b>${low.toFixed(1)}–${high.toFixed(1)}%</b>${gainText ? `<span>${gainText}</span>` : ''}</div>`;
     scalingRoot.querySelectorAll('[data-result]').forEach(element => {
       const current = scalingResult(element.dataset.task,element.dataset.method,element.dataset.robots === undefined ? undefined : Number(element.dataset.robots));
       element.classList.toggle('is-selected',sameResult(current,result));

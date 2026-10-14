@@ -27,12 +27,10 @@
 #ablation-readout>div{min-width:0;display:flex;flex-direction:column;gap:5px}
 .ablation-selection>span:first-child,.ablation-uncertainty>span:first-child{color:#657581}
 .ablation-selection>strong{font-size:17px;line-height:1.45;font-weight:550;color:#243746}
-.ablation-default{align-self:flex-start;color:#944a35;font-size:12px;line-height:1.5}
 .ablation-stat>strong{font:38px/1.2 var(--serif,Georgia,serif);letter-spacing:-1px;color:var(--ablation-selected-color,#944a35);font-variant-numeric:tabular-nums}
 .ablation-stat>strong>span{font-size:25px}
 .ablation-stat>span,.ablation-uncertainty>span{color:#657581}
 .ablation-uncertainty>strong{font-size:20px;line-height:1.3;font-weight:550;font-variant-numeric:tabular-nums}
-.ablation-uncertainty>span:last-child{font-size:12px}
 .ablation-tooltip{position:absolute;z-index:3;box-sizing:border-box;width:max-content;max-width:min(280px,calc(100% - 16px));padding:11px 13px;border:1px solid #cdd7de;border-radius:9px;background:#fff;box-shadow:0 5px 18px #2437461a;font:13px/1.5 var(--sans,Arial,sans-serif);pointer-events:none}
 .ablation-tooltip[hidden]{display:none}
 .ablation-tooltip strong,.ablation-tooltip span{display:block}
@@ -51,7 +49,6 @@
  .ablation-stat>strong{font-size:33px}
  .ablation-selection>strong{font-size:16px}
  .ablation-uncertainty>strong{font-size:17px}
- .ablation-uncertainty>span:last-child{font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){
  .fert-ablations *{animation:none!important;transition:none!important}

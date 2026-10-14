@@ -16,7 +16,7 @@
   const intervals = selected.map(m => ({trajectory:m.trajectory,start:m.interval[0],end:m.interval[1]}));
   const updated = model.updatePriorities(model.priorities, intervals, .88, 2);
   const overlaps = (t,c) => intervals.some(i => i.trajectory===t && c<i.end && c+2>i.start);
-  let probability, active = 1, after = true, visible = false, seed = 21, batch = 0;
+  let probability, active = 1, after = true, visible = false, seed = 21;
   const get = id => root.querySelector('#'+id);
   const panelAnimations = new Map();
   panels.forEach(panel => {
@@ -230,7 +230,6 @@
       get(`fert-retrieved-${t}-${f}`)?.classList.toggle('is-matched',on);
     });
   });
-  get('fert-retrieval-readout').textContent=tr('Lowest-cost candidates: #4 and #1','检索代价最低的候选：#4 和 #1');
   function showQuery(q) {
     root.querySelectorAll('[data-query-frame]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.queryFrame===q)));
     svg.querySelectorAll('.fert-query-token').forEach((token,i)=>token.classList.toggle('is-current',i===q));
@@ -255,24 +254,18 @@
         title.textContent=tr(`Trajectory ${t+1}, chunk ${c+1}: weight ${value.toFixed(2)}`,`轨迹 ${t+1}，动作块 ${c+1}：权重 ${value.toFixed(2)}`);
       }
     }));
-    const mass=probability.reduce((s,row,t)=>s+row.reduce((v,p,c)=>v+(overlaps(t,c)?p:0),0),0);
-    get('fert-sampling-readout').textContent=tr(`Overlapping chunks: ${(mass*100).toFixed(1)}% of illustrative sampling probability.`,`重叠动作块的示例采样概率合计 ${(mass*100).toFixed(1)}%。`);
     root.querySelectorAll('[data-priority]').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.priority==='after')===after)));
     showBatch();
   }
   function showBatch() {
     svg.querySelectorAll('.fert-buffer-token-sampled').forEach(t=>{t.classList.remove('fert-buffer-token-sampled');t.removeAttribute('stroke');t.removeAttribute('stroke-width');});
-    const counts=[0,0,0,0];
     for(let i=0;i<9;i++) {
       seed=(1664525*seed+1013904223)>>>0;
       const sample=model.sample(probability,seed/4294967296);if(!sample)continue;
-      counts[sample.trajectory]++;
       const source=get(`fert-buffer-${sample.trajectory}-${sample.chunk}`);
       source.classList.add('fert-buffer-token-sampled');source.setAttribute('stroke','#805b84');source.setAttribute('stroke-width','2.5');
       const token=get(`fert-batch-${i}`);token.setAttribute('fill',['#79abc5','#8aafc3','#709d83','#a0bfae'][sample.trajectory]);
     }
-    batch++;
-    get('fert-batch-readout').textContent=tr(`Batch ${batch} · 9 chunks. Sources: `,`第 ${batch} 组 · 9 个动作块。来源：`)+counts.map((n,t)=>`#${t+1} × ${n}`).join(' · ');
   }
   root.querySelectorAll('[data-priority]').forEach(b=>b.addEventListener('click',()=>{after=b.dataset.priority==='after';showPriorities();}));
   get('fert-sample').addEventListener('click',showBatch);
