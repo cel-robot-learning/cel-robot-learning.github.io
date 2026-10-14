@@ -18,20 +18,79 @@
   const overlaps = (t,c) => intervals.some(i => i.trajectory===t && c<i.end && c+2>i.start);
   let probability, active = 1, after = true, visible = false, seed = 21, batch = 0;
   const get = id => root.querySelector('#'+id);
+  const panelAnimations = new Map();
+  panels.forEach(panel => {
+    const body = document.createElement('div');
+    body.className = 'fert-step-body';
+    body.append(...panel.childNodes);
+    panel.append(body);
+  });
 
-  function selectStep(value) {
-    active = Number(value);
+  function settlePanel(panel, open) {
+    const running = panelAnimations.get(panel);
+    if (running) {
+      running.onfinish = null;
+      running.cancel();
+      panelAnimations.delete(panel);
+    }
+    panel.hidden = !open;
+    panel.inert = !open;
+    panel.setAttribute('aria-hidden', String(!open));
+    panel.style.removeProperty('height');
+    panel.style.removeProperty('opacity');
+  }
+  function setPanelOpen(panel, open, animate) {
+    const running = panelAnimations.get(panel);
+    const wasHidden = panel.hidden;
+    if (!animate || reduced.matches || !panel.animate) {
+      settlePanel(panel, open);
+      return;
+    }
+    if (!running && open === !wasHidden) return;
+    const height = wasHidden ? 0 : panel.getBoundingClientRect().height;
+    const opacity = wasHidden ? 0 : Number(getComputedStyle(panel).opacity);
+    if (running) {
+      // Freeze the current frame before canceling so rapid clicks can reverse smoothly.
+      panel.style.height = `${height}px`;
+      panel.style.opacity = String(opacity);
+      running.onfinish = null;
+      running.cancel();
+    }
+    if (!open && panel.contains(document.activeElement)) {
+      steps.find(button => button.dataset.step === panel.dataset.step)?.focus({preventScroll:true});
+    }
+    panel.hidden = false;
+    panel.inert = !open;
+    panel.setAttribute('aria-hidden', String(!open));
+    panel.style.height = `${height}px`;
+    panel.style.opacity = String(opacity);
+    const targetHeight = open ? panel.firstElementChild.getBoundingClientRect().height : 0;
+    const animation = panel.animate([
+      {height:`${height}px`, opacity},
+      {height:`${targetHeight}px`, opacity:open ? 1 : 0}
+    ], {duration:380, easing:'cubic-bezier(.22,.61,.36,1)', fill:'forwards'});
+    panelAnimations.set(panel, animation);
+    animation.onfinish = () => {
+      if (panelAnimations.get(panel) === animation) settlePanel(panel, open);
+    };
+  }
+  function selectStep(value, {toggle = false, animate = true} = {}) {
+    const requested = Number(value);
+    active = toggle && active === requested ? null : requested;
     steps.forEach(b => b.setAttribute('aria-expanded',String(+b.dataset.step===active)));
-    panels.forEach(p => {p.hidden = +p.dataset.step!==active;});
+    panels.forEach(p => setPanelOpen(p, +p.dataset.step===active, animate));
     modules.forEach(m => {const on = +m.dataset.step===active; m.classList.toggle('is-active',on); m.setAttribute('aria-pressed',String(on));});
-    get('fert-focus-status').textContent = tr(`Step ${active} / 4`,`第 ${active} / 4 步`);
+    get('fert-focus-status').textContent = active === null
+      ? tr('All step explanations collapsed','所有步骤说明已收起')
+      : tr(`Step ${active} / 4`,`第 ${active} / 4 步`);
   }
   [...steps,...modules].forEach(el => {
-    el.addEventListener('click',()=>selectStep(el.dataset.step));
+    el.addEventListener('click',()=>selectStep(el.dataset.step, {toggle:el.matches('.fert-step-button')}));
     el.addEventListener('keydown',event=>{
       if (['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)) {
         event.preventDefault();
-        const next = event.key==='Home'?1:event.key==='End'?4:(active-1+(['ArrowRight','ArrowDown'].includes(event.key)?1:3))%4+1;
+        const current = Number(el.dataset.step);
+        const next = event.key==='Home'?1:event.key==='End'?4:(current-1+(['ArrowRight','ArrowDown'].includes(event.key)?1:3))%4+1;
         selectStep(next); steps[next-1].focus({preventScroll:true});
       } else if (el.matches('.fert-module') && ['Enter',' '].includes(event.key)) {event.preventDefault();selectStep(el.dataset.step);}
     });
@@ -106,26 +165,27 @@
   function motion(){root.classList.toggle('is-live',visible&&!document.hidden&&!reduced.matches);}
   if('IntersectionObserver' in window)new IntersectionObserver(e=>{visible=e[0].isIntersecting;motion();},{threshold:.08}).observe(root);
   else{visible=true;motion();}
-  document.addEventListener('visibilitychange',motion);reduced.addEventListener('change',motion);
+  document.addEventListener('visibilitychange',motion);
+  reduced.addEventListener('change',()=>{
+    motion();
+    panels.forEach(panel => settlePanel(panel, +panel.dataset.step === active));
+  });
   const mobile=matchMedia('(max-width:760px)');
   const hosts=steps.map(b=>b.parentElement);
   const mobileNav=document.createElement('div');mobileNav.className='fert-mobile-nav';mobileNav.setAttribute('aria-label',tr('Algorithm steps','算法步骤'));
   root.querySelector('.fert-visual').before(mobileNav);
-  function arrange(){steps.forEach((b,i)=>mobile.matches?mobileNav.append(b):hosts[i].prepend(b));}
-  mobile.addEventListener('change',arrange);arrange();
-  showQuery(0);showPriorities();selectStep(1);
-  // Reserve the tallest explanation so selection never moves the next section.
-  function reserveSpace(){
-    const side=root.querySelector('.fert-steps');side.style.minHeight='0';
-    let height=0;
-    panels.forEach(panel=>{
-      panels.forEach(p=>{p.hidden=p!==panel;});
-      height=Math.max(height,side.getBoundingClientRect().height);
-    });
-    panels.forEach(p=>{p.hidden=+p.dataset.step!==active;});
-    side.style.minHeight=`${Math.ceil(height)+8}px`;
+  function arrange(){
+    panels.forEach(panel => settlePanel(panel, +panel.dataset.step === active));
+    steps.forEach((b,i)=>mobile.matches?mobileNav.append(b):hosts[i].prepend(b));
   }
-  reserveSpace();document.fonts?.ready.then(reserveSpace);
-  let resizeTimer;
-  window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(reserveSpace,120);});
+  mobile.addEventListener('change',arrange);arrange();
+  // Retarget an opening panel if text wraps differently or a webfont loads mid-animation.
+  if ('ResizeObserver' in window) {
+    const panelResize = new ResizeObserver(entries => entries.forEach(entry => {
+      const panel = entry.target.parentElement;
+      if (panelAnimations.has(panel) && +panel.dataset.step === active) setPanelOpen(panel, true, true);
+    }));
+    panels.forEach(panel => panelResize.observe(panel.firstElementChild));
+  }
+  showQuery(0);showPriorities();selectStep(1, {animate:false});
 })();
