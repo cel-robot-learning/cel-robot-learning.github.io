@@ -5,7 +5,7 @@
   const order = ['flowers', 'folding', 'charging', 'stool', 'packaging'];
   const methods = ['human', 'sft', 'dagger', 'rlt', 'recap', 'fert'];
   const labels = {human:'Human', sft:'SFT', dagger:'(M)HG-DAgger', rlt:'RLT', recap:'RECAP', fert:'FERT'};
-  const scalingLabels = {dagger:'HG-DAgger', fert:'FERT', sft:'Init. with SFT', initial:'Init. with (M)HG-DAgger'};
+  const scalingLabels = {dagger:'(M)HG-DAgger', fert:'FERT', sft:'Init. with SFT', initial:'Init. with (M)HG-DAgger'};
   // Exact vector fill colors from CEL (2).zip, 2026-10-13; shared by both result figures.
   const colors = {human:'#d8dee3', sft:'#aab7c4', dagger:'#6f8ba4', rlt:'#b9c8c7', recap:'#9691ad', fert:'#b76549'};
   const scalingColors = {dagger:colors.dagger, fert:colors.fert, sft:colors.dagger, initial:colors.fert};
@@ -67,7 +67,7 @@
   function scalingResult(key, method, robots) {
     const task = tasks[key];
     const count = method === 'sft' ? task.sft : method === 'initial' ? task.initial : task[method].find(point => point[0] === robots)[1];
-    const context = method === 'sft' ? 'Starting checkpoint for HG-DAgger' : method === 'initial' ? `${task.initialLabel} · starting checkpoint for FERT` : fleetLabel(robots);
+    const context = method === 'sft' ? 'Starting checkpoint for (M)HG-DAgger' : method === 'initial' ? `${task.initialLabel} · starting checkpoint for FERT` : fleetLabel(robots);
     return {key, method, count, robots, context, group:'scaling'};
   }
 
@@ -194,13 +194,13 @@
       }).join('');
       return `<g class="plot-series"><path d="${path}" fill="none" stroke="${scalingColors[method]}" stroke-width="2.5" stroke-linejoin="round"/>${points}</g>`;
     }).join('');
-    host.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" data-left="${left}" data-right="${right}" data-top="${top}" data-bottom="${bottom}" role="group" aria-label="${task.title}: HG-DAgger and FERT scaling results"><text class="plot-caption" x="${left}" y="12">Success rate (%)</text>${grid(left,right,y,yTicks)}${baselines}${curves}<line class="plot-guide" x1="${left}" x2="${left}" y1="${top}" y2="${bottom}" aria-hidden="true"/>${ticks.map(n => `<text class="plot-tick" x="${x(n)}" y="${bottom+22}" text-anchor="middle">${n}</text>`).join('')}<text class="plot-caption" x="${(left+right)/2}" y="${height-7}" text-anchor="middle">Number of training robots</text></svg>`;
+    host.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" data-left="${left}" data-right="${right}" data-top="${top}" data-bottom="${bottom}" role="group" aria-label="${task.title}: (M)HG-DAgger and FERT scaling results"><text class="plot-caption" x="${left}" y="12">Success rate (%)</text>${grid(left,right,y,yTicks)}${baselines}${curves}<line class="plot-guide" x1="${left}" x2="${left}" y1="${top}" y2="${bottom}" aria-hidden="true"/>${ticks.map(n => `<text class="plot-tick" x="${x(n)}" y="${bottom+22}" text-anchor="middle">${n}</text>`).join('')}<text class="plot-caption" x="${(left+right)/2}" y="${height-7}" text-anchor="middle">Number of training robots</text></svg>`;
   }
 
   function updateScaling(result) {
     const [low,high] = wilson(result.count);
     const gain = rate(result.count) - rate(tasks[result.key].initial);
-    const gainText = result.method === 'fert' ? `${gain >= 0 ? '+' : ''}${gain.toFixed(1)} percentage points vs. starting HG-DAgger` : result.context;
+    const gainText = result.method === 'fert' ? `${gain >= 0 ? '+' : ''}${gain.toFixed(1)} percentage points vs. starting (M)HG-DAgger` : result.context;
     byId('scaling-readout').innerHTML = `<div><span class="result-method" style="--method-color:${resultColor(result)}">${resultLabel(result)}</span><h4>${tasks[result.key].title}</h4><span class="selection-context">${result.context}</span></div><div><strong>${percent(result.count)}<span>%</span></strong><span>${result.count} / ${trials} successful trials</span></div><div><span class="small-mono">95% Wilson interval</span><b>${low.toFixed(1)}–${high.toFixed(1)}%</b><span>${gainText}</span></div>`;
     scalingRoot.querySelectorAll('[data-result]').forEach(element => {
       const current = scalingResult(element.dataset.task,element.dataset.method,element.dataset.robots === undefined ? undefined : Number(element.dataset.robots));
