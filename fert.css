@@ -10,8 +10,8 @@
 .fert-view-controls button:disabled{opacity:.4}
 .fert-layout{display:grid;grid-template-columns:minmax(0,2.15fr) minmax(290px,1fr);align-items:start}
 .fert-visual{position:sticky;top:24px;padding:22px 16px 16px 24px;min-width:0}
-.fert-scene{position:relative;width:100%;aspect-ratio:1060/940;overflow:hidden;border-radius:12px;background:#fff;touch-action:pan-y}
-.fert-scene.is-pannable{cursor:grab;touch-action:none}
+.fert-scene{position:relative;width:100%;aspect-ratio:1060/940;overflow:hidden;border-radius:12px;background:#fff;touch-action:auto}
+.fert-scene.is-pannable{cursor:grab}
 .fert-scene.is-dragging{cursor:grabbing}
 .fert-scene svg{width:100%;height:100%;max-width:none;overflow:hidden;user-select:none;font-family:Arial,Helvetica,sans-serif}
 .fert-module{cursor:pointer;outline:none;transition:opacity .35s}
@@ -92,7 +92,16 @@
 /* Keep the original composition steady while the adjacent explanation changes. */
 .fert-layout{align-items:start;grid-template-columns:minmax(0,2.05fr) minmax(300px,1fr)}
 .fert-visual{position:relative;top:auto;padding:24px 20px}
+.fert-zoom-toolbar{display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-bottom:10px}
+.fert-zoom-toolbar button{display:inline-grid;place-items:center;min-width:40px;min-height:40px;box-sizing:border-box;padding:7px 10px;border:1px solid #dbe2e7;border-radius:8px;background:#fff;color:#526877;font:18px/1 var(--sans);cursor:pointer;transition:background .2s,border-color .2s}
+.fert-zoom-toolbar #fert-zoom-reset{font-size:12px}
+.fert-zoom-toolbar button:hover{background:#f0f7fb;border-color:#99b8cb}
+.fert-zoom-toolbar button:disabled{opacity:.4;cursor:default}
 .fert-scene{aspect-ratio:1060/940;max-height:none;overflow:visible}
+.fert-scene:focus{outline:none}
+.fert-scene:focus-visible{outline:2px solid #507f99;outline-offset:3px}
+.fert-scene.is-zoomed{cursor:grab;touch-action:pinch-zoom;overflow:hidden}
+.fert-scene.is-dragging{cursor:grabbing}
 .fert-scene svg{overflow:visible}
 .fert-module .module-outline{stroke-width:3}
 .fert-alignment{pointer-events:none}
@@ -117,3 +126,4 @@
  .fert-mobile-nav .fert-step-caret{display:none}.fert-mobile-nav .fert-step-button[aria-expanded=true]{background:#f0f7fb}
  .fert-steps{padding:20px}.fert-steps-heading{display:none}.fert-step{border:0}.fert-step-body{padding:0}.fert-demo-note{padding:10px 0 0}
 }
+@media print{.fert-zoom-toolbar{display:none}}

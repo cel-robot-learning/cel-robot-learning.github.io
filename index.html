@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="results.css?v=20261013-paper-palette">
   <link rel="preload" as="image" href="assets/cel-fleet-cover.png">
   <link rel="preload" as="font" href="assets/fonts/source-serif-4-bold.woff2" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="fert.css?v=20261014-accordion-motion">
+  <link rel="stylesheet" href="fert.css?v=20261014-diagram-zoom">
   <link rel="stylesheet" href="motion.css?v=20261012-smaller-logos">
   <link rel="stylesheet" href="fats.css?v=20261013-system-narrative">
 </head>
@@ -119,7 +119,13 @@
     </figure>    <figure class="fert-framework wide-width" id="fert-framework" data-locale="en" aria-label="FERT algorithm framework">
   <div class="fert-layout">
     <div class="fert-visual">
-      <div class="fert-scene" id="fert-scene"><svg role="group" id="fert-diagram" viewBox="-48 -10 1060 940" xmlns="http://www.w3.org/2000/svg" aria-labelledby="fert-svg-title fert-svg-description">
+      <div class="fert-zoom-toolbar" role="group" aria-label="Diagram zoom">
+        <button type="button" id="fert-zoom-out" aria-label="Zoom out" title="Zoom out">−</button>
+        <button type="button" id="fert-zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
+        <button type="button" id="fert-zoom-reset" aria-label="Fit diagram" title="Fit diagram">Fit</button>
+        <span class="sr-only" id="fert-zoom-status" role="status" aria-live="polite">Diagram zoom: 100%</span>
+      </div>
+      <div class="fert-scene" id="fert-scene" tabindex="0" role="region" aria-label="FERT diagram. Use plus and minus to zoom, arrow keys to pan, and 0 to fit."><svg role="group" id="fert-diagram" viewBox="-48 -10 1060 940" xmlns="http://www.w3.org/2000/svg" aria-labelledby="fert-svg-title fert-svg-description">
 <title id="fert-svg-title">Failure-guided Experience Retrieval Fine-Tuning</title><desc id="fert-svg-description">Four steps from the revised framework: asynchronous robot collection, frozen visual and joint-state encoding, S-DTW retrieval from successful trajectories, and priority updates followed by weighted sampling and policy fine-tuning.</desc>
 <defs><marker id="fert-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#718896"/></marker><marker id="fert-arrow-green" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#709d83"/></marker><marker id="fert-arrow-red" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#cf8790"/></marker></defs>
 <g class="fert-module" data-step="1" role="button" tabindex="0" aria-label="1. Asynchronous collection" aria-pressed="false" aria-controls="fert-panel-1">
@@ -436,7 +442,7 @@
       </details>
 
       <div class="result-tooltip" id="comparison-tooltip" role="tooltip" hidden></div>
-    </figure><div class="reading-width prose" id="scaling-evidence"><h3 id="scaling-title">What changes when more robots contribute?</h3><p>The reliability gains above come from shared practice. To see how performance changes as more robots contribute, we varied fleet size while keeping collection time per robot fixed. Larger fleets therefore provided more experience for FERT. On phone packaging, success reaches <strong>50.8%, 86.7% and 98.3%</strong> with 4, 16 and 96 training robots, respectively. The 4-robot result falls below the starting policy’s <strong>79.2%</strong>, while expanding from 16 to 96 robots adds 11.6 percentage points. Across the five tasks, FERT generally improves with larger fleets. One possible explanation for weaker small-fleet results is that their successful experience does not cover enough of the situations in which the policy fails. Dashed lines mark the SFT and (M)HG-DAgger starting policies.</p></div>    <figure class="research-results wide-width" id="fleet-scaling" aria-label="Success rates by training fleet size">
+    </figure><div class="reading-width prose" id="scaling-evidence"><h3 id="scaling-title">What changes when more robots contribute?</h3><p>The reliability gains above come from shared practice. To see how performance changes as more robots contribute, we varied fleet size while keeping collection time per robot fixed. Larger fleets therefore provided more experience for FERT. On phone packaging, success reaches <strong>50.8%, 86.7% and 98.3%</strong> with 4, 16 and 96 training robots, respectively. The 4-robot result falls below the starting policy’s <strong>79.2%</strong>, while expanding from 16 to 96 robots adds 11.7 percentage points. Across the five tasks, FERT generally improves with larger fleets. One possible explanation for weaker small-fleet results is that their successful experience does not cover enough of the situations in which the policy fails. Dashed lines mark the SFT and (M)HG-DAgger starting policies.</p></div>    <figure class="research-results wide-width" id="fleet-scaling" aria-label="Success rates by training fleet size">
       <div id="scaling-legend" class="results-legend" role="group" aria-label="Show or hide scaling series"></div>
       <div id="scaling-cards" class="scaling-cards"></div>
       <div id="scaling-readout" class="scaling-selection" aria-live="polite" aria-atomic="true"></div>
@@ -446,7 +452,7 @@
     </figure>
     <section class="reading-width prose ablation-section">
       <h3>Choosing what to practice</h3>
-      <p>A larger pool gives FERT more successful actions to learn from. Retrieval directs that learning toward the difficulties the policy is actually encountering. We tested this selection step by comparing full FERT with uniform sampling from the same success buffer on phone packaging with 16 training robots and 120 evaluation trials per model. Removing failure-guided retrieval lowers success from <strong>86.7%</strong> to <strong>64.2%</strong>, a drop of 22.5 percentage points. With the experience and other settings held fixed, this shows the benefit of choosing examples related to current failures.</p>
+      <p>A larger pool gives FERT more successful actions to learn from. Retrieval directs that learning toward the difficulties the policy is actually encountering. We tested this selection step by comparing full FERT with uniform sampling from the same success buffer on phone packaging with 16 training robots and 120 evaluation trials per model. Removing failure-guided retrieval (FR) lowers success from <strong>86.7%</strong> to <strong>64.2%</strong>, a drop of 22.5 percentage points. With the experience and other settings held fixed, this shows the benefit of choosing examples related to current failures.</p>
       <figure id="retrieval-ablation" class="ablation-chart" aria-label="Failure retrieval ablation: w/o FR, 64.2 percent; w/ FR, 86.7 percent"><div class="ablation-row"><span>w/o FR</span><div><i style="width:64.1667%"></i></div><strong>64.2%</strong></div><div class="ablation-row"><span>w/ FR</span><div><i class="fert-bar" style="width:86.6667%"></i></div><strong>86.7%</strong></div></figure>
       <!-- CEL.zip: source/experiments/ablation.tex and source/appendix/exp_res.tex. -->
       <p>FERT also learns from the movements around each matched segment, retaining one second before and after it. Removing this context lowers success from <strong>86.7% to 57.5%</strong> in the same 16-robot phone-packaging experiment. The result suggests that these surrounding movements are an important part of the training example.</p>
@@ -515,7 +521,7 @@
   <script src="research-data.js?v=20261014-method-labels" defer></script>
   <script src="app.js?v=20261012-editorial-cleanup" defer></script>
   <script src="fert-model.js?v=20261011-explainer-2" defer></script>
-  <script src="fert.js?v=20261014-accordion-motion" defer></script>
+  <script src="fert.js?v=20261014-diagram-zoom" defer></script>
   <script src="results.js?v=20261014-method-labels" defer></script>
 <script src="ablation.js?v=20261011-reveal" defer></script>
   <script src="fats.js?v=20261013-system-final" defer></script>

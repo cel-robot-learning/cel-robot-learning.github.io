@@ -96,6 +96,120 @@
     });
   });
 
+  // Regional zoom uses the SVG camera so the diagram keeps its original layout height.
+  // Touch pinch remains the browser's page gesture; a single finger can pan a zoomed diagram.
+  const scene = root.querySelector('.fert-scene');
+  const zoomIn = get('fert-zoom-in'), zoomOut = get('fert-zoom-out'), zoomReset = get('fert-zoom-reset');
+  if (scene && zoomIn && zoomOut && zoomReset) {
+    const initial = svg.viewBox.baseVal;
+    const bounds = {x:initial.x, y:initial.y, width:initial.width, height:initial.height};
+    let view = {...bounds}, zoom = 1, drag = null, ignoreClickUntil = 0;
+    const touches = new Set();
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    function drawView() {
+      view.x = clamp(view.x, bounds.x, bounds.x + bounds.width - view.width);
+      view.y = clamp(view.y, bounds.y, bounds.y + bounds.height - view.height);
+      svg.setAttribute('viewBox', [view.x, view.y, view.width, view.height].map(n => n.toFixed(4)).join(' '));
+      scene.classList.toggle('is-zoomed', zoom > 1);
+      scene.dataset.zoom = zoom.toFixed(2);
+      zoomIn.disabled = zoom >= 3;
+      zoomOut.disabled = zoomReset.disabled = zoom <= 1;
+      const status = get('fert-zoom-status');
+      const label = tr(`Diagram zoom ${Math.round(zoom * 100)}%`, `图示缩放 ${Math.round(zoom * 100)}%`);
+      if (status && status.textContent !== label) status.textContent = label;
+    }
+    function endDrag(suppressClick = false) {
+      if (!drag) return;
+      const previous = drag;
+      drag = null;
+      scene.classList.remove('is-dragging');
+      if (suppressClick && previous.moved) ignoreClickUntil = performance.now() + 600;
+      try {
+        if (scene.hasPointerCapture(previous.id)) scene.releasePointerCapture(previous.id);
+      } catch (_) { /* Native pinch can release capture before pointercancel arrives. */ }
+    }
+    function setZoom(value) {
+      endDrag();
+      const next = clamp(value, 1, 3), cx = view.x + view.width / 2, cy = view.y + view.height / 2;
+      zoom = next;
+      view = next === 1 ? {...bounds} : {
+        x:cx - bounds.width / next / 2,
+        y:cy - bounds.height / next / 2,
+        width:bounds.width / next,
+        height:bounds.height / next
+      };
+      drawView();
+    }
+    zoomIn.addEventListener('click', () => setZoom(zoom * 1.25));
+    zoomOut.addEventListener('click', () => setZoom(zoom / 1.25));
+    zoomReset.addEventListener('click', () => setZoom(1));
+
+    // Suppression runs before SVG controls receive the synthetic click after a drag.
+    scene.addEventListener('click', event => {
+      if (event.detail && performance.now() < ignoreClickUntil) {
+        ignoreClickUntil = 0;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
+    document.addEventListener('pointerdown', event => {
+      if (event.pointerType === 'touch') {
+        touches.add(event.pointerId);
+        if (touches.size > 1) endDrag(true);
+      }
+    }, true);
+    scene.addEventListener('pointerdown', event => {
+      ignoreClickUntil = 0;
+      if (zoom <= 1 || drag || event.button !== 0 || (event.pointerType === 'touch' && touches.size > 1)) return;
+      const matrix = svg.getScreenCTM();
+      if (!matrix) return;
+      drag = {id:event.pointerId, x:event.clientX, y:event.clientY, view:{...view}, inverse:matrix.inverse(), moved:false};
+    });
+    document.addEventListener('pointermove', event => {
+      if (!drag || event.pointerId !== drag.id) return;
+      if (event.pointerType === 'touch' && touches.size > 1) {endDrag(true); return;}
+      const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
+      if (!drag.moved) {
+        if (Math.hypot(dx, dy) < 5) return;
+        drag.moved = true;
+        scene.classList.add('is-dragging');
+        // Capture only after the threshold; ordinary taps must still reach SVG modules.
+        try {scene.setPointerCapture(event.pointerId);} catch (_) {}
+      }
+      const matrix = drag.inverse;
+      view.x = drag.view.x - (matrix.a * dx + matrix.c * dy);
+      view.y = drag.view.y - (matrix.b * dx + matrix.d * dy);
+      drawView();
+      if (event.cancelable) event.preventDefault();
+    }, {passive:false});
+    function releasePointer(event) {
+      touches.delete(event.pointerId);
+      if (drag?.id === event.pointerId) endDrag(true);
+    }
+    document.addEventListener('pointerup', releasePointer, true);
+    document.addEventListener('pointercancel', releasePointer, true);
+    scene.addEventListener('lostpointercapture', event => {
+      if (drag?.id === event.pointerId) endDrag(true);
+    });
+    window.addEventListener('blur', () => {touches.clear(); endDrag();});
+    scene.addEventListener('keydown', event => {
+      // SVG modules retain their existing arrow-key step navigation.
+      if (event.target !== scene || event.ctrlKey || event.metaKey || event.altKey) return;
+      if (['+', '='].includes(event.key)) {event.preventDefault(); setZoom(zoom * 1.25);}
+      else if (event.key === '-') {event.preventDefault(); setZoom(zoom / 1.25);}
+      else if (['0', 'Escape'].includes(event.key)) {event.preventDefault(); setZoom(1);}
+      else if (zoom > 1 && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+        event.preventDefault();
+        endDrag();
+        const direction = event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 1;
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') view.x += direction * view.width * .12;
+        else view.y += direction * view.height * .12;
+        drawView();
+      }
+    });
+    drawView();
+  }
+
   const ns = 'http://www.w3.org/2000/svg';
   const lines = get('fert-alignments');
   matches.forEach((match,t)=>{
