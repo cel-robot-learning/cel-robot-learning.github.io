@@ -18,6 +18,35 @@
   const overlaps = (t,c) => intervals.some(i => i.trajectory===t && c<i.end && c+2>i.start);
   let probability, active = 1, after = true, visible = false, seed = 21;
   const get = id => root.querySelector('#'+id);
+  const streamPaths = [...svg.querySelectorAll('.fert-path')].filter(path => {
+    // The miniature charts use the same path class; keep their axes still.
+    if (path.style.markerEnd === 'none' && parseFloat(path.style.strokeWidth) === 1) return false;
+    const route = path.dataset.fertRoute || path.closest('.fert-module')?.dataset.step;
+    if (!route) return false;
+    path.dataset.fertRoute = route;
+    path.classList.add('fert-stream');
+    return true;
+  });
+  let streamHover = null, streamFocus = null, streamFrame = null;
+  function refreshStreams() {
+    if (streamFrame !== null) cancelAnimationFrame(streamFrame);
+    streamFrame = null;
+    streamPaths.forEach(path => path.classList.remove('is-streaming'));
+    if (!visible || document.hidden || reduced.matches) return;
+    const target = streamHover || streamFocus || active;
+    // A painted frame without the class also makes repeated selections replay in Safari.
+    streamFrame = requestAnimationFrame(() => {
+      streamFrame = requestAnimationFrame(() => {
+        streamFrame = null;
+        if (!visible || document.hidden || reduced.matches) return;
+        streamPaths.forEach(path => path.classList.toggle('is-streaming',
+          target === null || path.dataset.fertRoute.split(' ').includes(String(target))));
+      });
+    });
+  }
+  svg.addEventListener('animationend', event => {
+    if (event.animationName === 'fert-stream') event.target.classList.remove('is-streaming');
+  });
   const panelAnimations = new Map();
   panels.forEach(panel => {
     const body = document.createElement('div');
@@ -83,12 +112,26 @@
     get('fert-focus-status').textContent = active === null
       ? tr('All step explanations collapsed','所有步骤说明已收起')
       : tr(`Step ${active} / 4`,`第 ${active} / 4 步`);
+    refreshStreams();
   }
   [...steps,...modules].forEach(el => {
+    el.addEventListener('pointerenter', event => {
+      if (event.pointerType === 'touch') return;
+      streamHover = Number(el.dataset.step);
+      refreshStreams();
+    });
+    el.addEventListener('pointerleave', event => {
+      if (event.pointerType === 'touch') return;
+      streamHover = null;
+      refreshStreams();
+    });
+    el.addEventListener('focus', () => {streamFocus = Number(el.dataset.step); refreshStreams();});
+    el.addEventListener('blur', () => {streamFocus = null; refreshStreams();});
     el.addEventListener('click',()=>selectStep(el.dataset.step, {toggle:el.matches('.fert-step-button')}));
     el.addEventListener('keydown',event=>{
       if (['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)) {
         event.preventDefault();
+        streamHover = null;
         const current = Number(el.dataset.step);
         const next = event.key==='Home'?1:event.key==='End'?4:(current-1+(['ArrowRight','ArrowDown'].includes(event.key)?1:3))%4+1;
         selectStep(next); steps[next-1].focus({preventScroll:true});
@@ -269,7 +312,7 @@
   }
   root.querySelectorAll('[data-priority]').forEach(b=>b.addEventListener('click',()=>{after=b.dataset.priority==='after';showPriorities();}));
   get('fert-sample').addEventListener('click',showBatch);
-  function motion(){root.classList.toggle('is-live',visible&&!document.hidden&&!reduced.matches);}
+  function motion(){root.classList.toggle('is-live',visible&&!document.hidden&&!reduced.matches);refreshStreams();}
   if('IntersectionObserver' in window)new IntersectionObserver(e=>{visible=e[0].isIntersecting;motion();},{threshold:.08}).observe(root);
   else{visible=true;motion();}
   document.addEventListener('visibilitychange',motion);

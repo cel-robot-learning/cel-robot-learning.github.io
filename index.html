@@ -13,9 +13,11 @@
   <link rel="stylesheet" href="ablation.css?v=20261014-ablation-footer">
   <link rel="preload" as="image" href="assets/cel-fleet-cover.png">
   <link rel="preload" as="font" href="assets/fonts/source-serif-4-bold.woff2" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="fert.css?v=20261014-copy-trim">
+  <link rel="stylesheet" href="fert.css?v=20261015-native-streams">
   <link rel="stylesheet" href="motion.css?v=20261012-smaller-logos">
   <link rel="stylesheet" href="fats.css?v=20261013-system-narrative">
+  <link rel="stylesheet" href="cel-sources.css?v=20261015-native-overview">
+  <link rel="stylesheet" href="system-diagrams.css?v=20261015-native-system">
 </head>
 <body>
   <a class="skip-link" href="#overview">Skip to content</a>
@@ -56,7 +58,193 @@
 <section class="project-section" id="overview">
 <div class="reading-width section-heading"><p class="section-index">01</p><h2>CEL: learning from a fleet’s own experience</h2>
 <p>A robot needs practice to perform a task reliably. Robot foundation models can continue improving during deployment by learning from real-world execution. A substantial body of evidence has already demonstrated the effectiveness of scaling data and compute, and robot fleets can expand their experience through parallel execution. The core bottleneck in scaling this learning process is that expert action supervision is limited and difficult to scale.</p>
-<p>We introduce Collective Experience Learning (CEL), a paradigm for scalable policy improvement during deployment in which robots learn from experience generated across a fleet. After expert-supervised initialization, robots contribute execution experience to a shared learning process and receive updated policies while the fleet continues operating. CEL uses this collective experience to improve policy performance without additional expert demonstrations or corrective actions. Humans provide outcome labels and reset environments.</p></div>
+</div>
+<figure id="cel-sources" class="cel-sources wide-width" aria-label="Sources of experience for policy learning">
+  <svg class="cel-source-defs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="cel-src-arrow-blue" viewBox="0 0 8 8" refX="6.5" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#32658a"/></marker>
+      <marker id="cel-src-arrow-coral" viewBox="0 0 8 8" refX="6.5" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#dc795d"/></marker>
+      <marker id="cel-src-arrow-green" viewBox="0 0 8 8" refX="6.5" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#709d83"/></marker>
+      <marker id="cel-src-arrow-failure" viewBox="0 0 8 8" refX="6.5" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#cf8790"/></marker>
+      <symbol id="cel-src-human" viewBox="0 0 60 60">
+        <g fill="none" stroke="#dc795d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="30" cy="16" r="10.5"/>
+          <path d="M13 52C14 37 21 29 30 29S46 37 47 52"/>
+        </g>
+      </symbol>
+      <symbol id="cel-src-robot" viewBox="0 0 60 60">
+        <g stroke="#32658a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M30 8V16" fill="none"/>
+          <circle cx="30" cy="6" r="2.3" fill="#32658a" stroke="none"/>
+          <rect x="9" y="17" width="42" height="34" rx="7" fill="#fff"/>
+          <path d="M8 28H5V41H8M52 28H55V41H52" fill="none"/>
+          <ellipse cx="22" cy="32" rx="1.6" ry="2.5" fill="#32658a" stroke="none"/>
+          <ellipse cx="38" cy="32" rx="1.6" ry="2.5" fill="#32658a" stroke="none"/>
+          <path d="M24 40Q30 47 36 40" fill="none"/>
+        </g>
+      </symbol>
+      <symbol id="cel-src-robot-failure" viewBox="0 0 60 60">
+        <g stroke="#32658a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M30 8V16" fill="none"/>
+          <circle cx="30" cy="6" r="2.3" fill="#32658a" stroke="none"/>
+          <rect x="9" y="17" width="42" height="34" rx="7" fill="#fff"/>
+          <path d="M8 28H5V41H8M52 28H55V41H52M18 28 24 26M36 26 42 28" fill="none"/>
+          <ellipse cx="22" cy="33" rx="1.5" ry="1.8" fill="#32658a" stroke="none"/>
+          <ellipse cx="38" cy="33" rx="1.5" ry="1.8" fill="#32658a" stroke="none"/>
+          <path d="M24 44Q30 37 36 44" fill="none"/>
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="cel-source-grid">
+    <button type="button" class="cel-source-card" data-cel-source="demonstrations" aria-pressed="false" aria-controls="cel-source-detail" aria-labelledby="cel-demo-heading cel-demo-method">
+      <span class="cel-source-heading" id="cel-demo-heading">(a) Learn from demonstrations</span>
+      <span class="cel-source-method" id="cel-demo-method">SFT</span>
+      <svg viewBox="0 0 300 300" role="img" aria-labelledby="cel-demo-title cel-demo-desc" xmlns="http://www.w3.org/2000/svg">
+        <title id="cel-demo-title">Learning from human demonstrations</title>
+        <desc id="cel-demo-desc">A human supplies demonstrated actions. These actions supervise a policy update, and the updated policy is used by multiple robots.</desc>
+        <g font-family="inherit" fill="#243746" text-anchor="middle">
+          <use href="#cel-src-human" x="126" y="13" width="48" height="48"/>
+          <text x="150" y="77" font-size="13" font-weight="650">Human demonstrations</text>
+          <g fill="#dc795d">
+            <rect x="50" y="91" width="13" height="15" rx="1.5"/>
+            <rect x="67" y="91" width="13" height="15" rx="1.5"/>
+            <rect x="84" y="91" width="13" height="15" rx="1.5"/>
+            <rect x="101" y="91" width="13" height="15" rx="1.5"/>
+            <rect x="118" y="91" width="13" height="15" rx="1.5"/>
+            <rect x="135" y="91" width="13" height="15" rx="1.5"/>
+            <rect x="152" y="91" width="13" height="15" rx="1.5"/>
+            <rect x="169" y="91" width="13" height="15" rx="1.5"/>
+            <rect x="186" y="91" width="13" height="15" rx="1.5"/>
+            <rect x="203" y="91" width="13" height="15" rx="1.5"/>
+            <rect x="220" y="91" width="13" height="15" rx="1.5"/>
+            <rect x="237" y="91" width="13" height="15" rx="1.5"/>
+          </g>
+          <path class="cel-source-flow" d="M150 113V133" fill="none" stroke="#709d83" stroke-width="1.8" marker-end="url(#cel-src-arrow-green)"/>
+          <rect x="44" y="140" width="212" height="36" rx="8" fill="#f0f7fb" stroke="#c9d8e4" stroke-width="1.2"/>
+          <text x="150" y="163" font-size="15" font-weight="650" fill="#32658a">Policy Update</text>
+          <path class="cel-source-flow" d="M150 184V204" fill="none" stroke="#32658a" stroke-width="1.8" marker-end="url(#cel-src-arrow-blue)"/>
+          <use href="#cel-src-robot" x="49" y="214" width="48" height="48"/>
+          <use href="#cel-src-robot" x="126" y="214" width="48" height="48"/>
+          <use href="#cel-src-robot" x="203" y="214" width="48" height="48"/>
+          <text x="150" y="287" font-size="11.5" fill="#526877"><tspan font-weight="700" fill="#243746">Experience source:</tspan><tspan dx="3">human demonstrations</tspan></text>
+        </g>
+      </svg>
+    </button>
+
+    <button type="button" class="cel-source-card" data-cel-source="corrections" aria-pressed="false" aria-controls="cel-source-detail" aria-labelledby="cel-correction-heading cel-correction-method">
+      <span class="cel-source-heading" id="cel-correction-heading">(b) Learn from corrections</span>
+      <span class="cel-source-method" id="cel-correction-method">(M)HG-DAgger</span>
+      <svg viewBox="0 0 300 300" role="img" aria-labelledby="cel-correction-title cel-correction-desc" xmlns="http://www.w3.org/2000/svg">
+        <title id="cel-correction-title">Learning from expert corrections</title>
+        <desc id="cel-correction-desc">An expert takes over robot execution to supply corrective actions within a rollout. The intervention actions supervise a policy update, which returns to the robot for further execution.</desc>
+        <g font-family="inherit" fill="#243746" text-anchor="middle">
+          <use href="#cel-src-robot" x="79" y="8" width="48" height="48"/>
+          <use href="#cel-src-human" x="211" y="8" width="48" height="48"/>
+          <text x="173" y="21" font-size="11.5" fill="#dc795d">Takeover</text>
+          <path class="cel-source-flow" d="M207 32H144" fill="none" stroke="#dc795d" stroke-width="1.8" marker-end="url(#cel-src-arrow-coral)"/>
+          <text x="158" y="77" font-size="13" font-weight="650">Human-corrected rollouts</text>
+          <g fill="#79abc5">
+            <rect x="64" y="93" width="16" height="15" rx="1.5"/>
+            <rect x="83" y="93" width="16" height="15" rx="1.5"/>
+            <rect x="102" y="93" width="16" height="15" rx="1.5"/>
+            <rect x="197" y="93" width="16" height="15" rx="1.5"/>
+            <rect x="216" y="93" width="16" height="15" rx="1.5"/>
+            <rect x="235" y="93" width="16" height="15" rx="1.5"/>
+          </g>
+          <g fill="#dc795d">
+            <rect x="121" y="93" width="16" height="15" rx="1.5"/>
+            <rect x="140" y="93" width="16" height="15" rx="1.5"/>
+            <rect x="159" y="93" width="16" height="15" rx="1.5"/>
+            <rect x="178" y="93" width="16" height="15" rx="1.5"/>
+          </g>
+          <rect x="118.5" y="89.5" width="78" height="22" rx="2" fill="none" stroke="#dc795d" stroke-width="1.4" stroke-dasharray="4 3"/>
+          <path class="cel-source-flow" d="M157 117V198" fill="none" stroke="#dc795d" stroke-width="1.8" marker-end="url(#cel-src-arrow-coral)"/>
+          <text x="168" y="153" font-size="11" fill="#dc795d" text-anchor="start">Intervention actions</text>
+          <rect x="50" y="214" width="214" height="36" rx="8" fill="#f0f7fb" stroke="#c9d8e4" stroke-width="1.2"/>
+          <text x="157" y="237" font-size="15" font-weight="650" fill="#32658a">Policy Update</text>
+          <path class="cel-source-flow" d="M43 232H27V32H75" fill="none" stroke="#32658a" stroke-width="1.8" marker-end="url(#cel-src-arrow-blue)"/>
+          <text x="150" y="287" font-size="11.5" fill="#526877"><tspan font-weight="700" fill="#243746">Experience source:</tspan><tspan dx="3">expert corrections</tspan></text>
+        </g>
+      </svg>
+    </button>
+
+    <button type="button" class="cel-source-card is-active" data-cel-source="collective" aria-pressed="true" aria-controls="cel-source-detail" aria-labelledby="cel-collective-heading cel-collective-method">
+      <span class="cel-source-heading" id="cel-collective-heading">(c) Learn from collective experience</span>
+      <span class="cel-source-method" id="cel-collective-method">Collective Experience Learning (CEL)</span>
+      <svg viewBox="0 0 300 300" role="img" aria-labelledby="cel-collective-title cel-collective-desc" xmlns="http://www.w3.org/2000/svg">
+        <title id="cel-collective-title">Learning from collective robot experience</title>
+        <desc id="cel-collective-desc">Robots contribute successful executions to a collective experience buffer. Failure contexts retrieve relevant successful experience. The selected successful actions supervise a policy update that returns to the fleet.</desc>
+        <g font-family="inherit" fill="#243746" text-anchor="middle">
+          <use href="#cel-src-robot-failure" x="25" y="8" width="44" height="44"/>
+          <path d="M72 15 79 22M79 15 72 22" fill="none" stroke="#cf8790" stroke-width="1.9" stroke-linecap="round"/>
+          <use href="#cel-src-robot" x="102" y="8" width="44" height="44"/>
+          <use href="#cel-src-robot" x="161" y="8" width="44" height="44"/>
+          <use href="#cel-src-robot" x="220" y="8" width="44" height="44"/>
+          <g fill="none" stroke="#709d83" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M148 20 151 23 158 16"/>
+            <path d="M207 20 210 23 217 16"/>
+            <path d="M266 20 269 23 276 16"/>
+          </g>
+          <text x="47" y="71" font-size="11.5" fill="#cf8790">Failure context</text>
+          <text x="183" y="71" font-size="11.5" fill="#32658a">Peer success</text>
+          <g fill="#cf8790">
+            <rect x="24.5" y="82" width="9" height="9" rx="1.3"/>
+            <rect x="36.5" y="82" width="9" height="9" rx="1.3"/>
+            <rect x="48.5" y="82" width="9" height="9" rx="1.3"/>
+            <rect x="60.5" y="82" width="9" height="9" rx="1.3"/>
+          </g>
+          <g fill="#79abc5">
+            <rect x="160.5" y="82" width="9" height="9" rx="1.3"/>
+            <rect x="172.5" y="82" width="9" height="9" rx="1.3"/>
+            <rect x="184.5" y="82" width="9" height="9" rx="1.3"/>
+            <rect x="196.5" y="82" width="9" height="9" rx="1.3"/>
+          </g>
+          <path class="cel-source-flow" d="M47 97V138Q47 144 53 144H75" fill="none" stroke="#cf8790" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#cel-src-arrow-failure)"/>
+          <path class="cel-source-flow" d="M183 97V115" fill="none" stroke="#79abc5" stroke-width="1.8" marker-end="url(#cel-src-arrow-blue)"/>
+          <rect x="83" y="123" width="200" height="58" rx="8" fill="#f0f7fb" stroke="#c9d8e4" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <text x="183" y="141" font-size="11.5" font-weight="650">Collective Experience buffer</text>
+          <g fill="#79abc5">
+            <rect x="100" y="157" width="10" height="11" rx="1.3"/>
+            <rect x="113" y="157" width="10" height="11" rx="1.3"/>
+            <rect x="126" y="157" width="10" height="11" rx="1.3"/>
+            <rect x="139" y="157" width="10" height="11" rx="1.3"/>
+            <rect x="152" y="157" width="10" height="11" rx="1.3"/>
+            <rect x="204" y="157" width="10" height="11" rx="1.3"/>
+            <rect x="217" y="157" width="10" height="11" rx="1.3"/>
+            <rect x="230" y="157" width="10" height="11" rx="1.3"/>
+            <rect x="243" y="157" width="10" height="11" rx="1.3"/>
+            <rect x="256" y="157" width="10" height="11" rx="1.3"/>
+          </g>
+          <g fill="#32658a">
+            <rect x="165" y="157" width="10" height="11" rx="1.3"/>
+            <rect x="178" y="157" width="10" height="11" rx="1.3"/>
+            <rect x="191" y="157" width="10" height="11" rx="1.3"/>
+          </g>
+          <rect x="162" y="153.5" width="42" height="18" rx="2" fill="none" stroke="#32658a" stroke-width="1.4" stroke-dasharray="4 2.5"/>
+          <path class="cel-source-flow" d="M183 187V210" fill="none" stroke="#32658a" stroke-width="1.8" marker-end="url(#cel-src-arrow-blue)"/>
+          <rect x="83" y="218" width="200" height="36" rx="8" fill="#f0f7fb" stroke="#c9d8e4" stroke-width="1.2"/>
+          <text x="183" y="241" font-size="15" font-weight="650" fill="#32658a">Policy Update</text>
+          <path class="cel-source-flow" d="M289 236H294V32H269" fill="none" stroke="#32658a" stroke-width="1.8" marker-end="url(#cel-src-arrow-blue)"/>
+          <text x="150" y="287" font-size="11.5" fill="#526877"><tspan font-weight="700" fill="#243746">Experience source:</tspan><tspan dx="3">fleet experience</tspan></text>
+        </g>
+      </svg>
+    </button>
+  </div>
+
+  <div class="cel-supervision" aria-label="Expert action supervision decreases from left to right">
+    <span>High</span>
+    <span>Expert action supervision</span>
+    <span>Low</span>
+    <i aria-hidden="true"></i>
+  </div>
+  <figcaption id="cel-source-detail" class="cel-source-detail" aria-live="polite">
+    <strong data-cel-detail-title>Fleet experience.</strong>
+    <span data-cel-detail-copy>Successful robot actions supply supervision; failure contexts guide which experience to revisit.</span>
+  </figcaption>
+</figure>
+<div class="reading-width prose overview-copy"><p>We introduce Collective Experience Learning (CEL), a paradigm for scalable policy improvement during deployment in which robots learn from experience generated across a fleet. After expert-supervised initialization, robots pool their execution experience to improve a shared policy and receive updated policies while the fleet continues operating. Successful robot executions supply action supervision for further updates, without additional expert demonstrations or corrective actions. In our implementation, humans provide outcome labels and reset environments.</p></div>
 <dl class="reading-width overview-highlights"><div><dt>Largest training fleet</dt><dd>96<span>robots</span></dd></div><div><dt>Separately trained tasks</dt><dd>5<span>real-world tasks</span></dd></div><div><dt>Phone Packaging</dt><dd>98.3<span>% success</span></dd></div></dl>
 </section>
 <section class="project-section" id="tasks">
@@ -395,7 +583,7 @@
 <rect x="898" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-6" data-baseline="872"/>
 <rect x="918" y="855" width="15" height="17" rx="2" fill="#b57aa8" class="fert-priority-bar" id="fert-buffer-weight-3-7" data-baseline="872"/>
 </g>
-<path d="M371 85H433" class="fert-path" /><path d="M371 194H433" class="fert-path" /><path d="M881 247C918 274 930 311 914 340" class="fert-path" /><path d="M12 390H-10Q-30 390-30 410V621Q-30 641-10 641H16" class="fert-path" style="stroke:#709d83;marker-end:url(#fert-arrow-green)" />
+<path d="M371 85H433" class="fert-path" data-fert-route="1 2" /><path d="M371 194H433" class="fert-path" data-fert-route="1 2" /><path d="M881 247C918 274 930 311 914 340" class="fert-path" data-fert-route="2 3" /><path d="M12 390H-10Q-30 390-30 410V621Q-30 641-10 641H16" class="fert-path" data-fert-route="3 4" style="stroke:#709d83;marker-end:url(#fert-arrow-green)" />
 <path d="M375 85H428" class="fert-flow" /><path d="M375 194H428" class="fert-flow" /><path d="M885 251C916 278 926 309 915 334" class="fert-flow flow-red" /><path d="M12 390H-10Q-30 390-30 410V621Q-30 641-10 641H12" class="fert-flow flow-green" />
 </svg></div>
     </div>
@@ -438,8 +626,193 @@
 <section class="project-section" id="system">
 <div class="reading-width section-heading"><p class="section-index">04</p><h2 id="hardware-title">FATS: Learning together without waiting for everyone</h2>
 <p>Collective experience learning turns a robot fleet into a distributed training system. Keeping that system stable is a challenge: robots may go offline, edge nodes may lose their connections, and some robots may pause for resets or recovery. To keep these local interruptions from holding up the whole learning process, we developed the <strong>Fault-tolerant Asynchronous Training System (FATS)</strong>. Asynchronous collection and fault recovery allow available robots to continue contributing experience while recovered workers rejoin the fleet, helping collective learning continue through interruptions.</p></div>
-<figure class="fats-concept wide-width" aria-label="SwarmLink data plane and HotSwarm control plane">
-  <img src="assets/fats-architecture.png?v=20261013-manuscript" width="2075" height="700" loading="lazy" alt="FATS architecture: the HotSwarm control plane manages worker membership and recovery across the robot fleet, edge nodes and cloud servers. SwarmLink carries observations to shared edge inference, returns actions to robots, uploads completed episodes to cloud training and distributes policy updates to inference workers.">
+<figure id="fats-architecture" class="fats-concept wide-width system-diagram system-architecture" data-system-diagram="architecture">
+  <div class="system-diagram-scroll">
+    <svg class="system-diagram-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2075 700" role="group" aria-labelledby="sys-arch-title sys-arch-desc" font-family="Arial, Helvetica, sans-serif" fill="#243746">
+      <title id="sys-arch-title">FATS architecture: the HotSwarm control plane and SwarmLink data plane</title>
+      <desc id="sys-arch-desc">HotSwarm manages membership, worker identity and recovery across the robot fleet, edge nodes and cloud servers. SwarmLink sends observations through a shared edge request queue, returns actions to the sending robot, asynchronously uploads completed episodes to the experience queue and carries policy updates back to inference workers. Select a component or flow for details.</desc>
+      <defs>
+        <symbol id="sys-arch-robot" viewBox="0 0 100 100">
+          <g fill="#fff" stroke="currentColor" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="33" y="2" width="31" height="25" rx="5"/>
+            <path d="M48.5 27v7M29 39 13 49 6 67M1 67h10M68 39l17 10 7 18m-5 0h10" fill="none"/>
+            <rect x="29" y="34" width="39" height="40" rx="4"/>
+            <rect x="14" y="78" width="69" height="12" rx="4"/>
+            <circle cx="26" cy="90" r="5"/>
+            <circle cx="70" cy="90" r="5"/>
+          </g>
+          <g fill="currentColor"><circle cx="42" cy="14" r="2.25"/><circle cx="55" cy="14" r="2.25"/></g>
+        </symbol>
+        <symbol id="sys-arch-chip" viewBox="0 0 50 50">
+          <g stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="square">
+            <path d="M12 1v7m13-7v7m13-7v7M12 43v7m13-7v7m13-7v7M1 12h7m-7 13h7m-7 13h7m35-26h7m-7 13h7m-7 13h7"/>
+            <rect x="7" y="7" width="36" height="36" rx="3.3" fill="#fff" stroke-width="2.5"/>
+          </g>
+          <rect x="16" y="16" width="19" height="19" rx="2.2" fill="currentColor"/>
+        </symbol>
+        <marker id="sys-arch-arrow-blue" viewBox="0 0 20 20" refX="18" refY="10" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="m0 1 20 9-20 9Z" fill="#0b76a0"/></marker>
+        <marker id="sys-arch-arrow-gray" viewBox="0 0 20 20" refX="18" refY="10" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto"><path d="m0 1 20 9-20 9Z" fill="#71808a"/></marker>
+        <marker id="sys-arch-arrow-gray-small" viewBox="0 0 14 14" refX="12" refY="7" markerWidth="14" markerHeight="14" markerUnits="userSpaceOnUse" orient="auto"><path d="m0 1 14 6-14 6Z" fill="#71808a"/></marker>
+        <marker id="sys-arch-arrow-coral" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="m0 0 12 6-12 6Z" fill="#b76549"/></marker>
+        <marker id="sys-arch-arrow-policy" viewBox="0 0 22 22" refX="20" refY="11" markerWidth="22" markerHeight="22" markerUnits="userSpaceOnUse" orient="auto"><path d="m0 0 22 11-22 11Z" fill="#b76549"/></marker>
+      </defs>
+
+      <path d="M1328 129h123" fill="none" stroke="#b8c3ca" stroke-width="14"/>
+      <text x="1389" y="92" text-anchor="middle" font-size="22" fill="#71808a">edge-cloud link</text>
+      <rect class="system-zone" x="22" y="106" width="658" height="500" rx="26" fill="#f2f4f5" stroke="#71808a" stroke-width="3.2"/>
+      <rect class="system-zone" x="760" y="106" width="567" height="500" rx="26" fill="#f2f4f5" stroke="#71808a" stroke-width="3.2"/>
+      <rect class="system-zone" x="1451" y="106" width="601" height="500" rx="26" fill="#f2f4f5" stroke="#71808a" stroke-width="3.2"/>
+      <text x="51" y="147" font-size="30" font-weight="700">Robot fleet</text>
+      <text x="789" y="147" font-size="30" font-weight="700">Edge nodes</text>
+      <text x="1480" y="147" font-size="30" font-weight="700">Cloud servers</text>
+      <text x="2052" y="94" text-anchor="end" font-size="23" font-weight="700" fill="#0b76a0">SwarmLink data plane</text>
+
+      <g class="system-hotspot" data-system-focus="control" role="button" tabindex="0" aria-pressed="false" aria-controls="fats-architecture-detail" aria-label="HotSwarm control plane: fleet membership, worker identity and recovery">
+        <rect class="system-zone" x="22" y="11" width="2030" height="59" rx="18" fill="#f7ece8" stroke="#b76549" stroke-width="3.2"/>
+        <text x="51" y="47" font-size="27" font-weight="700" fill="#b76549">HotSwarm control plane</text>
+        <text x="475" y="46" font-size="23">fleet membership, worker identity and recovery</text>
+        <g fill="none" stroke="#b76549" stroke-width="3" marker-end="url(#sys-arch-arrow-coral)">
+          <path class="system-flow" data-system-route="control" d="M340 71v32"/>
+          <path class="system-flow" data-system-route="control" d="M362 105V73"/>
+          <path class="system-flow" data-system-route="control" d="M1032 71v32"/>
+          <path class="system-flow" data-system-route="control" d="M1055 105V73"/>
+          <path class="system-flow" data-system-route="control" d="M1645 71v32"/>
+          <path class="system-flow" data-system-route="control" d="M1667 105V73"/>
+        </g>
+        <path class="system-hit" d="M340 71v32m22 2V73m670-2v32m23 2V73m590-2v32m22 2V73" fill="none" stroke="transparent" stroke-width="22" pointer-events="stroke"/>
+        <text x="270" y="94" font-size="22" fill="#b76549">repair</text>
+        <text x="379" y="94" font-size="22" fill="#b76549">failures</text>
+      </g>
+
+      <g class="system-hotspot" data-system-focus="robots" role="button" tabindex="0" aria-pressed="false" aria-controls="fats-architecture-detail" aria-label="Robot fleet: executing, resetting and recovering workers">
+        <rect class="system-zone" x="45" y="193" width="590" height="389" rx="16" fill="transparent"/>
+
+        <use href="#sys-arch-robot" x="62" y="213" width="92" height="92" color="#355d78"/>
+        <circle cx="106.62" cy="262.68" r="6.9" fill="#0b76a0"/>
+        <use href="#sys-arch-robot" x="181" y="213" width="92" height="92" color="#355d78"/>
+        <circle cx="225.62" cy="262.68" r="6.9" fill="#0b76a0"/>
+        <use href="#sys-arch-robot" x="300" y="213" width="92" height="92" color="#355d78"/>
+        <circle cx="344.62" cy="262.68" r="6.9" fill="#0b76a0"/>
+        <use href="#sys-arch-robot" x="419" y="213" width="92" height="92" color="#b8c3ca"/>
+        <use href="#sys-arch-robot" x="538" y="213" width="92" height="92" color="#355d78"/>
+        <circle cx="582.62" cy="262.68" r="6.9" fill="#0b76a0"/>
+        <use href="#sys-arch-robot" x="62" y="349" width="92" height="92" color="#355d78"/>
+        <circle cx="106.62" cy="398.68" r="6.9" fill="#0b76a0"/>
+        <use href="#sys-arch-robot" x="181" y="349" width="92" height="92" color="#c66b70"/>
+        <use href="#sys-arch-robot" x="300" y="349" width="92" height="92" color="#355d78"/>
+        <circle cx="344.62" cy="398.68" r="6.9" fill="#0b76a0"/>
+        <use href="#sys-arch-robot" x="419" y="349" width="92" height="92" color="#355d78"/>
+        <circle cx="463.62" cy="398.68" r="6.9" fill="#0b76a0"/>
+        <use href="#sys-arch-robot" x="538" y="349" width="92" height="92" color="#b8c3ca"/>
+        <use href="#sys-arch-robot" x="62" y="485" width="92" height="92" color="#355d78"/>
+        <circle cx="106.62" cy="534.68" r="6.9" fill="#0b76a0"/>
+        <use href="#sys-arch-robot" x="181" y="485" width="92" height="92" color="#b8c3ca"/>
+        <use href="#sys-arch-robot" x="300" y="485" width="92" height="92" color="#355d78"/>
+        <circle cx="344.62" cy="534.68" r="6.9" fill="#0b76a0"/>
+        <use href="#sys-arch-robot" x="419" y="485" width="92" height="92" color="#355d78"/>
+        <circle cx="463.62" cy="534.68" r="6.9" fill="#0b76a0"/>
+        <use href="#sys-arch-robot" x="538" y="485" width="92" height="92" color="#355d78"/>
+        <circle cx="582.62" cy="534.68" r="6.9" fill="#0b76a0"/>
+        <path d="m255 330 15 15m0-15-15 15" fill="none" stroke="#c66b70" stroke-width="5.5" stroke-linecap="round"/>
+        <path class="system-flow" data-system-route="control" d="M168 409c-26-18-26-36-3-50" fill="none" stroke="#b76549" stroke-width="3.2" marker-end="url(#sys-arch-arrow-coral)"/>
+        <path class="system-hit" d="M168 409c-26-18-26-36-3-50" fill="none" stroke="transparent" stroke-width="24" pointer-events="stroke"/>
+        <text x="155" y="463" font-size="22" fill="#b76549">restart in place</text>
+        <use href="#sys-arch-robot" x="42" y="631" width="53" height="53" color="#355d78"/>
+        <circle cx="67.71" cy="659.62" r="4" fill="#0b76a0"/>
+        <text x="106" y="658" font-size="22" fill="#71808a">Executing</text>
+        <use href="#sys-arch-robot" x="252" y="631" width="53" height="53" color="#b8c3ca"/>
+        <text x="316" y="658" font-size="22" fill="#71808a">Resetting</text>
+        <use href="#sys-arch-robot" x="462" y="631" width="53" height="53" color="#c66b70"/>
+        <text x="526" y="658" font-size="22" fill="#71808a">Fault</text>
+      </g>
+
+      <g class="system-hotspot" data-system-focus="interaction" role="button" tabindex="0" aria-pressed="false" aria-controls="fats-architecture-detail" aria-label="Interaction: observations enter a shared edge queue and actions return to the sending robot">
+        <path class="system-flow" data-system-route="interaction" d="M640 356 786 399" fill="none" stroke="#0b76a0" stroke-width="6" stroke-linecap="round" marker-end="url(#sys-arch-arrow-blue)"/>
+        <path class="system-hit" d="M640 356 786 399" fill="none" stroke="transparent" stroke-width="26" pointer-events="stroke"/>
+        <text x="776" y="320" font-size="22" fill="#0b76a0">observations</text>
+        <text x="793" y="367" font-size="23">Shared request queue</text>
+        <rect class="system-zone" x="793" y="386" width="234" height="57" rx="12" fill="#fff" stroke="#71808a" stroke-width="2.5"/>
+
+        <rect x="805" y="400" width="29" height="30" rx="4" fill="#0b76a0"/>
+        <rect x="841" y="400" width="29" height="30" rx="4" fill="#0b76a0"/>
+        <rect x="877" y="400" width="29" height="30" rx="4" fill="#0b76a0"/>
+        <rect x="913" y="400" width="29" height="30" rx="4" fill="#0b76a0"/>
+        <rect x="949" y="400" width="29" height="30" rx="4" fill="#0b76a0"/>
+        <rect x="985" y="400" width="29" height="30" rx="4" fill="#0b76a0"/>
+        <g fill="none" stroke="#71808a" stroke-width="3.3" marker-end="url(#sys-arch-arrow-gray-small)">
+          <path class="system-flow" data-system-route="interaction" d="M1028 415 1089 252"/>
+          <path class="system-flow" data-system-route="interaction" d="M1028 415 1089 377"/>
+          <path class="system-flow" data-system-route="interaction" d="M1028 415 1089 498"/>
+        </g>
+        <path class="system-hit" d="M1028 415 1089 252m-61 163 61-38m-61 38 61 83" fill="none" stroke="transparent" stroke-width="24" pointer-events="stroke"/>
+
+        <rect class="system-zone" x="1094" y="207" width="204" height="87" rx="13" fill="#fff" stroke="#71808a" stroke-width="3.2"/>
+        <use href="#sys-arch-chip" x="1106" y="225" width="50" height="50" color="#355d78"/>
+        <text x="1166" y="257" font-size="25" font-weight="700">Inference</text>
+        <rect class="system-zone" x="1094" y="331" width="204" height="87" rx="13" fill="#fff" stroke="#71808a" stroke-width="3.2"/>
+        <use href="#sys-arch-chip" x="1106" y="349" width="50" height="50" color="#355d78"/>
+        <text x="1166" y="381" font-size="25" font-weight="700">Inference</text>
+        <rect class="system-zone" x="1094" y="456" width="204" height="87" rx="13" fill="#fff" stroke="#71808a" stroke-width="3.2"/>
+        <use href="#sys-arch-chip" x="1106" y="474" width="50" height="50" color="#355d78"/>
+        <text x="1166" y="506" font-size="25" font-weight="700">Inference</text>
+        <path class="system-flow" data-system-route="interaction" d="M1089 520C923 563 784 565 641 531" fill="none" stroke="#71808a" stroke-width="6" stroke-linecap="round" marker-end="url(#sys-arch-arrow-gray)"/>
+        <path class="system-hit" d="M1089 520C923 563 784 565 641 531" fill="none" stroke="transparent" stroke-width="26" pointer-events="stroke"/>
+        <text x="931" y="488" text-anchor="middle" font-size="22"><tspan x="931">actions to the</tspan><tspan x="931" dy="24">sending robot</tspan></text>
+      </g>
+
+      <g class="system-hotspot" data-system-focus="experience" role="button" tabindex="0" aria-pressed="false" aria-controls="fats-architecture-detail" aria-label="Experience: completed episodes upload asynchronously to the cloud queue for training">
+        <path class="system-flow" data-system-route="experience" d="M640 176h875v128" fill="none" stroke="#0b76a0" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="17 9" marker-end="url(#sys-arch-arrow-blue)"/>
+        <path class="system-hit" d="M640 176h875v128" fill="none" stroke="transparent" stroke-width="25" pointer-events="stroke"/>
+        <text x="947" y="222" text-anchor="middle" font-size="22" fill="#0b76a0"><tspan x="947">completed episodes,</tspan><tspan x="947" dy="24">uploaded asynchronously</tspan></text>
+        <text x="1534" y="291" font-size="23">Experience queue</text>
+        <rect class="system-zone" x="1485" y="315" width="211" height="238" rx="11" fill="#fff" stroke="#71808a" stroke-width="2.5"/>
+
+        <rect x="1501" y="336" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1531" y="336" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1561" y="336" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1591" y="336" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1621" y="336" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <path d="m1659 349 6 7 11-15" fill="none" stroke="#5c9670" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="1501" y="393" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1531" y="393" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1561" y="393" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1591" y="393" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1621" y="393" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <path d="m1659 406 6 7 11-15" fill="none" stroke="#5c9670" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="1501" y="450" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1531" y="450" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1561" y="450" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1591" y="450" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1621" y="450" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <path d="m1660 456 14 14m0-14-14 14" fill="none" stroke="#c66b70" stroke-width="5.5" stroke-linecap="round"/>
+        <rect x="1501" y="507" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1531" y="507" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1561" y="507" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1591" y="507" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <rect x="1621" y="507" width="25" height="25" rx="5" fill="#0b76a0"/>
+        <path d="m1659 520 6 7 11-15" fill="none" stroke="#5c9670" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path class="system-flow" data-system-route="experience" d="M1702 424h58" fill="none" stroke="#71808a" stroke-width="6" stroke-linecap="round" marker-end="url(#sys-arch-arrow-gray)"/>
+        <path class="system-hit" d="M1702 424h58" fill="none" stroke="transparent" stroke-width="26" pointer-events="stroke"/>
+
+        <rect class="system-zone" x="1768" y="231" width="261" height="91" rx="13" fill="#fff" stroke="#71808a" stroke-width="3.2"/>
+        <use href="#sys-arch-chip" x="1780" y="251" width="50" height="50" color="#b76549"/>
+        <text x="1841" y="283" font-size="25" font-weight="700">Training</text>
+        <rect class="system-zone" x="1768" y="350" width="261" height="91" rx="13" fill="#fff" stroke="#71808a" stroke-width="3.2"/>
+        <use href="#sys-arch-chip" x="1780" y="370" width="50" height="50" color="#b76549"/>
+        <text x="1841" y="402" font-size="25" font-weight="700">Training</text>
+        <rect class="system-zone" x="1768" y="469" width="261" height="91" rx="13" fill="#fff" stroke="#71808a" stroke-width="3.2"/>
+        <use href="#sys-arch-chip" x="1780" y="489" width="50" height="50" color="#b76549"/>
+        <text x="1841" y="521" font-size="25" font-weight="700">Training</text>
+      </g>
+
+      <g class="system-hotspot" data-system-focus="policy" role="button" tabindex="0" aria-pressed="false" aria-controls="fats-architecture-detail" aria-label="Policy updates: cloud training sends updated parameters back to edge inference workers">
+        <path class="system-flow" data-system-route="policy" d="M1899 561v22h-703v-36" fill="none" stroke="#b76549" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#sys-arch-arrow-policy)"/>
+        <path class="system-hit" d="M1899 561v22h-703v-36" fill="none" stroke="transparent" stroke-width="27" pointer-events="stroke"/>
+        <text x="1372" y="645" font-size="22" fill="#b76549">policy updates</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption id="fats-architecture-detail" class="system-diagram-detail" aria-live="polite"><strong data-system-title>FATS architecture.</strong><span data-system-copy>HotSwarm keeps the fleet available while SwarmLink carries interaction, experience and policy updates.</span></figcaption>
 </figure>
 <div class="reading-width prose">
 <h3 id="swarmlink-title">SwarmLink: connecting robots and training</h3>
@@ -478,10 +851,82 @@
 <h3 id="hotswarm-title">HotSwarm: a robot hot-plugging system</h3>
 <p>To keep training data consistent through interruptions, HotSwarm gives each restarted worker a new identity. When a robot’s control process fails, it restarts the process at the same workstation and rebuilds its connections. The other robots keep collecting. The incomplete episode is discarded, and the replacement rejects late actions addressed to its predecessor. Inference workers reload the current policy, and training workers resume from a saved checkpoint. Robots continue using their installed policy during training recovery, queuing new experience until training resumes. Operators handle scene resets and hardware repairs.</p>
 </div>
-<figure class="fats-concept fats-mechanism wide-width" aria-labelledby="hotswarm-title">
-  <div class="fats-mechanism-scroll">
-    <img src="assets/hotswarm-recovery.png" width="1270" height="424" loading="lazy" alt="Illustrative recovery sequence: other robots keep collecting while a failed worker restarts in place with a new identity. An action for the previous worker, #1, is discarded; an action for the restarted worker, #2, is executed.">
+<figure id="hotswarm-recovery" class="fats-concept fats-mechanism wide-width system-diagram system-recovery" data-system-diagram="recovery">
+  <div class="system-diagram-scroll">
+    <svg class="system-diagram-svg" viewBox="0 0 1270 424" xmlns="http://www.w3.org/2000/svg" role="group" aria-labelledby="sys-recovery-title sys-recovery-desc" font-family="Arial, Helvetica, sans-serif">
+      <title id="sys-recovery-title">HotSwarm restarts one robot in place</title>
+      <desc id="sys-recovery-desc">Other robots continue collecting while the failed robot's worker number 1 is replaced at the same station by worker number 2. A late action for worker number 1 is discarded. A new action for worker number 2 is executed. Durations are illustrative.</desc>
+      <defs>
+        <marker id="sys-recovery-arrow-gray" viewBox="0 0 12 12" refX="10.5" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto">
+          <path d="M 0 0 L 12 6 L 0 12 Z" fill="#74848e"/>
+        </marker>
+        <marker id="sys-recovery-arrow-blue" viewBox="0 0 12 12" refX="10.5" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto">
+          <path d="M 0 0 L 12 6 L 0 12 Z" fill="#355f79"/>
+        </marker>
+        <marker id="sys-recovery-arrow-time" viewBox="0 0 12 12" refX="10.5" refY="6" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto">
+          <path d="M 0 0 L 12 6 L 0 12 Z" fill="#b9c5cc"/>
+        </marker>
+      </defs>
+
+      <g fill="#263d4d" font-size="32">
+        <text x="26" y="61">Other robots</text>
+        <text x="26" y="190">Failed robot</text>
+        <text x="26" y="337">Inference</text>
+      </g>
+      <path d="M 308 328 H 1247" fill="none" stroke="#e4e9ec" stroke-width="4"/>
+
+      <g class="system-hotspot" data-system-focus="continuity" role="button" tabindex="0" aria-pressed="false" aria-controls="hotswarm-recovery-detail" aria-label="Other robots keep collecting independently throughout recovery">
+        <title>Other robots continue collecting</title>
+        <rect class="system-zone" x="310" y="36.5" width="227" height="34" rx="6.5" fill="#107da2"/>
+        <rect class="system-zone" x="551" y="36.5" width="255" height="34" rx="6.5" fill="#107da2"/>
+        <rect class="system-zone" x="820" y="36.5" width="227" height="34" rx="6.5" fill="#107da2"/>
+        <rect class="system-zone" x="1061" y="36.5" width="184" height="34" rx="6.5" fill="#107da2"/>
+        <path class="system-flow system-activity" data-system-route="continuity" opacity="0" d="M 326 53.5 H 521 M 567 53.5 H 790 M 836 53.5 H 1031 M 1077 53.5 H 1229" fill="none" stroke="#d9f1f8" stroke-opacity=".66" stroke-width="2" stroke-dasharray="9 15" stroke-linecap="round"/>
+      </g>
+
+      <g class="system-hotspot" data-system-focus="restart" role="button" tabindex="0" aria-pressed="false" aria-controls="hotswarm-recovery-detail" aria-label="Replace failed worker number 1 with worker number 2 at the same robot station">
+        <title>Restart in place with a new worker identity</title>
+        <rect class="system-zone" x="310" y="164" width="213" height="34" rx="6.5" fill="#107da2"/>
+        <rect class="system-zone" x="721" y="164" width="524" height="34" rx="6.5" fill="#107da2"/>
+        <rect class="system-zone" x="344" y="107.5" width="59" height="34" rx="7" fill="#74848e"/>
+        <text x="373.5" y="132.5" text-anchor="middle" fill="#fff" font-size="28">#1</text>
+        <rect class="system-zone" x="748" y="107.5" width="59" height="34" rx="7" fill="#355f79"/>
+        <text x="777.5" y="132.5" text-anchor="middle" fill="#fff" font-size="28">#2</text>
+        <path d="M 513 112.5 L 531.5 131 M 531.5 112.5 L 513 131" fill="none" stroke="#ce6b73" stroke-width="7" stroke-linecap="round"/>
+        <rect class="system-zone" x="522.5" y="142.5" width="198.5" height="77" rx="8" fill="#e4e9ec" stroke="#74848e" stroke-width="3"/>
+        <text x="621.5" y="174.5" text-anchor="middle" fill="#263d4d" font-size="26">
+          <tspan x="621.5">restart</tspan><tspan x="621.5" dy="26">in place</tspan>
+        </text>
+        <path class="system-flow system-activity" data-system-route="restart" opacity="0" d="M 326 181 H 507 M 737 181 H 1229" fill="none" stroke="#d9f1f8" stroke-opacity=".66" stroke-width="2" stroke-dasharray="9 15" stroke-linecap="round"/>
+      </g>
+
+      <g class="system-hotspot" data-system-focus="discard" role="button" tabindex="0" aria-pressed="false" aria-controls="hotswarm-recovery-detail" aria-label="Discard the late inference action carrying failed worker number 1's identity">
+        <title>Reject an action addressed to the previous worker</title>
+        <path class="system-hit" d="M 436.5 198 L 500 312 M 622 314 L 739 203" fill="none" stroke="transparent" stroke-width="22"/>
+        <path class="system-flow" data-system-route="discard" d="M 436.5 198 L 500 312" fill="none" stroke="#74848e" stroke-width="4" stroke-linecap="round" marker-end="url(#sys-recovery-arrow-gray)"/>
+        <rect class="system-zone" x="501" y="314" width="121" height="29" rx="6.5" fill="#74848e"/>
+        <path class="system-flow" data-system-route="discard" d="M 622 314 L 739 203" fill="none" stroke="#74848e" stroke-width="4" stroke-dasharray="7 6" stroke-linecap="round" marker-end="url(#sys-recovery-arrow-gray)"/>
+        <path d="M 750 238.5 L 765.5 254 M 765.5 238.5 L 750 254" fill="none" stroke="#ce6b73" stroke-width="6" stroke-linecap="round"/>
+        <text x="777" y="241" fill="#d46670" font-size="26">
+          <tspan x="777">action for #1</tspan><tspan x="777" dy="26">discarded</tspan>
+        </text>
+      </g>
+
+      <g class="system-hotspot" data-system-focus="execute" role="button" tabindex="0" aria-pressed="false" aria-controls="hotswarm-recovery-detail" aria-label="Execute the new inference action addressed to replacement worker number 2">
+        <title>Execute the replacement worker's matching action</title>
+        <path class="system-hit" d="M 947 198 L 996 312 M 1046 314 L 1088 203" fill="none" stroke="transparent" stroke-width="22"/>
+        <path class="system-flow" data-system-route="execute" d="M 947 198 L 996 312" fill="none" stroke="#355f79" stroke-width="4" stroke-linecap="round" marker-end="url(#sys-recovery-arrow-blue)"/>
+        <rect class="system-zone" x="997" y="314" width="50" height="29" rx="6.5" fill="#355f79"/>
+        <path class="system-flow" data-system-route="execute" d="M 1046 314 L 1088 203" fill="none" stroke="#355f79" stroke-width="4" stroke-linecap="round" marker-end="url(#sys-recovery-arrow-blue)"/>
+        <path d="M 1103 247 L 1110.5 254.5 L 1122 237.5" fill="none" stroke="#659a78" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="1132" y="254" fill="#659a78" font-size="26">executed</text>
+      </g>
+
+      <path d="M 310 382.5 H 1242" fill="none" stroke="#b9c5cc" stroke-width="3" stroke-linecap="round" marker-end="url(#sys-recovery-arrow-time)"/>
+      <text x="1245" y="411.5" text-anchor="end" fill="#74848e" font-size="28">Time</text>
+    </svg>
   </div>
+  <figcaption id="hotswarm-recovery-detail" class="system-diagram-detail" aria-live="polite"><strong data-system-title>Recovery without a fleet-wide pause.</strong><span data-system-copy>Other robots keep collecting while a failed worker restarts in place with a new identity.</span></figcaption>
 </figure>
 <div class="reading-width prose">
 <h3 id="deployment-title">Network topology</h3>
@@ -524,8 +969,10 @@
   <footer class="reading-width site-footer"><a class="wordmark" href="#top">Collective Experience Learning</a><p>Tsinghua University · AgiBot · Infinigence AI</p><a href="#top">Back to top</a></footer>
   <script src="research-data.js?v=20261014-method-labels" defer></script>
   <script src="app.js?v=20261014-task-caption-restored" defer></script>
+  <script src="cel-sources.js?v=20261015-native-overview" defer></script>
+  <script src="system-diagrams.js?v=20261015-native-system" defer></script>
   <script src="fert-model.js?v=20261011-explainer-2" defer></script>
-  <script src="fert.js?v=20261014-copy-trim" defer></script>
+  <script src="fert.js?v=20261015-native-streams" defer></script>
   <script src="results.js?v=20261014-copy-trim" defer></script>
   <script src="ablation-data.js?v=20261014-ablation-complete" defer></script>
   <script src="ablation.js?v=20261014-ablation-footer" defer></script>

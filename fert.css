@@ -127,3 +127,10 @@
  .fert-steps{padding:20px}.fert-steps-heading{display:none}.fert-step{border:0}.fert-step-body{padding:0}.fert-demo-note{padding:10px 0 0}
 }
 @media print{.fert-zoom-toolbar{display:none}}
+
+/* Animate the original connectors, matching the overview and system figures. */
+.fert-framework .fert-flow{display:none}
+@media screen and (prefers-reduced-motion:no-preference){
+ .fert-framework.is-live .fert-stream.is-streaming{stroke-dasharray:5 10;animation:fert-stream 2.6s linear 2}
+}
+@keyframes fert-stream{to{stroke-dashoffset:-60}}

@@ -1,0 +1,135 @@
+/* Native system figures retain their manuscript colours and geometry. */
+.system-diagram {
+  --system-focus-color: #587e93;
+  position: relative;
+  touch-action: auto;
+}
+
+.system-diagram .system-diagram-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: -5px;
+  padding: 5px;
+  touch-action: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #b6c2c7 #eef2f4;
+  -webkit-overflow-scrolling: touch;
+}
+
+.system-diagram .system-diagram-scroll::-webkit-scrollbar { height: 6px; }
+.system-diagram .system-diagram-scroll::-webkit-scrollbar-track { background: #eef2f4; }
+.system-diagram .system-diagram-scroll::-webkit-scrollbar-thumb {
+  background: #b6c2c7;
+  border-radius: 4px;
+}
+
+.system-diagram .system-diagram-svg {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  overflow: visible;
+  margin-inline: auto;
+  font-family: var(--sans, Arial, sans-serif);
+  touch-action: auto;
+}
+
+.system-diagram[data-system-diagram="architecture"] .system-diagram-svg { min-width: 1000px; }
+.system-diagram[data-system-diagram="recovery"] .system-diagram-svg { min-width: 760px; }
+
+.system-diagram .system-hotspot {
+  cursor: pointer;
+  outline: none;
+}
+
+.system-diagram .system-hotspot[data-system-focus="control"],
+.system-diagram .system-hotspot[data-system-focus="restart"] { --system-focus-color: #967187; }
+.system-diagram .system-hotspot[data-system-focus="robots"],
+.system-diagram .system-hotspot[data-system-focus="continuity"] { --system-focus-color: #658264; }
+.system-diagram .system-hotspot[data-system-focus="policy"],
+.system-diagram .system-hotspot[data-system-focus="discard"] { --system-focus-color: #b77a60; }
+
+.system-diagram .system-hotspot:focus-visible {
+  outline: 2px solid var(--system-focus-color);
+  outline-offset: 4px;
+}
+
+.system-diagram .system-zone {
+  transition: filter 180ms ease;
+}
+
+.system-diagram .system-hotspot.is-active .system-zone {
+  filter: drop-shadow(0 0 1px var(--system-focus-color));
+}
+
+.system-diagram .system-hotspot.is-displayed .system-zone,
+.system-diagram .system-hotspot:focus-visible .system-zone {
+  filter: drop-shadow(0 0 2.5px var(--system-focus-color));
+}
+
+.system-diagram .system-hotspot.is-active .system-zone[fill="transparent"],
+.system-diagram .system-hotspot.is-displayed .system-zone[fill="transparent"] {
+  stroke: var(--system-focus-color);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.system-diagram .system-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 20;
+  stroke-linecap: round;
+  pointer-events: stroke;
+}
+
+.system-diagram .system-flow {
+  display: inline;
+  padding: 0;
+}
+
+.system-diagram .system-flow.is-highlighted {
+  filter: drop-shadow(0 0 1px #aabcc6);
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .system-diagram .system-activity.is-flowing { opacity: 1; }
+  .system-diagram .system-flow.is-flowing {
+    stroke-dasharray: 6 10;
+    animation: system-diagram-flow 2.6s linear 2;
+  }
+}
+
+.system-diagram .system-diagram-detail {
+  min-height: 1.75em;
+  margin: 14px 0 0;
+  color: #626e77;
+  font: 13px/1.75 var(--sans, Arial, sans-serif);
+}
+
+.system-diagram .system-diagram-detail strong {
+  margin-right: .3em;
+  color: #344750;
+  font-weight: 600;
+}
+
+@keyframes system-diagram-flow {
+  to { stroke-dashoffset: -64; }
+}
+
+@media (max-width: 760px) {
+  .system-diagram .system-diagram-detail {
+    margin-top: 11px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .system-diagram .system-zone { transition: none; }
+}
+
+@media print {
+  .system-diagram .system-diagram-scroll { overflow: visible; }
+  .system-diagram[data-system-diagram] .system-diagram-svg { min-width: 0; }
+  .system-diagram .system-zone { filter: none; }
+}
