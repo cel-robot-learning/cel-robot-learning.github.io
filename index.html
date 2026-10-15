@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="FERT enables robot fleets to learn from successful executions and failure contexts, realizing Collective Experience Learning with up to 96 training robots.">
-  <title>Collective Experience Learning Enables Scalable Robot Post-training</title>
-  <link rel="canonical" href="https://cel-robot-post-training.github.io/">
+  <title>Learning from Fleet Experience: A Collective Learning Paradigm for Robots</title>
+  <link rel="canonical" href="https://cel-robot-training.github.io/">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%2332658a'/%3E%3Cpath d='M7 7h7v7H7zm11 0h7v7h-7zM7 18h7v7H7zm11 0h7v7h-7z' fill='%23ffffff'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261013-full-width-copy">
   <link rel="stylesheet" href="results.css?v=20261013-paper-palette">
@@ -25,8 +25,8 @@
       <div class="hero-shade" aria-hidden="true"></div>
       <div class="hero-heading">
         <h1 id="project-title">
-          <span class="hero-title-name">Collective Experience Learning</span>
-          <span class="hero-title-statement">Enables Scalable Robot Post-training</span>
+          <span class="hero-title-name">Learning from Fleet Experience:</span>
+          <span class="hero-title-statement">A Collective Learning Paradigm for Robots</span>
         </h1>
       </div>
       <div class="hero-partners">
@@ -55,8 +55,8 @@
     </figure>
 <section class="project-section" id="overview">
 <div class="reading-width section-heading"><p class="section-index">01</p><h2>CEL: learning from a fleet’s own experience</h2>
-<p>A robot needs practice to perform a task reliably. Robot post-training helps pretrained foundation models improve through real-world interaction. A substantial body of evidence has already demonstrated the effectiveness of scaling data and compute, yet robot post-training still often involves small fleets. The core bottleneck in scaling robot post-training is that human supervision is limited and difficult to scale.</p>
-<p>We introduce Collective Experience Learning (CEL), a scalable paradigm for online robot post-training in which robots learn from one another within a fleet. CEL uses this collective experience to significantly improve model performance without additional demonstrations or corrective actions. Compared with previous training approaches, CEL greatly reduces the need for human supervision and demonstrates remarkable scalability. This offers a possible direction for future research on scalable robot post-training.</p></div>
+<p>A robot needs practice to perform a task reliably. Robot foundation models can continue improving during deployment by learning from real-world execution. A substantial body of evidence has already demonstrated the effectiveness of scaling data and compute, and robot fleets can expand their experience through parallel execution. The core bottleneck in scaling this learning process is that expert action supervision is limited and difficult to scale.</p>
+<p>We introduce Collective Experience Learning (CEL), a paradigm for scalable policy improvement during deployment in which robots learn from experience generated across a fleet. After expert-supervised initialization, robots contribute execution experience to a shared learning process and receive updated policies while the fleet continues operating. CEL uses this collective experience to improve policy performance without additional expert demonstrations or corrective actions. Humans provide outcome labels and reset environments.</p></div>
 <dl class="reading-width overview-highlights"><div><dt>Largest training fleet</dt><dd>96<span>robots</span></dd></div><div><dt>Separately trained tasks</dt><dd>5<span>real-world tasks</span></dd></div><div><dt>Phone Packaging</dt><dd>98.3<span>% success</span></dd></div></dl>
 </section>
 <section class="project-section" id="tasks">
@@ -518,7 +518,7 @@
 </section>
 <section class="project-section" id="discussion">
 <div class="reading-width section-heading"><p class="section-index">06</p><h2>Conclusion</h2>
-<p>We introduce <strong>Collective Experience Learning (CEL)</strong>, a paradigm for robot post-training in which fleet-generated experience supports continued policy improvement after expert-supervised initialization. We realize CEL through <strong>Failure-guided Experience Retrieval Fine-Tuning (FERT)</strong>, which uses successful executions as action supervision and failures to select relevant successful experience. A <strong>Fault-tolerant Asynchronous Training System (FATS)</strong> supports this learning process by coordinating experience collection, optimization and policy distribution across the fleet despite interruptions to individual robots. Together, these components enable the fleet to supply experience for subsequent policy updates without additional expert demonstrations or corrective actions. Across five real-world manipulation tasks, the resulting policies achieved <strong>93.3–99.2%</strong> success on robots excluded from training data collection, with evaluation also extending to Longcheer’s electronics production line.</p></div>
+<p>We introduce <strong>Collective Experience Learning (CEL)</strong>, a paradigm in which robots improve a shared policy during deployment using fleet-generated experience after expert-supervised initialization. We realize CEL through <strong>Failure-guided Experience Retrieval Fine-Tuning (FERT)</strong>, which uses successful executions as action supervision and failures to select relevant successful experience. A <strong>Fault-tolerant Asynchronous Training System (FATS)</strong> supports this learning process by coordinating experience collection, optimization and policy distribution across the fleet despite interruptions to individual robots. Together, these components enable the fleet to supply experience for subsequent policy updates without additional expert demonstrations or corrective actions. Across five real-world manipulation tasks, the resulting policies achieved <strong>93.3–99.2%</strong> success on robots excluded from training data collection.</p></div>
 </section>
   </main>
   <footer class="reading-width site-footer"><a class="wordmark" href="#top">Collective Experience Learning</a><p>Tsinghua University · AgiBot · Infinigence AI</p><a href="#top">Back to top</a></footer>
