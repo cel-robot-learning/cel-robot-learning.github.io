@@ -37,6 +37,7 @@
 
 .system-diagram[data-system-diagram="architecture"] .system-diagram-svg { min-width: 1000px; }
 .system-diagram[data-system-diagram="recovery"] .system-diagram-svg { min-width: 760px; }
+.system-diagram[data-system-diagram="streaming"] .system-diagram-svg { min-width: 680px; }
 
 .system-diagram .system-hotspot {
   cursor: pointer;

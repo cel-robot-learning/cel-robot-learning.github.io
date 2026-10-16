@@ -4,29 +4,29 @@
   const configurations = {
     architecture: {
       overview: {
-        title: 'Asynchronous learning loop.',
-        copy: 'Robots collect experience while edge workers serve actions, cloud workers update the policy and HotSwarm coordinates the fleet.'
+        title: 'FATS keeps the fleet learning.',
+        copy: 'Robot workers execute locally; inference, trajectory assembly and training run in the cloud. HotSwarm recovers failed workers while the others continue.'
       },
       details: {
         control: {
           title: 'HotSwarm control plane.',
-          copy: 'HotSwarm coordinates worker membership and recovery across robots, edge nodes and cloud servers.'
+          copy: 'HotSwarm manages worker membership and identities, detects failures and rebuilds the affected connections.'
         },
         robots: {
           title: 'Robot fleet.',
-          copy: 'Robots request actions from edge inference and send completed episodes for training.'
+          copy: 'Environment workers acquire observations, execute action chunks from cloud inference and stream execution records and outcomes.'
         },
         interaction: {
-          title: 'Interaction at the edge.',
-          copy: 'Shared queues send observations to available inference workers and return action chunks to each robot.'
+          title: 'Shared cloud inference.',
+          copy: 'Available cloud workers batch ready observations and return action chunks to the sending robot. They dispatch at a batch target or timeout, so slower robots do not hold up the others.'
         },
         experience: {
-          title: 'Experience to the cloud.',
-          copy: 'Completed episodes upload in the background while robots continue collecting.'
+          title: 'Trajectory assembly in the cloud.',
+          copy: 'The collector reuses inference observations and outputs, joins them with robot records, and releases an episode only after its required data and outcome arrive.'
         },
         policy: {
-          title: 'Policy updates to the edge.',
-          copy: 'One copy of each policy update reaches the edge, then relays forward it to inference workers.'
+          title: 'Policy updates within the cloud.',
+          copy: 'Training workers improve the policy from complete experience and send updates to cloud inference workers.'
         }
       },
       routes: {
@@ -35,6 +35,36 @@
         interaction: ['interaction'],
         experience: ['experience'],
         policy: ['policy']
+      }
+    },
+    streaming: {
+      overview: {
+        title: 'Experience arrives as robots work.',
+        copy: 'The cloud collector combines inference data with robot records and releases complete episodes for training.'
+      },
+      details: {
+        reuse: {
+          title: 'Reuse inference data.',
+          copy: 'Observations and policy outputs already present in the cloud enter the collector without a second upload of those observations.'
+        },
+        records: {
+          title: 'Stream robot records.',
+          copy: 'Environment workers send execution records, task outcomes and any additional frames while the robot continues operating.'
+        },
+        join: {
+          title: 'Join the corresponding records.',
+          copy: 'Worker, episode and step identifiers associate the fields even when different inference workers serve successive requests.'
+        },
+        complete: {
+          title: 'Train on complete episodes.',
+          copy: 'The collector releases an episode only after every required field and its outcome have arrived.'
+        }
+      },
+      routes: {
+        reuse: ['inference'],
+        records: ['records'],
+        join: ['inference', 'records'],
+        complete: ['complete']
       }
     },
     recovery: {
