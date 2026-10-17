@@ -19,7 +19,7 @@
 .section-heading .section-index{margin-bottom:14px}
 .section-heading h2{max-width:var(--text-width);font:42px/1.18 var(--serif);letter-spacing:-.8px;margin-bottom:22px}
 .section-heading p:not(.section-index){max-width:var(--text-width);margin-bottom:18px}
-.overview-highlights{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;padding:16px 0 28px}
+.overview-highlights{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:26px;padding:16px 0 28px}
 .overview-highlights>div{padding-top:16px;border-top:1px solid var(--line)}
 .overview-highlights dt{font:11px/1.65 var(--mono);color:var(--muted);margin-bottom:12px}
 .overview-highlights dd{font:49px/1.15 var(--serif);letter-spacing:-1.6px;color:var(--accent)}
@@ -37,7 +37,7 @@
 .details-copy .system-figure{width:100%;margin:24px auto 12px}
 .project-section#discussion{padding-bottom:15px}
 .site-footer .research-note{margin-top:20px;padding-top:18px;margin-bottom:25px}
-@media(max-width:600px){.project-masthead{width:calc(100% - 40px);margin-top:0;margin-bottom:28px}.project-masthead h1{font-size:42px;letter-spacing:-1.4px}.project-affiliations{font-size:11px}.project-tagline-space{height:26px}.site-header nav{gap:9px 21px}.project-section{padding-top:18px;padding-bottom:8px}.section-heading{padding-top:23px;margin-bottom:23px}.section-heading h2{font-size:34px}.overview-highlights{gap:15px;padding-bottom:18px}.overview-highlights dt{font-size:10px;min-height:33px}.overview-highlights dd{font-size:37px;letter-spacing:-1px}.overview-highlights dd span{font-size:10px}.project-details{margin-bottom:28px}.details-copy>p{font-size:15px}.project-section .prose h3{font-size:28px}}
+@media(max-width:600px){.project-masthead{width:calc(100% - 40px);margin-top:0;margin-bottom:28px}.project-masthead h1{font-size:42px;letter-spacing:-1.4px}.project-affiliations{font-size:11px}.project-tagline-space{height:26px}.site-header nav{gap:9px 21px}.project-section{padding-top:18px;padding-bottom:8px}.section-heading{padding-top:23px;margin-bottom:23px}.section-heading h2{font-size:34px}.overview-highlights{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;padding-bottom:18px}.overview-highlights dt{font-size:10px;min-height:33px}.overview-highlights dd{font-size:37px;letter-spacing:-1px}.overview-highlights dd span{font-size:10px}.project-details{margin-bottom:28px}.details-copy>p{font-size:15px}.project-section .prose h3{font-size:28px}}
 .title-video{margin-bottom:62px}
 .title-video-frame{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--surface);border-radius:4px}
 .title-video-frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--dark)}
