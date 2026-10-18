@@ -5,7 +5,7 @@ const percent = count => (100 * count / trials).toFixed(1);
 const byId = id => document.getElementById(id);
 
 const titleVideo = byId('title-video');
-if (titleVideo.dataset.src) {
+if (titleVideo?.dataset.src) {
   const frame = titleVideo.closest('.title-video-frame');
   titleVideo.muted = true;
   titleVideo.src = titleVideo.dataset.src;
@@ -245,6 +245,7 @@ showTask(0);
 (() => {
   const windowElement = document.getElementById('title-video-window');
   const video = document.getElementById('title-video');
+  if (!windowElement || !video) return;
   let videoVisible = false;
   let autoPaused = false, manuallyPaused = false, changingPlayback = false;
 

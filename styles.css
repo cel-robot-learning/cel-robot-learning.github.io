@@ -100,3 +100,13 @@
 @media(max-width:600px){.stages>div{padding:22px 24px}.stages .stage-label{font-size:15px}.stages h3.stage-name{font-size:30px}.stage-number{margin-bottom:12px}.stage-signal{font-size:10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
 .hardware-figure .method-image{max-width:760px;margin-inline:auto}
+
+/* Project resource links beside the wordmark. */
+.site-header .project-resources{display:flex;flex:0 0 auto;align-items:center;justify-content:flex-end;gap:10px;margin-left:auto;font:500 15px/1 var(--sans)}
+.site-header .project-resources a,.site-header .project-resources button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:104px;min-height:44px;padding:10px 18px;border:1px solid transparent;border-radius:999px;appearance:none;font:inherit;letter-spacing:0;text-decoration:none;white-space:nowrap;box-shadow:0 1px 2px #00000012;transition:background-color .18s ease,color .18s ease}
+.site-header .project-resources svg{width:17px;height:17px;flex:0 0 17px}
+.site-header .project-resources a{background:#363636;border-color:#363636;color:#fff}
+.site-header .project-resources a:hover{background:#4a4a4a;border-color:#4a4a4a}
+.site-header .project-resources a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.site-header .project-resources button:disabled{background:#565656;border-color:#565656;color:#ededed;opacity:1;cursor:default;box-shadow:none}
+@media(max-width:600px){.site-header .project-resources{width:100%;margin-top:16px;gap:8px}.site-header .project-resources a,.site-header .project-resources button{flex:1;min-width:0;padding:10px 12px;gap:7px;font-size:14px}}
