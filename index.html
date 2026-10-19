@@ -54,7 +54,7 @@
     </header>
 <section class="project-section" id="overview">
 <div class="reading-width section-heading"><p class="section-index">01</p><h2>CEL: learning from a fleet’s own experience</h2>
-<p>As robots carry out tasks, they generate real-world experience that can help improve their policies. A larger fleet gathers more experience in parallel, creating an opportunity for robot foundation models to keep learning during deployment. Learning through human corrections, however, requires experts to watch execution and take over when robots need help. As the fleet grows, supplying those corrective actions becomes the bottleneck.</p>
+<p>As robots carry out tasks, they collect real-world experience that can help robot foundation models improve during deployment. Larger fleets collect this experience in parallel, potentially accelerating policy improvement. One way to realize this potential is to learn from human corrections. However, this requires experts to monitor execution and provide corrective actions when robots need help. The demand for expert supervision increases as fleets grow. Human supervision thus becomes a bottleneck: robots can gather experience at increasing scale, but their ability to learn from it remains constrained by the availability of experts.</p>
 </div>
 <figure id="cel-sources" class="cel-sources wide-width" aria-label="Sources of experience for policy learning">
   <svg class="cel-source-defs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute" xmlns="http://www.w3.org/2000/svg">
