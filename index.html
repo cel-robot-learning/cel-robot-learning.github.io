@@ -8,7 +8,7 @@
   <title>Learning from Fleet Experience: Collective Experience Learning across 96 Robots</title>
   <link rel="canonical" href="https://cel-robot-learning.github.io/">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%2332658a'/%3E%3Cpath d='M7 7h7v7H7zm11 0h7v7h-7zM7 18h7v7H7zm11 0h7v7h-7z' fill='%23ffffff'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles.css?v=20261017-resource-pills">
+  <link rel="stylesheet" href="styles.css?v=20261030-citation">
   <link rel="stylesheet" href="results.css?v=20261013-paper-palette">
   <link rel="stylesheet" href="ablation.css?v=20261014-ablation-footer">
   <link rel="preload" as="image" href="assets/cel-fleet-cover.png">
@@ -7372,6 +7372,23 @@
 <section class="project-section" id="discussion">
 <div class="reading-width section-heading"><p class="section-index">06</p><h2>Conclusion</h2>
 <p>We introduce <strong>Collective Experience Learning (CEL)</strong>, a paradigm in which robots improve a shared policy during deployment using fleet-generated experience after expert-supervised initialization. We realize CEL through <strong>Failure-guided Experience Retrieval Fine-Tuning (FERT)</strong>, which uses successful executions as action supervision and failures to select relevant successful experience. A <strong>Fault-tolerant Asynchronous Training System (FATS)</strong> supports this learning process by coordinating robot execution, cloud inference and policy optimization despite interruptions to individual robots. Together, these components enable the fleet to supply experience for subsequent policy updates without additional expert demonstrations or corrective actions. Across five real-world manipulation tasks, the resulting policies achieved <strong>93.3–99.2%</strong> success on robots excluded from training data collection.</p></div>
+</section>
+<section class="project-section" id="citation" aria-labelledby="citation-title">
+  <div class="reading-width section-heading">
+    <h2 id="citation-title">Citation</h2>
+    <p class="citation-reference">C. Yu et al., “<a href="https://arxiv.org/abs/2610.25736" target="_blank" rel="noopener noreferrer">Learning from Fleet Experience: Collective Experience Learning Across 96 Robots</a>,” <em>arXiv preprint arXiv:2610.25736</em>, 2026.</p>
+  </div>
+  <div class="reading-width">
+    <pre class="citation-code" tabindex="0" aria-label="BibTeX citation"><code class="language-bibtex">@misc{yu2026learningfleetexperiencecollective,
+  title = {Learning from Fleet Experience: Collective Experience Learning Across 96 Robots},
+  author = {Chao Yu and Shu'ang Yu and Hao Lin and Hongzhi Zang and Yuxiang Yan and Chenxi Jiang and Zhen Guo and Chuankang Li and Yihao Chen and Xin Xu and Xu Fu and Jiakai Zhou and Liangzhi Shi and Hongyi Ren and Yiwei Liu and Jing Wu and Yuanqing Wang and Chen Wu and Bo Dai and Chunyu Yang and Hongliang Huang and Shuoyu Yue and Weiqi Yin and Yinuo Chen and Ruihua Chen and Chunyang Zhu and Han Xiao and Yanghao Li and Ruipu Wu and Zhikai Cai and Xiu Chen and Xu Tan and Si Liu and Yuchen Yan and Jialin Zhang and Wen Zeng and Yiming Zhou and Zixiao Huang and Xinlei Chen and Guanghui Ren and Quanlu Zhang and Boxun Li and Maoqing Yao and Yu Wang},
+  year = {2026},
+  eprint = {2610.25736},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.RO},
+  url = {https://arxiv.org/abs/2610.25736},
+}</code></pre>
+  </div>
 </section>
   </main>
   <footer class="reading-width site-footer"><a class="wordmark" href="#top">Collective Experience Learning</a><p>Tsinghua University · AgiBot · Infinigence AI</p><a href="#top">Back to top</a></footer>

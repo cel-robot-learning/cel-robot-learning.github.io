@@ -110,3 +110,8 @@
 .site-header .project-resources a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 .site-header .project-resources button:disabled{background:#565656;border-color:#565656;color:#ededed;opacity:1;cursor:default;box-shadow:none}
 @media(max-width:600px){.site-header .project-resources{width:100%;margin-top:16px;gap:8px}.site-header .project-resources a,.site-header .project-resources button{flex:1;min-width:0;padding:10px 12px;gap:7px;font-size:14px}}
+
+/* Selectable citation with wrapping for narrow screens. */
+.citation-code{max-width:100%;margin:0;padding:24px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:14px/1.7 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;tab-size:2}
+.citation-code code{font:inherit}
+@media(max-width:600px){.citation-code{padding:18px;font-size:13px}}
