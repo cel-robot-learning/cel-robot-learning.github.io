@@ -3,68 +3,95 @@
 
   const configurations = {
     architecture: {
-      overview: {
-        title: 'FATS keeps the fleet learning.',
-        copy: 'Robot workers execute locally; inference, trajectory assembly and training run in the cloud. HotSwarm recovers failed workers while the others continue.'
+      "overview": {
+        "title": "FATS keeps the fleet learning.",
+        "copy": "Robot workers execute locally and send complete labeled episodes to cloud training workers. Shared cloud inference returns actions; HotSwarm recovers failed workers while the others continue."
       },
-      details: {
-        control: {
-          title: 'HotSwarm control plane.',
-          copy: 'HotSwarm manages worker membership and identities, detects failures and rebuilds the affected connections.'
+      "details": {
+        "control": {
+          "title": "HotSwarm control plane.",
+          "copy": "HotSwarm manages worker membership and identities, detects failures and rebuilds the affected connections."
         },
-        robots: {
-          title: 'Robot fleet.',
-          copy: 'Environment workers acquire observations, execute action chunks from cloud inference and stream execution records and outcomes.'
+        "robots": {
+          "title": "Robot fleet.",
+          "copy": "Environment workers acquire observations, execute action chunks from cloud inference and keep the current episode locally until it is labeled."
         },
-        interaction: {
-          title: 'Shared cloud inference.',
-          copy: 'Available cloud workers batch ready observations and return action chunks to the sending robot. They dispatch at a batch target or timeout, so slower robots do not hold up the others.'
+        "interaction": {
+          "title": "Shared cloud inference.",
+          "copy": "Available cloud workers batch ready observations and return action chunks to the sending robot. They dispatch at a batch target or timeout, so slower robots do not hold up the others."
         },
-        experience: {
-          title: 'Trajectory assembly in the cloud.',
-          copy: 'The collector reuses inference observations and outputs, joins them with robot records, and releases an episode only after its required data and outcome arrive.'
+        "experience": {
+          "title": "Complete labeled episodes.",
+          "copy": "Each completed, labeled episode crosses the link once into a training worker's experience store. Training samples directly from memory."
         },
-        policy: {
-          title: 'Policy updates within the cloud.',
-          copy: 'Training workers improve the policy from complete experience and send updates to cloud inference workers.'
+        "policy": {
+          "title": "Policy updates within the cloud.",
+          "copy": "Training workers improve the policy using experience sampled from memory and send updates to cloud inference workers."
         }
       },
-      routes: {
-        control: ['control'],
-        robots: ['control', 'interaction', 'experience'],
-        interaction: ['interaction'],
-        experience: ['experience'],
-        policy: ['policy']
+      "routes": {
+        "control": [
+          "control"
+        ],
+        "robots": [
+          "control",
+          "interaction",
+          "experience"
+        ],
+        "interaction": [
+          "interaction"
+        ],
+        "experience": [
+          "experience"
+        ],
+        "policy": [
+          "policy"
+        ]
       }
     },
     streaming: {
-      overview: {
-        title: 'Experience arrives as robots work.',
-        copy: 'The cloud collector combines inference data with robot records and releases complete episodes for training.'
+      "overview": {
+        "title": "Complete episodes, local accumulation.",
+        "copy": "Robot workers send complete labeled episodes to training workers. Training samples from memory, archives every eight episodes and reloads complete shards after a restart."
       },
-      details: {
-        reuse: {
-          title: 'Reuse inference data.',
-          copy: 'Observations and policy outputs already present in the cloud enter the collector without a second upload of those observations.'
+      "details": {
+        "accumulate": {
+          "title": "Accumulate at the robot site.",
+          "copy": "The current episode stays at its robot until outcome labeling. A local fault discards that robot's partial episode before it reaches cloud training."
         },
-        records: {
-          title: 'Stream robot records.',
-          copy: 'Environment workers send execution records, task outcomes and any additional frames while the robot continues operating.'
+        "transfer": {
+          "title": "Send one complete labeled episode.",
+          "copy": "A complete episode is sent asynchronously as one record, tagged with worker identity and episode ID, over a channel separate from observations."
         },
-        join: {
-          title: 'Join the corresponding records.',
-          copy: 'Worker, episode and step identifiers associate the fields even when different inference workers serve successive requests.'
+        "memory": {
+          "title": "Train directly from memory.",
+          "copy": "Each training worker appends arriving episodes to its in-memory store. Training samples from that store without disk reads."
         },
-        complete: {
-          title: 'Train on complete episodes.',
-          copy: 'The collector releases an episode only after every required field and its outcome have arrived.'
+        "archive": {
+          "title": "Archive every eight episodes.",
+          "copy": "Every eight episodes, a training worker writes the new episodes as a LeRobot shard to persistent storage."
+        },
+        "reload": {
+          "title": "Reload completed shards.",
+          "copy": "A restarted training worker reloads completed shards in the background and skips any shard left incomplete."
         }
       },
-      routes: {
-        reuse: ['inference'],
-        records: ['records'],
-        join: ['inference', 'records'],
-        complete: ['complete']
+      "routes": {
+        "accumulate": [
+          "episode"
+        ],
+        "transfer": [
+          "episode"
+        ],
+        "memory": [
+          "sample"
+        ],
+        "archive": [
+          "archive"
+        ],
+        "reload": [
+          "reload"
+        ]
       }
     },
     recovery: {
